@@ -1,0 +1,16 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@font-face {
+  font-family: 'Istok Web';
+  src: url('/fonts/IstokWeb-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Istok Web';
+  src: url('/fonts/IstokWeb-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+body {
+  font-family: 'Istok Web', sans-serif;
+}

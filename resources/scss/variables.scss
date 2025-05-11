@@ -1,0 +1,8 @@
+$primary: #EEB521; // Kuning emas, cocok buat highlight / CTA
+$accent: #092C6B; // Biru tua elegan, bisa untuk header, tombol utama
+$bg-light: #FFF6DF; // Background cerah, aman buat base page
+$bg-softer: #FFF8F1; // Background sangat lembut, cocok buat section lain
+$text-muted: #727272; // Abu-abu netral, pas untuk teks sekunder
+$text-dark: #232323; // Hitam pekat, buat teks utama
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

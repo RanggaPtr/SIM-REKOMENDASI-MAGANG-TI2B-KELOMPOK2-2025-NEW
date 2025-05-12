@@ -10,6 +10,7 @@ class CreateMTableUsersTable extends Migration
         Schema::create('m_table_users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
+            $table->string('username', 255)->unique(); // Tambahkan kolom username dengan constraint unik
             $table->string('email', 255)->unique();
             $table->string('password', 255);
             $table->enum('role', ['admin', 'dosen', 'mahasiswa']);

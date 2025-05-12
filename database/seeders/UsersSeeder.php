@@ -12,6 +12,7 @@ class UsersSeeder extends Seeder
     {
         UsersModel::create([
             'nama' => 'Admin Utama',
+            'username' => 'admin_utama', // Tambahkan username unik
             'email' => 'admin@simmagang.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
@@ -21,6 +22,7 @@ class UsersSeeder extends Seeder
 
         UsersModel::create([
             'nama' => 'Dosen Satu',
+            'username' => 'dosen_satu', // Tambahkan username unik
             'email' => 'dosen1@simmagang.com',
             'password' => Hash::make('password'),
             'role' => 'dosen',
@@ -30,6 +32,7 @@ class UsersSeeder extends Seeder
 
         UsersModel::create([
             'nama' => 'Mahasiswa Satu',
+            'username' => 'mahasiswa_satu', // Tambahkan username unik
             'email' => 'mahasiswa1@simmagang.com',
             'password' => Hash::make('password'),
             'role' => 'mahasiswa',

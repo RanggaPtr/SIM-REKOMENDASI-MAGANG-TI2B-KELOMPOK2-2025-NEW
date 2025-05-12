@@ -2,21 +2,21 @@
 
 <aside class="bg-light-softer vh-99" id="sidebar">
     <div class="d-flex justify-content-center my-3 bg-light-softer pb-3">
-        <img src="{{url('/images/logo.png')}}" style="height: 50px;" class="bg-light-softer" alt="">
+        <img src="{{ url('/images/logo.png') }}" style="height: 50px;" class="bg-light-softer" alt="">
     </div>
 
     <ul class="sidebar-nav nav flex-column gap-1">
         <li class="nav-item bg-light-softer">
             <a href="{{ url('/roles/admin/dashboard') }}"
-                class="nav-link d-flex align-items-center {{ $activeMenu == 'dashboard' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'dashboard' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-tachometer-alt me-4"></i><b>Dashboard</b>
             </a>
         </li>
 
-        {{-- Manajemen Magang --}}
+        <!-- Manajemen Magang -->
         <li class="nav-item bg-light-softer">
             <div
-                class="nav-link toggle-submenu d-flex align-items-center {{ $activeMenu == 'manajemenMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'manajemenMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-briefcase me-4"></i><b>Manajemen Magang</b> <i class="fas fa-caret-right ms-auto pe-2"></i>
             </div>
             <ul class="nav-submenu ps-5 bg-light-softer">
@@ -27,10 +27,10 @@
             </ul>
         </li>
 
-        {{-- Manajemen Data --}}
+        <!-- Manajemen Data -->
         <li class="nav-item bg-light-softer">
             <div
-                class="nav-link toggle-submenu d-flex align-items-center {{ $activeMenu == 'manajemenData' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'manajemenData' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-database me-4"></i><b>Manajemen Data</b> <i class="fas fa-caret-right ms-auto pe-2"></i>
             </div>
             <ul class="nav-submenu ps-5 bg-light-softer">
@@ -45,18 +45,18 @@
             </ul>
         </li>
 
-        {{-- Statistik --}}
+        <!-- Statistik -->
         <li class="nav-item bg-light-softer">
             <a href="{{ url('/roles/admin/statistik-data-tren') }}"
-                class="nav-link d-flex align-items-center {{ $activeMenu == 'analitik' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'analitik' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-chart-line me-4"></i><b>Statistik Tren</b>
             </a>
         </li>
-        
-        {{-- Logout --}}
+
+        <!-- Logout -->
         <li class="nav-item bg-light-softer mt-auto" style="position: absolute; bottom: 10vh;">
             <a href="{{ url('/logout') }}"
-                class="nav-link d-flex align-items-center {{ $activeMenu == 'logout' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'logout' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-sign-out-alt me-4"></i><b>Logout</b>
             </a>
         </li>
@@ -71,11 +71,10 @@
             header.addEventListener('click', () => {
                 const parentLi = header.parentElement;
                 const submenu = parentLi.querySelector('.nav-submenu');
-                const caretIcon = header.querySelector('.fa-caret-right'); // pastikan ini tepat
+                const caretIcon = header.querySelector('.fa-caret-right');
 
                 if (submenu) {
                     submenu.classList.toggle('show');
-
                     if (caretIcon) {
                         caretIcon.classList.toggle('rotate-90');
                     }

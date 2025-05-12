@@ -1,27 +1,27 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateMTableUsersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('m_table_users', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->string('nama', 255);
+            $table->string('email', 255)->unique();
+            $table->string('password', 255);
+            $table->enum('role', ['admin', 'dosen', 'mahasiswa']);
+            $table->binary('foto_profile')->nullable();
+            $table->string('no_telepon', 20)->nullable();
+            $table->text('alamat')->nullable();
             $table->timestamps();
         });
     }
-    
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+
+    public function down()
     {
         Schema::dropIfExists('m_table_users');
     }
-};
+}

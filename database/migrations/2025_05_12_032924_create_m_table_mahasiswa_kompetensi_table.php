@@ -4,23 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateMTableMahasiswaKompetensiTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('m_table_mahasiswa_kompetensi', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('mahasiswa_id');
+            $table->unsignedBigInteger('kompetensi_id');
             $table->timestamps();
+
+            $table->foreign('mahasiswa_id')->references('id')->on('m_table_mahasiswa')->onDelete('restrict');
+            $table->foreign('kompetensi_id')->references('id')->on('m_table_kompetensi')->onDelete('restrict');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('m_table_mahasiswa_kompetensi');
     }

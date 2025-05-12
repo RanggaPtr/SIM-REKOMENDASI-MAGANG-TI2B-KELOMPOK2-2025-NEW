@@ -4,23 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateTTableEvaluasiMagangTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('t_table_evaluasi_magang', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('pengajuan_id');
+            $table->integer('nilai');
+            $table->text('komentar')->nullable();
             $table->timestamps();
+
+            $table->foreign('pengajuan_id')->references('id')->on('t_table_pengajuan_magang')->onDelete('restrict');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('t_table_evaluasi_magang');
     }

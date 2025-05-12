@@ -1,27 +1,25 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateMTableLowonganKeahlianTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('m_table_lowongan_keahlian', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('lowongan_id');
+            $table->unsignedBigInteger('keahlian_id');
             $table->timestamps();
+
+            $table->foreign('lowongan_id')->references('id')->on('m_table_lowongan_magang')->onDelete('restrict');
+            $table->foreign('keahlian_id')->references('id')->on('m_table_keahlian')->onDelete('restrict');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('m_table_lowongan_keahlian');
     }
-};
+}

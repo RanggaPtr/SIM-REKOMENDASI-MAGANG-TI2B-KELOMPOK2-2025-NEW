@@ -4,23 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateMTableDosenTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('m_table_dosen', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('nidn', 20)->unique();
+            $table->unsignedBigInteger('program_studi_id')->nullable();
+            $table->integer('jumlah_bimbingan')->default(0);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('m_table_users')->onDelete('restrict');
+            $table->foreign('program_studi_id')->references('id')->on('m_table_program_studi')->onDelete('restrict');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('m_table_dosen');
     }

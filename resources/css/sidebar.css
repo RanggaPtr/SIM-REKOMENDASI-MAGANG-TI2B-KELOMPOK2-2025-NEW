@@ -1,0 +1,87 @@
+aside i {
+    background-color: #FFF8F1;
+}
+
+.sidebar-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF8F1;
+}
+
+.sidebar-nav ul,
+.sidebar-nav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toggle-submenu {
+    display: block;
+    padding: 10px;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+}
+
+.sidebar-nav li a {
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+}
+
+.nav-header {
+    cursor: pointer;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.nav-link:hover,
+.nav-link:hover * {
+    background-color: #EEB521;
+    color: #FFF8F1;
+    border-radius: 0.375rem;
+}
+
+.nav-link,
+.nav-link * {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-submenu li:hover {
+  background-color: #EEB521;
+  color: #FFF8F1;
+  border-radius: 0.375rem;
+}
+
+.nav-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.nav-submenu.show {
+    max-height: 500px;
+    /* cukup besar agar bisa muat semua item, scroll muncul otomatis */
+    overflow-y: hidden;
+}
+
+.nav-item b {
+    background-color: #FFF8F1;
+}
+
+.active i {
+    background-color: #EEB521;
+    color: #FFF8F1;
+}
+
+.active b {
+    background-color: #EEB521;
+    color: #FFF8F1;
+}

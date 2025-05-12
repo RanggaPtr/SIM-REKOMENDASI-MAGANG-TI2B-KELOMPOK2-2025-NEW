@@ -5,4 +5,13 @@ $bg-softer: #FFF8F1; // Background sangat lembut, cocok buat section lain
 $text-muted: #727272; // Abu-abu netral, pas untuk teks sekunder
 $text-dark: #232323; // Hitam pekat, buat teks utama
 
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $accent,
+    "light": $bg-light,
+    "light-softer": $bg-softer,
+    "muted": $text-muted,
+    "dark": $text-dark
+);
+
 @import "../../node_modules/bootstrap/scss/bootstrap";

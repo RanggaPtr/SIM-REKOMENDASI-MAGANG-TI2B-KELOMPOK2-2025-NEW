@@ -1,0 +1,30 @@
+.footer {
+    background-color: $bg-softer;
+    color: $text-muted;
+    padding: 1rem 2rem;
+    text-align: center;
+    border-top: 1px solid lighten($text-muted, 30%);
+    position: relative;
+    bottom: 0;
+    width: 100%;
+
+    p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    a {
+        color: $accent;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+
+    @media (max-width: 768px) {
+        padding: 1rem;
+        font-size: 0.8rem;
+    }
+}

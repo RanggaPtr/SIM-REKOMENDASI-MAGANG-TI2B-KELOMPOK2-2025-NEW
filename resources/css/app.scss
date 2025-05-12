@@ -1,0 +1,36 @@
+// Impor variabel kustom dan override Bootstrap
+@import 'variables';
+
+// Impor partials
+@import 'header';
+@import 'sidebar';
+@import 'footer';
+
+// Gaya global
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: $bg-softer;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    margin-top: 60px; // Sesuaikan dengan tinggi header
+    margin-left: 250px; // Sesuaikan dengan lebar sidebar
+
+    @media (max-width: 768px) {
+        margin-left: 0;
+    }
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: $bg-light;
+}

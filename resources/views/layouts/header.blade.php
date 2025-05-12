@@ -6,10 +6,12 @@
         <!-- Kanan: Bell dan Profile -->
         <div class="d-flex align-items-center gap-2 me-2">
             <i class="fas fa-bell me-5"></i>
-            <img src="/images/profile.png" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
+            <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}" 
+                 alt="Profile" 
+                 style="width: 40px; height: 40px; border-radius: 50%;">
             <div class="column ms-2">
-                <b class="mb-0">Mahmduuuud Al</b>
-                <p class="mb-0" style="font-size: 13px;">Mahasiswa</p>
+                <b class="mb-0">{{ Auth::user()->nama }}</b>
+                <p class="mb-0" style="font-size: 13px;">{{ ucfirst(Auth::user()->role) }}</p>
             </div>
         </div>
     </div>

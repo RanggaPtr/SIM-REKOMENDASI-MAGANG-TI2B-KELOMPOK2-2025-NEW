@@ -11,19 +11,19 @@
 
 <body>
     <div class="d-flex min-vh-100">
-        {{-- Sidebar --}}
+        <!-- Sidebar -->
         <aside class="bg-light-softer ps-3 pe-3 border-end" style="width: 290px;">
-            @include('layouts.sidebar')
+            @include('layouts.sidebar', ['activeMenu' => $activeMenu ?? '']) <!-- Tambahkan variabel default -->
         </aside>
 
-        {{-- Main Section: Header + Content --}}
+        <!-- Main Section: Header + Content -->
         <div class="d-flex flex-column flex-grow-1">
-            {{-- Header --}}
+            <!-- Header -->
             <header class="px-4 pt-3 pb-3">
                 @include('layouts.header')
             </header>
 
-            {{-- Content --}}
+            <!-- Content -->
             <main class="flex-grow-1 pt-2 px-4">
                 @yield('content')
             </main>

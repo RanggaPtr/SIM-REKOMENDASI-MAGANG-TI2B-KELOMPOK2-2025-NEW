@@ -10,13 +10,32 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
+    public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $this->call([
+            UsersSeeder::class,
+            ProgramStudiSeeder::class,
+            LokasiSeeder::class,
+            MinatSeeder::class,
+            SkemaSeeder::class,
+            KompetensiSeeder::class,
+            KeahlianSeeder::class,
+            PeriodeMagangSeeder::class,
+            PerusahaanSeeder::class,
+            AdminSeeder::class,
+            DosenSeeder::class,
+            MahasiswaSeeder::class,
+            SertifikatDosenSeeder::class,
+            LowonganMagangSeeder::class,
+            MahasiswaKompetensiSeeder::class,
+            MahasiswaKeahlianSeeder::class,
+            LowonganKompetensiSeeder::class,
+            LowonganKeahlianSeeder::class,
+            PengajuanMagangSeeder::class,
+            SertifikatMagangSeeder::class,
+            EvaluasiMagangSeeder::class,
+            BookmarkSeeder::class,
+            LogAktivitasSeeder::class,
+        ]);
     }
 }

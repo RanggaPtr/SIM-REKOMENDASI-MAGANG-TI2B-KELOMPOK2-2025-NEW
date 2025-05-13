@@ -37,7 +37,7 @@
         .btn-primary:hover {
             background-color: #ffcc00;
         }
-        .form-control, .form-select {
+        .form-control {
             background-color: #f9f6eb;
         }
         .carousel-caption-bottom {
@@ -46,6 +46,9 @@
             padding: 15px;
             margin-top: 10px;
             text-align: center;
+        }
+        .alert {
+            margin-bottom: 20px;
         }
         @media (max-width: 768px) {
             .register-left, .register-right {
@@ -97,12 +100,27 @@
         <div class="register-right col-md-6">
             <img src="{{ asset('images/logo.png') }}" alt="Magang.in" class="mb-3" style="width: 150px;">
             <h2>Selamat Datang di <strong><span style="color: #1976d2;">magang.</span><span style="color: #ffd54f;">in</span></strong></h2>
+            
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
             <form method="POST" action="{{ route('postregister') }}">
                 @csrf
                 <div class="mb-3">
-                    <label for="name">Nama</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
-                    @error('name')
+                    <label for="nama">Nama</label>
+                    <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama') }}" required>
+                    @error('nama')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username') }}" required>
+                    @error('username')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -127,7 +145,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <input type="hidden" name="role" value="User">
+                <input type="hidden" name="role" value="mahasiswa">
                 <button type="submit" class="btn btn-primary w-100">Daftar</button>
                 <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
             </form>
@@ -136,16 +154,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelector('form').addEventListener('submit', function (e) {
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (password.length < 8) {
+            if (username.trim() === '') {
                 e.preventDefault();
-                alert('Password harus minimal 8 karakter.');
+                alert('Username tidak boleh kosong.');
             } else if (!emailRegex.test(email)) {
                 e.preventDefault();
                 alert('Masukkan email yang valid.');
+            } else if (password.length < 8) {
+                e.preventDefault();
+                alert('Password harus minimal 8 karakter.');
+            } else if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Password dan konfirmasi password tidak cocok.');
             }
         });
     </script>

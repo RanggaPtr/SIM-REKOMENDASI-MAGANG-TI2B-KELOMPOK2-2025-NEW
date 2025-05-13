@@ -65,7 +65,7 @@
             <div id="slideshowExample" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../public/images/slide1.jpg" class="d-block w-100" alt="Slide 1">
+                        <img src="http://sim-rekomendasi-magang-ti2b-kelompok2-2025.test/images/slide1.png" class="d-block w-100" alt="Slide 1">
                         <div class="carousel-caption-bottom">
                             <h5><span style="color: #1976d2;">magang.</span>
                                 <span style="color: #ffd54f;">in</span> mengutamakan keefisiensian</h5>
@@ -73,14 +73,14 @@
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="../public/images/slide2.jpg" class="d-block w-100" alt="Slide 2">
+                        <img src="http://sim-rekomendasi-magang-ti2b-kelompok2-2025.test/images/slide2.png" class="d-block w-100" alt="Slide 2">
                         <div class="carousel-caption-bottom">
                             <h5>Jelajahi Berbagai Kesempatan Magang</h5>
                             <p>Temukan magang yang sesuai dengan minat dan keahlianmu.</p>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="../public/images/slide3.png" class="d-block w-100" alt="Slide 3">
+                        <img src="http://sim-rekomendasi-magang-ti2b-kelompok2-2025.test/images/slide3.png" class="d-block w-100" alt="Slide 3">
                         <div class="carousel-caption-bottom">
                             <h5>Dapatkan Pengalaman Berharga</h5>
                             <p>Tingkatkan keterampilanmu dengan pengalaman magang yang bermanfaat.</p>
@@ -99,7 +99,7 @@
         </div>
 
         <div class="login-right col-md-6">
-            <img src="../public/images/logo.png" alt="Magang.in" class="mb-3" style="width: 150px;">
+            <img src="http://sim-rekomendasi-magang-ti2b-kelompok2-2025.test/images/logo.png"alt="Magang.in" class="mb-3" style="width: 150px;">
             <h2>Selamat Datang di <strong>
                     <span style="color: #1976d2;">magang.</span>
                     <span style="color: #ffd54f;">in</span>

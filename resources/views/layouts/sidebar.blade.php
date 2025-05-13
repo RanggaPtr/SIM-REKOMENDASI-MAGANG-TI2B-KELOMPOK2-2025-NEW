@@ -44,7 +44,7 @@
                             class="nav-link text-muted bg-light-softer">Pengguna</a></li>
                     <li><a href="{{ url('/roles/admin/management-periode') }}"
                             class="nav-link text-muted bg-light-softer">Periode</a></li>
-                    <li><a href="{{ url('/roles/admin/management-prodi') }}"
+                    <li><a href="{{ url('/admin/management-prodi') }}"
                             class="nav-link text-muted bg-light-softer">Program Studi</a></li>
                 </ul>
             </li>

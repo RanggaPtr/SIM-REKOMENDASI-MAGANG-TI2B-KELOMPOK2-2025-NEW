@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProgramStudiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
@@ -68,6 +69,23 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/import_ajax', [UserController::class, 'import_ajax']); // menyimpan data User dari file import
             Route::get('/export_excel', [UserController::class,'export_excel']); // ajax export excel
             Route::get('/export_pdf', [UserController::class,'export_pdf']); // ajax export pdf
+        });
+
+        // Manajemen Program Studi
+        Route::group(['prefix' => 'management-prodi'], function () {
+            Route::get('/', [ProgramStudiController::class, 'index'])->name('programstudi.index');
+            Route::post('/list', [ProgramStudiController::class, 'list'])->name('programstudi.list');
+            Route::get('/create_ajax', [ProgramStudiController::class, 'create_ajax']);
+            Route::post('/ajax', [ProgramStudiController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [ProgramStudiController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [ProgramStudiController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [ProgramStudiController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [ProgramStudiController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [ProgramStudiController::class, 'delete_ajax']);
+            Route::get('/import', [ProgramStudiController::class, 'import']);
+            Route::post('/import_ajax', [ProgramStudiController::class, 'import_ajax']);
+            Route::get('/export_excel', [ProgramStudiController::class, 'export_excel']);
+            Route::get('/export_pdf', [ProgramStudiController::class, 'export_pdf']);
         });
     })->middleware('authorize:admin');
 

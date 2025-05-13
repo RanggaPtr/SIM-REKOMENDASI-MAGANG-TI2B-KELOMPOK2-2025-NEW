@@ -8,7 +8,7 @@
     <ul class="sidebar-nav nav flex-column gap-1">
         <!-- Dashboard (Tampil untuk semua role) -->
         <li class="nav-item bg-light-softer">
-            <a href="{{ url('/roles/' . strtolower(Auth::user()->role) . '/dashboard') }}"
+            <a href="{{ url( strtolower(Auth::user()->role) . '/dashboard') }}"
                 class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'dashboard' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                 <i class="fas fa-tachometer-alt me-4"></i><b>Dashboard</b>
             </a>

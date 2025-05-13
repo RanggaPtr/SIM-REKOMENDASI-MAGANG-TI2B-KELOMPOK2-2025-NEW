@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Auth;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/postlogin', [AuthController::class, 'postlogin'])->name('postlogin');
@@ -31,11 +29,11 @@ Route::group(['middleware' => 'auth'], function () {
         $user = Auth::user();
         switch ($user->role) {
             case 'admin':
-                return redirect()->route('admin.dashboard', ['activeMenu' => 'dashboard']);
+                return redirect()->route('admin.dashboard');
             case 'dosen':
-                return redirect()->route('dosen.dashboard', ['activeMenu' => 'dosen']);
+                return redirect()->route('dosen.dashboard');
             case 'mahasiswa':
-                return redirect()->route('mahasiswa.dashboard', ['activeMenu' => 'mahasiswa']);
+                return redirect()->route('mahasiswa.dashboard');
             default:
                 return redirect('login');
         }
@@ -78,23 +76,30 @@ Route::group(['middleware' => 'auth'], function () {
  
     // Rute untuk dosen
     Route::prefix('dosen')->name('dosen.')->group(function () {
+        // dashboard
         Route::get('/dashboard', function () {
-            return view('roles.dosen.dashboard', ['activeMenu' => 'dosen']);
+            return view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
         })->name('dashboard');
-        Route::get('/management-akun-profile', function () {
-            return view('roles.dosen.management-akun-profile', ['activeMenu' => 'manajemenData']);
-        })->name('management.akun');
-        // Tambahkan rute lain untuk dosen di sini
+        // Monitoring Mahasiswa
+        Route::get('/monitoring-mahasiswa', function () {
+            return view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']);
+        })->name('monitoring.mahasiswa');
+        // Evaluasi Magang
+        Route::get('/evaluasi-magang', function () {
+            return view('roles.dosen.evaluasi-magang', ['activeMenu' => 'evaluasiMagang']);
+        });
+        // Route::get('/management-akun-profile', function () {
+        //     return view('roles.dosen.management-akun-profile', ['activeMenu' => 'managementAkun']);
+        // })->name('management.akun');
     })->middleware('authorize:dosen');
 
     // Rute untuk mahasiswa
     Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('roles.mahasiswa.dashboard', ['activeMenu' => 'mahasiswa']);
+            return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
         })->name('dashboard');
         Route::get('/log-harian', function () {
-            return view('roles.mahasiswa.log-harian', ['activeMenu' => 'log']);
+            return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
         })->name('log.harian');
-        // Tambahkan rute lain untuk mahasiswa di sini
     })->middleware('authorize:mahasiswa');
 });

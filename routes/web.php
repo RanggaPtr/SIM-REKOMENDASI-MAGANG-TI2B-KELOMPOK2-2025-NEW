@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Auth;
 
 // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
+Route::get('/', function () {
+    return view('landing-page');
+})->name('landingPage');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/postlogin', [AuthController::class, 'postlogin'])->name('postlogin');

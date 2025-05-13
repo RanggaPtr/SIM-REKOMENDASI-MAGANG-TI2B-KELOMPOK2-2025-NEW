@@ -133,27 +133,30 @@ class ProgramStudiController extends Controller
         return view('roles.admin.management-prodi.confirm_ajax', ['programStudi' => $programStudi]);
     }
 
-    public function delete_ajax(Request $request, $id)
+    public function delete_ajax($id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $programStudi = ProgramStudiModel::find($id);
+        $programStudi = ProgramStudiModel::find($id);
 
-            if ($programStudi) {
-                // Hapus data Program Studi
+        if ($programStudi) {
+            try {
                 $programStudi->delete();
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil dihapus'
+                    'message' => 'Program Studi berhasil dihapus.'
                 ]);
-            } else {
+            } catch (\Exception $e) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Terjadi kesalahan saat menghapus data.'
                 ]);
             }
         }
-        return redirect('/admin/management-prodi');
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data Program Studi tidak ditemukan.'
+        ]);
     }
 
     public function show_ajax($id)

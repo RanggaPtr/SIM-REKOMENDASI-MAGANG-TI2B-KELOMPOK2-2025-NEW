@@ -1,4 +1,4 @@
-aside i {
+ aside i {
     background-color: #FFF8F1;
 }
 
@@ -84,4 +84,11 @@ aside i {
 .active b {
     background-color: #EEB521;
     color: #FFF8F1;
+}
+
+.logout:hover,
+.logout:hover * {
+    background-color: #dc3545 !important; /* Warna merah saat hover */
+    color: #fff !important;
+    border-radius: 0.375rem !important; /* Samakan border-radius dengan hover kuning */
 }

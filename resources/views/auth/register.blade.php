@@ -3,57 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - Magang.in</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .register-container { max-width: 300px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; }
-        .register-container input, .register-container select { width: 100%; padding: 8px; margin: 5px 0; }
-        .register-container button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; }
-        .error { color: red; }
+        body {
+            background-color: #f9f6eb;
+        }
+        .register-container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .register-left {
+            background-color: #ffd54f;
+            padding: 40px;
+            color: #333;
+        }
+        .register-right {
+            padding: 40px;
+        }
+        .register-right h2 {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #ffd54f;
+            border: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #ffcc00;
+        }
+        .form-control {
+            background-color: #f9f6eb;
+        }
+        .carousel-caption-bottom {
+            position: static;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .register-left, .register-right {
+                padding: 20px;
+            }
+            .register-container {
+                margin: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <h2>Register</h2>
-        @if ($message = Session::get('error'))
-            <div class="error">{{ $message }}</div>
-        @endif
-        @if ($errors->any())
-            <div class="error">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    <div class="register-container row">
+        <div class="register-left col-md-6 d-flex flex-column justify-content-center align-items-center">
+            <div id="slideshowExample" class="carousel slide" data-bs-ride="carousel" aria-label="Promotional slideshow">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{{ asset('images/slide1.png') }}" class="d-block w-100" alt="Slide 1">
+                        <div class="carousel-caption-bottom">
+                            <h5><span style="color: #1976d2;">magang.</span><span style="color: #ffd54f;">in</span> mengutamakan keefisiensian</h5>
+                            <p>Temukan magang impian melalui magang.in, efisien dan cocok untuk semua kalangan.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/slide2.png') }}" class="d-block w-100" alt="Slide 2">
+                        <div class="carousel-caption-bottom">
+                            <h5>Jelajahi Berbagai Kesempatan Magang</h5>
+                            <p>Temukan magang yang sesuai dengan minat dan keahlianmu.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/slide3.png') }}" class="d-block w-100" alt="Slide 3">
+                        <div class="carousel-caption-bottom">
+                            <h5>Dapatkan Pengalaman Berharga</h5>
+                            <p>Tingkatkan keterampilanmu dengan pengalaman magang yang bermanfaat.</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#slideshowExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#slideshowExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-        @endif
-        <form method="POST" action="{{ route('postregister') }}">
-            @csrf
-            <div>
-                <label for="nama">Nama</label>
-                <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required>
-            </div>
-            <div>
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" value="{{ old('username') }}" required>
-            </div>
-            <div>
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}" required>
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
-            </div>
-            <div>
-                <label for="role">Role</label>
-                <select name="role" id="role" required>
-                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
-                    <option value="mahasiswa" {{ old('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
-                </select>
-            </div>
-            <button type="submit">Register</button>
-        </form>
+        </div>
+        <div class="register-right col-md-6">
+            <img src="{{ asset('images/logo.png') }}" alt="Magang.in" class="mb-3" style="width: 150px;">
+            <h2>Selamat Datang di <strong><span style="color: #1976d2;">magang.</span><span style="color: #ffd54f;">in</span></strong></h2>
+            
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            <form method="POST" action="{{ route('postregister') }}">
+                @csrf
+                <div class="mb-3">
+                    <label for="nama">Nama</label>
+                    <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama') }}" required>
+                    @error('nama')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username') }}" required>
+                    @error('username')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation">Konfirmasi Password</label>
+                    <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" name="password_confirmation" required>
+                    @error('password_confirmation')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <input type="hidden" name="role" value="mahasiswa">
+                <button type="submit" class="btn btn-primary w-100">Daftar</button>
+                <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
+            </form>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (username.trim() === '') {
+                e.preventDefault();
+                alert('Username tidak boleh kosong.');
+            } else if (!emailRegex.test(email)) {
+                e.preventDefault();
+                alert('Masukkan email yang valid.');
+            } else if (password.length < 8) {
+                e.preventDefault();
+                alert('Password harus minimal 8 karakter.');
+            } else if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Password dan konfirmasi password tidak cocok.');
+            }
+        });
+    </script>
 </body>
 </html>

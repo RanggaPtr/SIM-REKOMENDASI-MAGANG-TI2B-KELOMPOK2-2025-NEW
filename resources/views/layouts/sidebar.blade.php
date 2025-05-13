@@ -36,7 +36,7 @@
             <ul class="nav-submenu ps-5 bg-light-softer">
                 <li><a href="{{ url('/roles/admin/management-mitra') }}"
                         class="nav-link text-muted bg-light-softer">Mitra</a></li>
-                <li><a href="{{ url('/roles/admin/management-pengguna') }}"
+                <li><a href="{{ url('/admin/management-pengguna') }}"
                         class="nav-link text-muted bg-light-softer">Pengguna</a></li>
                 <li><a href="{{ url('/roles/admin/management-periode') }}"
                         class="nav-link text-muted bg-light-softer">Periode</a></li>

@@ -32,10 +32,10 @@ class MahasiswaModel extends Model
         return $this->belongsTo(MinatModel::class, 'minat_id');
     }
 
-    public function skema()
-    {
-        return $this->belongsTo(SkemaModel::class, 'skema_id');
-    }
+    // public function skema()
+    // {
+    //     return $this->belongsTo(SkemaModel::class, 'skema_id');
+    // }
 
     public function mahasiswaKompetensi()
     {

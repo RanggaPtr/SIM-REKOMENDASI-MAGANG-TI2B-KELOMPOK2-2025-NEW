@@ -10,10 +10,10 @@ class SkemaModel extends Model
 
     protected $fillable = ['nama', 'deskripsi'];
 
-    public function mahasiswa()
-    {
-        return $this->hasMany(MahasiswaModel::class, 'skema_id');
-    }
+    // public function mahasiswa()
+    // {
+    //     return $this->hasMany(MahasiswaModel::class, 'skema_id');
+    // }
 
     public function lowonganMagang()
     {

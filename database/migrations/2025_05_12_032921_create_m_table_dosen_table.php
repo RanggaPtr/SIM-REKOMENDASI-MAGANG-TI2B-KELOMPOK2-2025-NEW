@@ -8,7 +8,7 @@ class CreateMTableDosenTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_dosen', function (Blueprint $table) {
+        Schema::create('m_dosen', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('nidn', 20)->unique();
@@ -16,13 +16,13 @@ class CreateMTableDosenTable extends Migration
             $table->integer('jumlah_bimbingan')->default(0);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('m_table_users')->onDelete('restrict');
-            $table->foreign('program_studi_id')->references('id')->on('m_table_program_studi')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
+            $table->foreign('program_studi_id')->references('id')->on('m_program_studi')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_dosen');
+        Schema::dropIfExists('m_dosen');
     }
 };

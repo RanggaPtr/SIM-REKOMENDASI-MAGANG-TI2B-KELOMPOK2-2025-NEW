@@ -8,7 +8,7 @@ class CreateMTableLokasiTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_lokasi', function (Blueprint $table) {
+        Schema::create('m_lokasi', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
             $table->timestamps();
@@ -17,6 +17,6 @@ class CreateMTableLokasiTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_table_lokasi');
+        Schema::dropIfExists('m_lokasi');
     }
 };

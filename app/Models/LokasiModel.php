@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LokasiModel extends Model
 {
-    protected $table = 'm_table_lokasi';
+    protected $table = 'm_lokasi';
 
     protected $fillable = ['nama'];
 

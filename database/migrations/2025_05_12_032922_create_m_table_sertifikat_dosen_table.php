@@ -8,7 +8,7 @@ class CreateMTableSertifikatDosenTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_sertifikat_dosen', function (Blueprint $table) {
+        Schema::create('m_sertifikat_dosen', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('dosen_id');
             $table->string('nama_sertifikat', 255);
@@ -17,12 +17,12 @@ class CreateMTableSertifikatDosenTable extends Migration
             $table->binary('file_sertifikat');
             $table->timestamps();
 
-            $table->foreign('dosen_id')->references('id')->on('m_table_dosen')->onDelete('restrict');
+            $table->foreign('dosen_id')->references('id')->on('m_dosen')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_sertifikat_dosen');
+        Schema::dropIfExists('m_sertifikat_dosen');
     }
 };

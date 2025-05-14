@@ -7,7 +7,7 @@ class CreateMTableProgramStudiTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_program_studi', function (Blueprint $table) {
+        Schema::create('m_program_studi', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
             $table->timestamps();
@@ -16,6 +16,6 @@ class CreateMTableProgramStudiTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_table_program_studi');
+        Schema::dropIfExists('m_program_studi');
     }
 };

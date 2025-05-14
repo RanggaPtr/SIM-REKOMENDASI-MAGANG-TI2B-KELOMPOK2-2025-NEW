@@ -8,19 +8,19 @@ class CreateMTableBookmarkTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_bookmark', function (Blueprint $table) {
+        Schema::create('m_bookmark', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('mahasiswa_id');
             $table->unsignedBigInteger('lowongan_id');
             $table->timestamps();
 
-            $table->foreign('mahasiswa_id')->references('id')->on('m_table_mahasiswa')->onDelete('restrict');
-            $table->foreign('lowongan_id')->references('id')->on('m_table_lowongan_magang')->onDelete('restrict');
+            $table->foreign('mahasiswa_id')->references('id')->on('m_mahasiswa')->onDelete('restrict');
+            $table->foreign('lowongan_id')->references('id')->on('m_lowongan_magang')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_bookmark');
+        Schema::dropIfExists('m_bookmark');
     }
 };

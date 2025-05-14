@@ -67,8 +67,8 @@
         <!-- Tombol di kanan -->
         <div class="d-flex gap-3 mt-3">
             <a href="login" class="btn fw-bold btn-outline-primary btn-sm px-3 btn-hover-white">Masuk</a>
-            <a href="register" class="btn fw-bold btn-primary text-light-softer ps-4 pe-2 btn-sm">Daftar <span class="ps-3"
-                    style="font-size: 13px; background: transparent;">></span></a>
+            <a href="register" class="btn fw-bold btn-primary text-light-softer ps-4 pe-2 btn-sm">Daftar <span
+                    class="ps-3" style="font-size: 13px; background: transparent;">></span></a>
         </div>
     </header>
 
@@ -91,7 +91,7 @@
                         Terpercaya, dan Sesuai Minatmu Bersama Magang.in!
                     </p>
                 </div>
-                
+
                 <!-- Kolom Ketiga: Tombol -->
                 <div class="d-flex gap-5">
                     <a href="register" class="btn btn-primary text-light-softer ps-5 pe-4 btn-lg fw-bold">Daftar <span
@@ -104,26 +104,34 @@
 
     <!-- Tentang Section -->
     <section class="content d-flex align-items-center justify-content-center"
-        style="height: 100vh; background: transparent;" id="tentang">
+        style="height: 100vh; background: transparent; scroll-margin-top: 6vh;" id="tentang">
         <div class="container">
-            <div class="d-flex flex-row align-items-center text-center">
-                <!-- Kolom Pertama: Judul -->
-                <div class="" style="">
-                    <p class="fw-bold text-primary" style="font-size: 60px">Portal <span
-                            class="text-secondary">Anda</span><br> <span class="text-secondary">Menuju</span> Kesuksesan
-                    </p>
+            <div class="row align-items-center">
+                <!-- Kolom Kiri: Kotak besar dengan quotes -->
+                <div class="col-md-6 mb-4 mb-md-0 d-flex align-items-center" style="height: 75vh;">
+                    <div class="bg-primary rounded-4 p-5 shadow-sm" style="height: 100%">
+                        <div class="bg-light rounded-3 p-4 shadow-sm">
+                            <blockquote class="blockquote mb-0">
+                                <p class="fw-semibold text-secondary">
+                                    "Magang bukan sekadar kerja, tapi langkah awal menuju mimpi."
+                                </p>
+                            </blockquote>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Kolom Kedua: Deskripsi -->
-                <div class="mb-4 text-dark" style="max-width: 650px;">
-                    <p>
-                        Jelajahi Puluhan Kesempatan Magang Impianmu dengan Rekomendasi Paling Cocok,
-                        Terpercaya, dan Sesuai Minatmu Bersama Magang.in!
+                <!-- Kolom Kanan: Judul + Deskripsi -->
+                <div class="col-md-6 text-center text-md-start">
+                    <h2 class="fw-bold text-primary mb-3 fs-1">Kenapa Magang.in?</h2>
+                    <p class="text-dark fs-5">
+                        Kami hadir untuk bantu kamu temukan pengalaman magang yang sesuai minat, terpercaya, dan
+                        mendukung karier masa depanmu.
                     </p>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- Panduan Section -->
     <section style="height: 100vh" id="panduan">

@@ -8,7 +8,7 @@ class CreateMTableSkemaTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_skema', function (Blueprint $table) {
+        Schema::create('m_skema', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
@@ -18,6 +18,6 @@ class CreateMTableSkemaTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_table_skema');
+        Schema::dropIfExists('m_skema');
     }
 };

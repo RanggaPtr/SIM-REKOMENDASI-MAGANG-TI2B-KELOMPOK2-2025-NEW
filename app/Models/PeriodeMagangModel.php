@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PeriodeMagangModel extends Model
 {
-    protected $table = 'm_table_periode_magang';
+    protected $table = 'm_periode_magang';
 
     protected $fillable = ['nama', 'tanggal_mulai', 'tanggal_selesai'];
 

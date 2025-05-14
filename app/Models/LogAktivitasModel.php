@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LogAktivitasModel extends Model
 {
-    protected $table = 't_table_log_aktivitas';
+    protected $table = 't_log_aktivitas';
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'aktivitas'];

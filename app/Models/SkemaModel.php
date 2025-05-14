@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SkemaModel extends Model
 {
-    protected $table = 'm_table_skema';
+    protected $table = 'm_skema';
 
     protected $fillable = ['nama', 'deskripsi'];
 

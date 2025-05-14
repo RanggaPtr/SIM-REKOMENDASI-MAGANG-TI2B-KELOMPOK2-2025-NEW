@@ -8,7 +8,7 @@ class CreateMTableKompetensiTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_kompetensi', function (Blueprint $table) {
+        Schema::create('m_kompetensi', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
@@ -18,6 +18,6 @@ class CreateMTableKompetensiTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_table_kompetensi');
+        Schema::dropIfExists('m_kompetensi');
     }
 };

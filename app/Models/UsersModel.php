@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UsersModel extends Authenticatable
 {
-    protected $table = 'm_table_users';
+    protected $table = 'm_users';
     protected $primaryKey = 'id'; // Sesuaikan dengan bigIncrements
     protected $fillable = ['nama', 'username', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
     protected $hidden = ['password'];

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LowonganMagangModel extends Model
 {
-    protected $table = 'm_table_lowongan_magang';
+    protected $table = 'm_lowongan_magang';
 
     protected $fillable = [
         'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi',

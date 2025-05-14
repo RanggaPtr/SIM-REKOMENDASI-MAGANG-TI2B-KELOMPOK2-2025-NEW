@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookmarkModel extends Model
 {
-    protected $table = 'm_table_bookmark';
+    protected $table = 'm_bookmark';
 
     protected $fillable = ['mahasiswa_id', 'lowongan_id'];
 

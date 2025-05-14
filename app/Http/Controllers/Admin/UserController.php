@@ -70,8 +70,8 @@ class UserController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'nama' => 'required|string|max:100',
-                'username' => 'required|string|min:3|unique:m_table_users,username',
-                'email' => 'required|email|unique:m_table_users,email',
+                'username' => 'required|string|min:3|unique:m_users,username',
+                'email' => 'required|email|unique:m_users,email',
                 'password' => 'required|min:6',
                 'role' => 'required|string',
                 'no_telepon' => 'nullable|string',
@@ -121,8 +121,8 @@ class UserController extends Controller
        if (!$request->ajax() && !$request->wantsJson()) {
             $rules = [
                 'nama' => 'required|string|max:100',
-                'username' => 'required|string|min:3|unique:m_table_users,username,'.$id.',id',
-                'email' => 'required|email|unique:m_table_users,email,'.$id.',id',
+                'username' => 'required|string|min:3|unique:m_users,username,'.$id.',id',
+                'email' => 'required|email|unique:m_users,email,'.$id.',id',
                 'password' => 'nullable|min:6',
                 'role' => 'required|string',
                 'no_telepon' => 'nullable|string',
@@ -244,9 +244,9 @@ class UserController extends Controller
 public function store(Request $request)
 {
     $request->validate([
-        'username' => 'required|string|min:3|unique:m_table_users,username',
+        'username' => 'required|string|min:3|unique:m_users,username',
         'nama' => 'required|string|max:100',
-        'email' => 'required|email|unique:m_table_users,email',
+        'email' => 'required|email|unique:m_users,email',
         'password' => 'required|string|min:5',
         'role' => 'required|string|in:admin,dosen,mahasiswa',
         'no_telepon' => 'nullable|string|max:20',

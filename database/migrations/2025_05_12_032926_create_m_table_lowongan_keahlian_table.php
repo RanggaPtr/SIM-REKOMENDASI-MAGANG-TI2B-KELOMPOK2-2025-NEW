@@ -7,19 +7,19 @@ class CreateMTableLowonganKeahlianTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_lowongan_keahlian', function (Blueprint $table) {
+        Schema::create('m_lowongan_keahlian', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('lowongan_id');
             $table->unsignedBigInteger('keahlian_id');
             $table->timestamps();
 
-            $table->foreign('lowongan_id')->references('id')->on('m_table_lowongan_magang')->onDelete('restrict');
-            $table->foreign('keahlian_id')->references('id')->on('m_table_keahlian')->onDelete('restrict');
+            $table->foreign('lowongan_id')->references('id')->on('m_lowongan_magang')->onDelete('restrict');
+            $table->foreign('keahlian_id')->references('id')->on('m_keahlian')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_lowongan_keahlian');
+        Schema::dropIfExists('m_lowongan_keahlian');
     }
 }

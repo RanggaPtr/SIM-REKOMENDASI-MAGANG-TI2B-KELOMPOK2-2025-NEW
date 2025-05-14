@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProgramStudiModel extends Model
 {
-    protected $table = 'm_table_program_studi';
+    protected $table = 'm_program_studi';
 
     protected $fillable = ['nama'];
 

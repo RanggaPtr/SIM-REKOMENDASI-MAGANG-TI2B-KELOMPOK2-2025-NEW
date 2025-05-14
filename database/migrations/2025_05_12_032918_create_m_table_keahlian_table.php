@@ -8,7 +8,7 @@ class CreateMTableKeahlianTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_keahlian', function (Blueprint $table) {
+        Schema::create('m_keahlian', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
@@ -18,6 +18,6 @@ class CreateMTableKeahlianTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_table_keahlian');
+        Schema::dropIfExists('m_keahlian');
     }
 };

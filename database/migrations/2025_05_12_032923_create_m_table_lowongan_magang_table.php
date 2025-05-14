@@ -8,7 +8,7 @@ class CreateMTableLowonganMagangTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_lowongan_magang', function (Blueprint $table) {
+        Schema::create('m_lowongan_magang', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('perusahaan_id');
             $table->unsignedBigInteger('periode_id');
@@ -21,14 +21,14 @@ class CreateMTableLowonganMagangTable extends Migration
             $table->date('tanggal_tutup');
             $table->timestamps();
 
-            $table->foreign('perusahaan_id')->references('id')->on('m_table_perusahaan')->onDelete('restrict');
-            $table->foreign('periode_id')->references('id')->on('m_table_periode_magang')->onDelete('restrict');
-            $table->foreign('skema_id')->references('id')->on('m_table_skema')->onDelete('restrict');
+            $table->foreign('perusahaan_id')->references('id')->on('m_perusahaan')->onDelete('restrict');
+            $table->foreign('periode_id')->references('id')->on('m_periode_magang')->onDelete('restrict');
+            $table->foreign('skema_id')->references('id')->on('m_skema')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_lowongan_magang');
+        Schema::dropIfExists('m_lowongan_magang');
     }
 };

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class KompetensiModel extends Model
 {
-    protected $table = 'm_table_kompetensi';
+    protected $table = 'm_kompetensi';
 
     protected $fillable = ['nama', 'deskripsi'];
 

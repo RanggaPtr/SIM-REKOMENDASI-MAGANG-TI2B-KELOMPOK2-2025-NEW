@@ -8,7 +8,7 @@ class CreateMTableMahasiswaTable extends Migration
 {
     public function up()
     {
-        Schema::create('m_table_mahasiswa', function (Blueprint $table) {
+        Schema::create('m_mahasiswa', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('nim', 20)->unique();
@@ -19,16 +19,16 @@ class CreateMTableMahasiswaTable extends Migration
             $table->decimal('ipk', 4, 2)->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('m_table_users')->onDelete('restrict');
-            $table->foreign('program_studi_id')->references('id')->on('m_table_program_studi')->onDelete('restrict');
-            $table->foreign('lokasi_id')->references('id')->on('m_table_lokasi')->onDelete('restrict');
-            $table->foreign('minat_id')->references('id')->on('m_table_minat')->onDelete('restrict');
-            $table->foreign('skema_id')->references('id')->on('m_table_skema')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
+            $table->foreign('program_studi_id')->references('id')->on('m_program_studi')->onDelete('restrict');
+            $table->foreign('lokasi_id')->references('id')->on('m_lokasi')->onDelete('restrict');
+            $table->foreign('minat_id')->references('id')->on('m_minat')->onDelete('restrict');
+            $table->foreign('skema_id')->references('id')->on('m_skema')->onDelete('restrict');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('m_table_mahasiswa');
+        Schema::dropIfExists('m_mahasiswa');
     }
 };

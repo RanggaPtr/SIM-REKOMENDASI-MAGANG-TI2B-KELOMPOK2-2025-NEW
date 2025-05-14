@@ -36,17 +36,6 @@
             height: 50px;
         }
 
-        /* Misal kamu punya card yang butuh background */
-        .card {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        }
-
-        section {
-            background: transparent;
-        }
 
         .content * {
             background: transparent;
@@ -77,15 +66,15 @@
 
         <!-- Tombol di kanan -->
         <div class="d-flex gap-3 mt-3">
-            <button class="btn fw-bold btn-primary text-light-softer ps-4 pe-2 btn-sm">Daftar <span class="ps-3"
-                    style="font-size: 13px; background: transparent;">></span></button>
-            <button class="btn fw-bold btn-outline-primary btn-sm px-3 btn-hover-white">Masuk</button>
+            <a href="login" class="btn fw-bold btn-outline-primary btn-sm px-3 btn-hover-white">Masuk</a>
+            <a href="register" class="btn fw-bold btn-primary text-light-softer ps-4 pe-2 btn-sm">Daftar <span class="ps-3"
+                    style="font-size: 13px; background: transparent;">></span></a>
         </div>
     </header>
 
     <!-- Beranda Section -->
     <section class="content d-flex align-items-center justify-content-center"
-        style="height: 85vh; background: transparent;">
+        style="height: 90vh; background: transparent;">
         <div class="container">
             <div class="d-flex flex-column align-items-center text-center">
                 <!-- Kolom Pertama: Judul -->
@@ -102,20 +91,38 @@
                         Terpercaya, dan Sesuai Minatmu Bersama Magang.in!
                     </p>
                 </div>
-
+                
                 <!-- Kolom Ketiga: Tombol -->
                 <div class="d-flex gap-5">
-                    <button class="btn btn-primary text-light-softer ps-5 pe-4 btn-lg fw-bold">Daftar <span
-                            class="ps-3" style="font-size: 15px">></span></button>
-                    <button class="btn btn-outline-primary btn-lg px-5 btn-hover-white fw-bold">Masuk</button>
+                    <a href="register" class="btn btn-primary text-light-softer ps-5 pe-4 btn-lg fw-bold">Daftar <span
+                            class="ps-3" style="font-size: 15px">></span></a>
+                    <a href="login" class="btn btn-outline-primary btn-lg px-5 btn-hover-white fw-bold">Masuk</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Tentang Section -->
-    <section style="height: 100vh" id="tentang">
+    <section class="content d-flex align-items-center justify-content-center"
+        style="height: 100vh; background: transparent;" id="tentang">
+        <div class="container">
+            <div class="d-flex flex-row align-items-center text-center">
+                <!-- Kolom Pertama: Judul -->
+                <div class="" style="">
+                    <p class="fw-bold text-primary" style="font-size: 60px">Portal <span
+                            class="text-secondary">Anda</span><br> <span class="text-secondary">Menuju</span> Kesuksesan
+                    </p>
+                </div>
 
+                <!-- Kolom Kedua: Deskripsi -->
+                <div class="mb-4 text-dark" style="max-width: 650px;">
+                    <p>
+                        Jelajahi Puluhan Kesempatan Magang Impianmu dengan Rekomendasi Paling Cocok,
+                        Terpercaya, dan Sesuai Minatmu Bersama Magang.in!
+                    </p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Panduan Section -->

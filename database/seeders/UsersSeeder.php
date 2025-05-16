@@ -8,36 +8,73 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersSeeder extends Seeder
 {
-    public function run()
+   public function run()
     {
-        UsersModel::create([
-            'nama' => 'Admin Utama',
-            'username' => 'admin_utama', // Tambahkan username unik
-            'email' => 'admin@simmagang.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-            'no_telepon' => '081234567890',
-            'alamat' => 'Jl. Contoh No. 1'
-        ]);
+        $users = [
+            [
+                'nama' => 'Admin Utama',
+                'username' => 'admin1',
+                'email' => 'admin1@univ.ac.id',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+                'foto_profile' => 'admin1.jpg',
+                'no_telepon' => '081234567890',
+                'alamat' => 'Jl. Merdeka No. 1, Jakarta',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Dr. Budi Santoso',
+                'username' => 'budi.santoso',
+                'email' => 'budi.santoso@univ.ac.id',
+                'password' => Hash::make('dosen123'),
+                'role' => 'dosen',
+                'foto_profile' => 'budi.jpg',
+                'no_telepon' => '081987654321',
+                'alamat' => 'Jl. Sudirman No. 10, Bandung',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Andi Wijaya',
+                'username' => 'andi.wijaya',
+                'email' => 'andi.wijaya@univ.ac.id',
+                'password' => Hash::make('mahasiswa123'),
+                'role' => 'mahasiswa',
+                'foto_profile' => 'andi.jpg',
+                'no_telepon' => '082112345678',
+                'alamat' => 'Jl. Gatot Subroto No. 5, Surabaya',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Dr. Siti Aminah',
+                'username' => 'siti.aminah',
+                'email' => 'siti.aminah@univ.ac.id',
+                'password' => Hash::make('dosen123'),
+                'role' => 'dosen',
+                'foto_profile' => 'siti.jpg',
+                'no_telepon' => '081567890123',
+                'alamat' => 'Jl. Diponegoro No. 20, Yogyakarta',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Rina Susanti',
+                'username' => 'rina.susanti',
+                'email' => 'rina.susanti@univ.ac.id',
+                'password' => Hash::make('mahasiswa123'),
+                'role' => 'mahasiswa',
+                'foto_profile' => 'rina.jpg',
+                'no_telepon' => '082298765432',
+                'alamat' => 'Jl. Ahmad Yani No. 15, Medan',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
 
-        UsersModel::create([
-            'nama' => 'Dosen Satu',
-            'username' => 'dosen_satu', // Tambahkan username unik
-            'email' => 'dosen1@simmagang.com',
-            'password' => Hash::make('password'),
-            'role' => 'dosen',
-            'no_telepon' => '081234567891',
-            'alamat' => 'Jl. Contoh No. 2'
-        ]);
-
-        UsersModel::create([
-            'nama' => 'Mahasiswa Satu',
-            'username' => 'mahasiswa_satu', // Tambahkan username unik
-            'email' => 'mahasiswa1@simmagang.com',
-            'password' => Hash::make('password'),
-            'role' => 'mahasiswa',
-            'no_telepon' => '081234567892',
-            'alamat' => 'Jl. Contoh No. 3'
-        ]);
+        foreach ($users as $user) {
+            UsersModel::create($user);
+        }
     }
 }

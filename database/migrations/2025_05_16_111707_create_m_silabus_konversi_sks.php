@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableSilabusKonversiSksTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
@@ -13,8 +13,8 @@ class CreateMTableSilabusKonversiSksTable extends Migration
             $table->unsignedBigInteger('lowongan_id');
             $table->integer('jumlah_sks');
             $table->text('deskripsi');
-            $table->text('kriteria')->nullable();
-            $table->string('dokumen_path', 255)->nullable();
+            $table->text('kriteria');
+            $table->string('dokumen_path', 255);
             $table->timestamps();
 
             $table->foreign('lowongan_id')->references('lowongan_id')->on('m_lowongan_magang')->onDelete('cascade');
@@ -25,4 +25,4 @@ class CreateMTableSilabusKonversiSksTable extends Migration
     {
         Schema::dropIfExists('m_silabus_konversi_sks');
     }
-}
+};

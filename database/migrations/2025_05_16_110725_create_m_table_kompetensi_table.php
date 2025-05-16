@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableKeahlianTable extends Migration
+return new class extends Migration
 {
-    public function up()
+     public function up()
     {
-        Schema::create('m_keahlian', function (Blueprint $table) {
-            $table->bigIncrements('keahlian_id');
+        Schema::create('m_kompetensi', function (Blueprint $table) {
+            $table->bigIncrements('kompetensi_id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
             $table->timestamps();
@@ -18,6 +18,6 @@ class CreateMTableKeahlianTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('m_keahlian');
+        Schema::dropIfExists('m_kompetensi');
     }
 };

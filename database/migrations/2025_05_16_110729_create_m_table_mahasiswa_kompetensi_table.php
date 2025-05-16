@@ -4,9 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableMahasiswaKompetensiTable extends Migration
+return new class extends Migration
 {
-    public function up()
+     public function up()
     {
         Schema::create('m_mahasiswa_kompetensi', function (Blueprint $table) {
             $table->bigIncrements('mahasiswa_kompetensi_id');
@@ -14,8 +14,8 @@ class CreateMTableMahasiswaKompetensiTable extends Migration
             $table->unsignedBigInteger('kompetensi_id');
             $table->timestamps();
 
-            $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('restrict');
-            $table->foreign('kompetensi_id')->references('kompetensi_id')->on('m_kompetensi')->onDelete('restrict');
+            $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('cascade');
+            $table->foreign('kompetensi_id')->references('kompetensi_id')->on('m_kompetensi')->onDelete('cascade');
         });
     }
 

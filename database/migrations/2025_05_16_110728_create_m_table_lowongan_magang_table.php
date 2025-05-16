@@ -4,26 +4,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableLowonganMagangTable extends Migration
+return new class extends Migration
 {
-    public function up()
+public function up()
     {
         Schema::create('m_lowongan_magang', function (Blueprint $table) {
             $table->bigIncrements('lowongan_id');
             $table->unsignedBigInteger('perusahaan_id');
             $table->unsignedBigInteger('periode_id');
-            $table->unsignedBigInteger('skema_id')->nullable();
+            $table->unsignedBigInteger('skema_id');
             $table->string('judul', 255);
             $table->text('deskripsi');
             $table->text('persyaratan');
-            $table->string('bidang_keahlian', 255);
+            $table->string('bidang_keahlian', 100);
             $table->date('tanggal_buka');
             $table->date('tanggal_tutup');
             $table->timestamps();
 
-            $table->foreign('perusahaan_id')->references('id')->on('m_perusahaan')->onDelete('restrict');
-            $table->foreign('periode_id')->references('id')->on('m_periode_magang')->onDelete('restrict');
-            $table->foreign('skema_id')->references('id')->on('m_skema')->onDelete('restrict');
+            $table->foreign('perusahaan_id')->references('perusahaan_id')->on('m_perusahaan')->onDelete('cascade');
+            $table->foreign('periode_id')->references('periode_id')->on('m_periode_magang')->onDelete('cascade');
+            $table->foreign('skema_id')->references('skema_id')->on('m_skema')->onDelete('cascade');
         });
     }
 

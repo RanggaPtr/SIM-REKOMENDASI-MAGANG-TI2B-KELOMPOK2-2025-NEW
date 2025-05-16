@@ -18,6 +18,11 @@ class CreateMTablePerusahaanTable extends Migration
             $table->unsignedBigInteger('wilayah_id')->nullable();
             $table->string('kontak', 255);
             $table->string('bidang_industri', 255);
+            // rating by admin
+            $table->float('rating')->default(0);
+            // deskripsi rating
+            $table->text('deskripsi_rating')->nullable();
+            
             $table->timestamps();
 
             $table->foreign('wilayah_id')->references('lokasi_id')->on('m_lokasi')->onDelete('restrict');

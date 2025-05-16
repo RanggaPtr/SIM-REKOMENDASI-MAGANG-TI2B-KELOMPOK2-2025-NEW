@@ -29,7 +29,7 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th class="col-3">ID</th>
-                        <td class="col-9">{{ $periode->id }}</td>
+                        <td class="col-9">{{ $periode->periode_id }}</td>
                     </tr>
                     <tr>
                         <th>Nama Periode</th>

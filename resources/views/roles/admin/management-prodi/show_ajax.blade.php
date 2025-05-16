@@ -29,7 +29,7 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th class="col-3">ID Program Studi</th>
-                        <td class="col-9">{{ $programStudi->id }}</td>
+                        <td class="col-9">{{ $programStudi->prodi_id }}</td>
                     </tr>
                     <tr>
                         <th>Nama Program Studi</th>

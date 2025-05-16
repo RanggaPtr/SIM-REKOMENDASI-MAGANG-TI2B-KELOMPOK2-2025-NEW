@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/management-prodi/' . $programStudi->id . '/delete_ajax') }}" method="POST" id="form-delete-prodi">
+    <form action="{{ url('/admin/management-prodi/' . $programStudi->prodi_id . '/delete_ajax') }}" method="POST" id="form-delete-prodi">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">

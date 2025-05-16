@@ -36,7 +36,7 @@ class UserController extends Controller
     // Ambil data user dalam bentuk json untuk datatables 
     public function list(Request $request)
     {
-        $users = UsersModel::select('id', 'username', 'nama', 'email', 'role', 'no_telepon');
+        $users = UsersModel::select('user_id', 'username', 'nama', 'email', 'role', 'no_telepon');
 
         // Filter data user berdasarkan role
         if ($request->role) {
@@ -46,11 +46,11 @@ class UserController extends Controller
         return DataTables::of($users)
             ->addIndexColumn()
             ->addColumn('aksi', function ($user) {
-                $btn = '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->id .
+                $btn = '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->user_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->user_id .
                     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengguna/' . $user->user_id .
                     '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
 
                 return $btn;
@@ -121,8 +121,8 @@ class UserController extends Controller
        if (!$request->ajax() && !$request->wantsJson()) {
             $rules = [
                 'nama' => 'required|string|max:100',
-                'username' => 'required|string|min:3|unique:m_users,username,'.$id.',id',
-                'email' => 'required|email|unique:m_users,email,'.$id.',id',
+                'username' => 'required|string|min:3|unique:m_users,username,'.$id.',user_id',
+                'email' => 'required|email|unique:m_users,email,'.$id.',user_id',
                 'password' => 'nullable|min:6',
                 'role' => 'required|string',
                 'no_telepon' => 'nullable|string',
@@ -336,7 +336,7 @@ public function store(Request $request)
     // public function export_excel()
     // {
     //     $users = UsersModel::select(
-    //         'id',
+    //         'user_id',
     //         'username',
     //         'nama',
     //         'email',
@@ -393,7 +393,7 @@ public function store(Request $request)
     // public function export_pdf()
     // {
     //     $users = UsersModel::select(
-    //         'id',
+    //         'user_id',
     //         'username',
     //         'nama',
     //         'email',

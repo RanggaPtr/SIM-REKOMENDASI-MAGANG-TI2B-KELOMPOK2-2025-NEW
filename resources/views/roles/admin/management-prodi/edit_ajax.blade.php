@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/management-prodi/' . $programStudi->id . '/update_ajax') }}" method="POST"
+    <form action="{{ url('/admin/management-prodi/' . $programStudi->prodi_id . '/update_ajax') }}" method="POST"
         id="form-edit-program-studi">
         @csrf
         @method('PUT')

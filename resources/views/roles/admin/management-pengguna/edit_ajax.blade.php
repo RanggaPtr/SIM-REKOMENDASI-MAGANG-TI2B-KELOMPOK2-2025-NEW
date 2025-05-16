@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/management-pengguna/' . $user->id . '/update_ajax') }}" method="POST" id="form-edit" enctype="multipart/form-data">
+    <form action="{{ url('/admin/management-pengguna/' . $user->user_id . '/update_ajax') }}" method="POST" id="form-edit" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">

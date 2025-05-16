@@ -29,7 +29,7 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th class="col-3">ID</th>
-                        <td class="col-9">{{ $user->id }}</td>
+                        <td class="col-9">{{ $user->user_id }}</td>
                     </tr>
                     <tr>
                         <th>Role</th>

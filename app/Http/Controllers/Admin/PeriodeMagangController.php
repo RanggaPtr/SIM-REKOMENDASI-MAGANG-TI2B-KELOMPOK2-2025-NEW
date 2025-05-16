@@ -35,16 +35,16 @@ class PeriodeMagangController extends Controller
     // Ambil data periode magang dalam bentuk json untuk datatables 
     public function list(Request $request)
     {
-        $periodes = PeriodeMagangModel::select('id', 'nama', 'tanggal_mulai', 'tanggal_selesai');
+        $periodes = PeriodeMagangModel::select('periode_id', 'nama', 'tanggal_mulai', 'tanggal_selesai');
 
         return DataTables::of($periodes)
             ->addIndexColumn()
             ->addColumn('aksi', function ($periode) {
-                $btn = '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->id .
+                $btn = '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->periode_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->periode_id .
                     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-periode-magang/' . $periode->periode_id .
                     '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
 
                 return $btn;
@@ -238,7 +238,7 @@ class PeriodeMagangController extends Controller
     // public function export_excel()
     // {
     //     $periodes = PeriodeMagangModel::select(
-    //         'id',
+    //         'periode_id',
     //         'nama',
     //         'tanggal_mulai',
     //         'tanggal_selesai'
@@ -289,7 +289,7 @@ class PeriodeMagangController extends Controller
     // public function export_pdf()
     // {
     //     $periodes = PeriodeMagangModel::select(
-    //         'id',
+    //         'periode_id',
     //         'nama',
     //         'tanggal_mulai',
     //         'tanggal_selesai'

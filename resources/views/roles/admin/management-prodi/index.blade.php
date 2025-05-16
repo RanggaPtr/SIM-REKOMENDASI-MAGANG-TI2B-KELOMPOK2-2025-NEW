@@ -78,7 +78,7 @@
                     }
                 },
                 columns: [
-                    { data: "id", className: "text-center" },
+                    { data: "prodi_id", className: "text-center" },
                     { data: "nama", className: "", orderable: true, searchable: true },
                     { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ],

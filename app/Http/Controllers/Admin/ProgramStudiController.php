@@ -36,7 +36,7 @@ class ProgramStudiController extends Controller
 
     public function list(Request $request)
     {
-        $programstudi = ProgramStudiModel::select('id', 'nama');
+        $programstudi = ProgramStudiModel::select('prodi_id', 'nama');
 
         // Filter berdasarkan nama jika ada (optional)
         if ($request->nama) {
@@ -46,11 +46,11 @@ class ProgramStudiController extends Controller
         return DataTables::of($programstudi)
             ->addIndexColumn()
             ->addColumn('aksi', function ($programstudi) {
-                $btn = '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->id .
+                $btn = '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
                     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->id .
+                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
                     '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
 
                 return $btn;

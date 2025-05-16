@@ -5,51 +5,57 @@ namespace Database\Seeders;
 use App\Models\WilayahModel;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class WilayahSeeder extends Seeder
 {
-    public function run(): void
+   public function run(): void
     {
-        // Path ke file SQL
-        $sqlFilePath = database_path('seeders/wilayah.sql');
+        $csvFile = Storage::path('data/regencies.csv');
 
-        if (File::exists($sqlFilePath)) {
-            // Baca file SQL
-            $sql = File::get($sqlFilePath);
-            $lines = explode("\n", $sql);
+        if (file_exists($csvFile)) {
+            $file = fopen($csvFile, 'r');
 
-            // Proses setiap baris untuk mengekstrak data
-            $data = [];
-            foreach ($lines as $line) {
-                // Lewati baris kosong atau baris yang tidak relevan
-                $line = trim($line);
-                if (empty($line) || strpos($line, 'INSERT INTO') === false) {
+            // Lewati baris kosong atau komentar jika ada
+            $row = fgetcsv($file);
+            while ($row && (empty($row[0]) || $row[0][0] === '#')) {
+                $row = fgetcsv($file);
+            }
+
+            if ($row === false) {
+                $this->command->error('File CSV kosong atau tidak valid.');
+                $this->importFallback();
+                return;
+            }
+
+            do {
+                try {
+                    // Asumsi: kolom 0 = kode_wilayah, kolom 2 = nama (lewati province_id di kolom 1)
+                    if (isset($row[0]) && isset($row[2])) {
+                        WilayahModel::firstOrCreate(
+                            ['kode_wilayah' => $row[0]],
+                            ['nama' => $row[2]]
+                        );
+                    }
+                } catch (\Exception $e) {
+                    $this->command->warn('Gagal memproses baris: ' . implode(',', $row) . '. Error: ' . $e->getMessage());
                     continue;
                 }
+            } while (($row = fgetcsv($file)) !== false);
 
-                // Ekstrak nilai dari perintah INSERT menggunakan regex
-                preg_match_all("/\('(.*?)','(.*?)'\)/", $line, $matches);
-                for ($i = 0; $i < count($matches[1]); $i++) {
-                    $data[] = [
-                        'kode_wilayah' => $matches[1][$i],
-                        'nama' => $matches[2][$i],
-                    ];
-                }
-            }
-
-            // Masukkan data menggunakan Eloquent
-            foreach ($data as $item) {
-                WilayahModel::create([
-                    'kode_wilayah' => $item['kode_wilayah'],
-                    'nama' => $item['nama'],
-                ]);
-            }
-
-            $this->command->info('Data wilayah berhasil dimasukkan menggunakan Eloquent.');
+            fclose($file);
+            $this->command->info('Data wilayah berhasil diimpor dari file CSV.');
         } else {
-            $this->command->info('File wilayah.sql tidak ditemukan. Menambahkan data manual sebagai contoh.');
-            WilayahModel::create(['nama' => 'Aceh', 'kode_wilayah' => '11']);
-            WilayahModel::create(['nama' => 'Sumatera Utara', 'kode_wilayah' => '12']);
+            $this->command->error('File regencies.csv tidak ditemukan di storage/app/data/.');
+            $this->importFallback();
         }
+    }
+
+    private function importFallback(): void
+    {
+        WilayahModel::firstOrCreate(['kode_wilayah' => '3171'], ['nama' => 'KOTA JAKARTA PUSAT']);
+        WilayahModel::firstOrCreate(['kode_wilayah' => '3273'], ['nama' => 'KOTA BANDUNG']);
+        WilayahModel::firstOrCreate(['kode_wilayah' => '3578'], ['nama' => 'KOTA MALANG']);
+        $this->command->info('Data wilayah fallback berhasil diimpor.');
     }
 }

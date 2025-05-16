@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateMTableUsersTable extends Migration
 {
+
     public function up()
     {
         Schema::create('m_users', function (Blueprint $table) {

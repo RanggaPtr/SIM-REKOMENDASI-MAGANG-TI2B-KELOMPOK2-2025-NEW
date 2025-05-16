@@ -17,7 +17,7 @@ class CreateTTablePengajuanMagangTable extends Migration
             $table->enum('status', ['belum_akses', 'diajukan', 'ditolak', 'diterima', 'ongoing', 'selesai'])->default('belum_akses');
             $table->timestamps();
 
-            $table->foreign('mahasiswa_id')->references('mahasiswa-id')->on('m_mahasiswa')->onDelete('restrict');
+            $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('restrict');
             $table->foreign('lowongan_id')->references('lowongan_id')->on('m_lowongan_magang')->onDelete('restrict');
             $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen')->onDelete('restrict');
             $table->foreign('periode_id')->references('periode_id')->on('m_periode_magang')->onDelete('restrict');

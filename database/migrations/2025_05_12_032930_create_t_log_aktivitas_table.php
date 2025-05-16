@@ -14,7 +14,7 @@ class CreateTTableLogAktivitasTable extends Migration
             $table->text('aktivitas');
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
+            $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('restrict');
         });
     }
 

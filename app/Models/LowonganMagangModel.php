@@ -47,4 +47,9 @@ class LowonganMagangModel extends Model
     {
         return $this->hasMany(BookmarkModel::class, 'lowongan_id');
     }
+
+    public function silabusKonversiSks()
+{
+    return $this->hasOne(SilabusKonversiSksModel::class, 'lowongan_id', 'lowongan_id');
+}
 }

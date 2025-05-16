@@ -14,7 +14,7 @@ class CreateMTableMahasiswaKompetensiTable extends Migration
             $table->unsignedBigInteger('kompetensi_id');
             $table->timestamps();
 
-            $table->foreign('mahasiswa_id')->references('mahasiswa-id')->on('m_mahasiswa')->onDelete('restrict');
+            $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('restrict');
             $table->foreign('kompetensi_id')->references('kompetensi_id')->on('m_kompetensi')->onDelete('restrict');
         });
     }

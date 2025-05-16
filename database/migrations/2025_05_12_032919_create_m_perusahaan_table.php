@@ -25,7 +25,7 @@ class CreateMTablePerusahaanTable extends Migration
             
             $table->timestamps();
 
-            $table->foreign('wilayah_id')->references('lokasi_id')->on('m_lokasi')->onDelete('restrict');
+            $table->foreign('wilayah_id')->references('wilayah_id')->on('m_wilayah')->onDelete('restrict');
         });
     }
 

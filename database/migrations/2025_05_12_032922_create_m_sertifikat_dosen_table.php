@@ -14,7 +14,7 @@ class CreateMTableSertifikatDosenTable extends Migration
             $table->string('nama_sertifikat', 255);
             $table->string('penerbit', 255);
             $table->date('tanggal_terbit');
-            $table->binary('file_sertifikat');
+            $table->string('file_sertifikat', 255);
             $table->timestamps();
 
             $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen')->onDelete('restrict');

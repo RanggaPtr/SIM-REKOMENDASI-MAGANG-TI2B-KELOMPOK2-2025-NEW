@@ -8,29 +8,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class UsersModel extends Authenticatable
 {
     protected $table = 'm_users';
-    protected $primaryKey = 'id'; // Sesuaikan dengan bigIncrements
+    protected $primaryKey = 'user_id'; // Disamakan dengan migrasi
+    public $incrementing = true;
+    public $timestamps = true;
+
     protected $fillable = ['nama', 'username', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
     protected $hidden = ['password'];
     protected $casts = ['password' => 'hashed'];
 
     public function admin(): HasOne
     {
-        return $this->hasOne(AdminModel::class, 'id'); // Sesuaikan dengan primary key
+        return $this->hasOne(AdminModel::class, 'user_id', 'user_id');
     }
 
     public function dosen(): HasOne
     {
-        return $this->hasOne(DosenModel::class, 'id');
+        return $this->hasOne(DosenModel::class, 'user_id', 'user_id');
     }
 
     public function mahasiswa(): HasOne
     {
-        return $this->hasOne(MahasiswaModel::class, 'id');
+        return $this->hasOne(MahasiswaModel::class, 'user_id', 'user_id');
     }
 
     public function logAktivitas(): HasMany
     {
-        return $this->hasMany(LogAktivitasModel::class, 'id');
+        return $this->hasMany(LogAktivitasModel::class, 'user_id', 'user_id');
     }
 
     public function getRoleName(): string
@@ -45,6 +48,6 @@ class UsersModel extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'username';
+        return 'user_id'; // Disamakan dengan primary key
     }
 }

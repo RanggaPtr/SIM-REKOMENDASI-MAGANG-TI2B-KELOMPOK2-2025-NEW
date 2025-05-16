@@ -9,7 +9,7 @@ class WilayahModel extends Model
 
     protected $table = 'm_wilayah';
 
-    protected $fillable = ['nama', 'kode_wilayah'];
+    protected $fillable = ['nama',];
 
     public function perusahaan()
     {

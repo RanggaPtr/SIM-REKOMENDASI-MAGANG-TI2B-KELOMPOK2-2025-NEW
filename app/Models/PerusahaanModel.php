@@ -20,6 +20,8 @@ class PerusahaanModel extends Model
         'wilayah_id',
         'kontak',
         'bidang_industri',
+        'rating',
+        'deskripsi_rating',
     ];
 
     public function lokasi()

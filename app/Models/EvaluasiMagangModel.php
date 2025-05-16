@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class EvaluasiMagangModel extends Model
 {
     protected $table = 't_evaluasi_magang';
+    protected $primaryKey = 'evaluasi_magang_id';
+    public $incrementing = true;
+    public $timestamps = true;
 
     protected $fillable = ['pengajuan_id', 'nilai', 'komentar'];
 
     public function pengajuan()
     {
-        return $this->belongsTo(PengajuanMagangModel::class, 'pengajuan_id');
+        return $this->belongsTo(PengajuanMagangModel::class, 'pengajuan_id', 'pengajuan_id');
     }
 }

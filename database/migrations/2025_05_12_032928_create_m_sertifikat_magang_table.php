@@ -9,14 +9,14 @@ class CreateMTableSertifikatMagangTable extends Migration
     public function up()
     {
         Schema::create('m_sertifikat_magang', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('sertifikat_magang_id');
             $table->unsignedBigInteger('pengajuan_id');
             $table->string('nama_dokumen', 255);
             $table->enum('jenis_dokumen', ['sertifikat', 'surat_keterangan']);
             $table->binary('file_dokumen');
             $table->timestamps();
 
-            $table->foreign('pengajuan_id')->references('id')->on('t_pengajuan_magang')->onDelete('restrict');
+            $table->foreign('pengajuan_id')->references('pengajuan_id')->on('t_pengajuan_magang')->onDelete('restrict');
         });
     }
 

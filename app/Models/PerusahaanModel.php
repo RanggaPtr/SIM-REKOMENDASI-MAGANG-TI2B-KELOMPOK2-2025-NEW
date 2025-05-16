@@ -7,16 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 class PerusahaanModel extends Model
 {
     protected $table = 'm_perusahaan';
+    protected $primaryKey = 'perusahaan_id';
+    public $incrementing = true;
+    public $timestamps = true;
 
-    protected $fillable = ['nama', 'lokasi_id', 'kontak', 'bidang_industri'];
+    protected $fillable = [
+        'nama',
+        'ringkasan',
+        'deskripsi',
+        'logo',
+        'alamat',
+        'wilayah_id',
+        'kontak',
+        'bidang_industri',
+    ];
 
     public function lokasi()
     {
-        return $this->belongsTo(LokasiModel::class, 'lokasi_id');
+        return $this->belongsTo(WilayahModel::class, 'wilayah_id', 'wilayah_id');
     }
 
     public function lowonganMagang()
     {
-        return $this->hasMany(LowonganMagangModel::class, 'perusahaan_id');
+        return $this->hasMany(LowonganMagangModel::class, 'perusahaan_id', 'perusahaan_id');
     }
 }

@@ -9,13 +9,13 @@ class CreateMTableMahasiswaKompetensiTable extends Migration
     public function up()
     {
         Schema::create('m_mahasiswa_kompetensi', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('mahasiswa_kompetensi_id');
             $table->unsignedBigInteger('mahasiswa_id');
             $table->unsignedBigInteger('kompetensi_id');
             $table->timestamps();
 
-            $table->foreign('mahasiswa_id')->references('id')->on('m_mahasiswa')->onDelete('restrict');
-            $table->foreign('kompetensi_id')->references('id')->on('m_kompetensi')->onDelete('restrict');
+            $table->foreign('mahasiswa_id')->references('mahasiswa-id')->on('m_mahasiswa')->onDelete('restrict');
+            $table->foreign('kompetensi_id')->references('kompetensi_id')->on('m_kompetensi')->onDelete('restrict');
         });
     }
 

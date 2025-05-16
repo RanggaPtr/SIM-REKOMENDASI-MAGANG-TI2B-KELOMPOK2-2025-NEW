@@ -9,21 +9,18 @@ class CreateMTableMahasiswaTable extends Migration
     public function up()
     {
         Schema::create('m_mahasiswa', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('mahasiswa-id');
             $table->unsignedBigInteger('user_id');
             $table->string('nim', 20)->unique();
             $table->unsignedBigInteger('program_studi_id');
-            $table->unsignedBigInteger('lokasi_id')->nullable();
-            $table->unsignedBigInteger('minat_id')->nullable();
+            $table->unsignedBigInteger('wilayah_id')->nullable();
             $table->unsignedBigInteger('skema_id')->nullable();
             $table->decimal('ipk', 4, 2)->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
             $table->foreign('program_studi_id')->references('id')->on('m_program_studi')->onDelete('restrict');
-            $table->foreign('lokasi_id')->references('id')->on('m_lokasi')->onDelete('restrict');
-            $table->foreign('minat_id')->references('id')->on('m_minat')->onDelete('restrict');
-            $table->foreign('skema_id')->references('id')->on('m_skema')->onDelete('restrict');
+            $table->foreign('wilayah_id')->references('wilayah_id')->on('m_wilayah')->onDelete('restrict');
         });
     }
 

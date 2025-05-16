@@ -9,7 +9,7 @@ class CreateMTableLowonganMagangTable extends Migration
     public function up()
     {
         Schema::create('m_lowongan_magang', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('lowongan_id');
             $table->unsignedBigInteger('perusahaan_id');
             $table->unsignedBigInteger('periode_id');
             $table->unsignedBigInteger('skema_id')->nullable();

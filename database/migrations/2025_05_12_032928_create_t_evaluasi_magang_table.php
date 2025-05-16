@@ -9,13 +9,13 @@ class CreateTTableEvaluasiMagangTable extends Migration
     public function up()
     {
         Schema::create('t_evaluasi_magang', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('evaluasi_magang_id');
             $table->unsignedBigInteger('pengajuan_id');
             $table->integer('nilai');
             $table->text('komentar')->nullable();
             $table->timestamps();
 
-            $table->foreign('pengajuan_id')->references('id')->on('t_pengajuan_magang')->onDelete('restrict');
+            $table->foreign('pengajuan_id')->references('pengajuan_id')->on('t_pengajuan_magang')->onDelete('restrict');
         });
     }
 

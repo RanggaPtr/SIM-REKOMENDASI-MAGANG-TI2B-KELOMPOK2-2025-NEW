@@ -9,7 +9,7 @@ class CreateMTableKeahlianTable extends Migration
     public function up()
     {
         Schema::create('m_keahlian', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('keahlian_id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
             $table->timestamps();

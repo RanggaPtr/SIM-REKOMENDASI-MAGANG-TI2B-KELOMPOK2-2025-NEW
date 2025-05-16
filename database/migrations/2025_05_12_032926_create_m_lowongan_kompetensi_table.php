@@ -9,13 +9,13 @@ class CreateMTableLowonganKompetensiTable extends Migration
     public function up()
     {
         Schema::create('m_lowongan_kompetensi', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('lowongan_kompetensi_id');
             $table->unsignedBigInteger('lowongan_id');
             $table->unsignedBigInteger('kompetensi_id');
             $table->timestamps();
 
-            $table->foreign('lowongan_id')->references('id')->on('m_lowongan_magang')->onDelete('restrict');
-            $table->foreign('kompetensi_id')->references('id')->on('m_kompetensi')->onDelete('restrict');
+            $table->foreign('lowongan_id')->references('lowongan_id')->on('m_lowongan_magang')->onDelete('restrict');
+            $table->foreign('kompetensi_id')->references('kompetensi_id')->on('m_kompetensi')->onDelete('restrict');
         });
     }
 

@@ -9,7 +9,7 @@ class CreateMTableKompetensiTable extends Migration
     public function up()
     {
         Schema::create('m_kompetensi', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('kompetensi_id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
             $table->timestamps();

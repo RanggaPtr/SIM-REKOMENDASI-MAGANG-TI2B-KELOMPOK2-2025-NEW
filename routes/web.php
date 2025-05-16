@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\ProgramStudiController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PeriodeMagangController;
+use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
@@ -55,13 +56,13 @@ Route::group(['middleware' => 'auth'], function () {
         // Tambahkan rute lain untuk admin di sini
 
         // Manajemen Pengguna
-          Route::group(['prefix' => 'management-pengguna'], function () {
+        Route::group(['prefix' => 'management-pengguna'], function () {
             Route::get('/', [UserController::class, 'index'])->name('user.index'); // menampilkan halaman awal user
             Route::post('/list', [UserController::class, 'list'])->name('user.list'); // menampilkan data user dalam bentuk json untuk datatable
-           
-           
+
+
             Route::get('/create_ajax', [UserController::class, 'create_ajax']); // menampilkan halaman form tambah user ajax
-                       
+
 
             Route::post('/ajax', [UserController::class, 'store_ajax']); // menyimpan data user baru ajax
             Route::get('/{id}/show_ajax', [UserController::class, 'show_ajax']); // menampilkan detail user ajax
@@ -71,8 +72,8 @@ Route::group(['middleware' => 'auth'], function () {
             Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // menghapus data user ajax
             Route::get('/import', [UserController::class, 'import']); // menampilkan halaman form import User
             Route::post('/import_ajax', [UserController::class, 'import_ajax']); // menyimpan data User dari file import
-            Route::get('/export_excel', [UserController::class,'export_excel']); // ajax export excel
-            Route::get('/export_pdf', [UserController::class,'export_pdf']); // ajax export pdf
+            Route::get('/export_excel', [UserController::class, 'export_excel']); // ajax export excel
+            Route::get('/export_pdf', [UserController::class, 'export_pdf']); // ajax export pdf
         });
 
         // Manajemen Program Studi
@@ -91,11 +92,27 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [ProgramStudiController::class, 'export_excel']);
             Route::get('/export_pdf', [ProgramStudiController::class, 'export_pdf']);
         });
+
+        Route::group(['prefix' => 'management-periode-magang'], function () {
+            Route::get('/', [PeriodeMagangController::class, 'index'])->name('programstudi.index');
+            Route::post('/list', [PeriodeMagangController::class, 'list'])->name('programstudi.list');
+             Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']); // menampilkan halaman form tambah user ajax
+            Route::post('/ajax', [PeriodeMagangController::class, 'store_ajax']); // menyimpan data user baru ajax
+            Route::get('/{id}/show_ajax', [PeriodeMagangController::class, 'show_ajax']); // menampilkan detail user ajax
+            Route::get('/{id}/edit_ajax', [PeriodeMagangController::class, 'edit_ajax']); // menampilkan halaman form edit user ajax
+            Route::put('/{id}/update_ajax', [PeriodeMagangController::class, 'update_ajax']); // menyimpan perubahan data user ajax
+            Route::get('/{id}/delete_ajax', [PeriodeMagangController::class, 'confirm_ajax']); // untuk tampilan form confirm delete user ajax
+            Route::delete('/{id}/delete_ajax', [PeriodeMagangController::class, 'delete_ajax']); // menghapus data user ajax
+            Route::get('/import', [PeriodeMagangController::class, 'import']); // menampilkan halaman form import User
+            Route::post('/import_ajax', [PeriodeMagangController::class, 'import_ajax']); // menyimpan data User dari file import
+            Route::get('/export_excel', [PeriodeMagangController::class, 'export_excel']); // ajax export excel
+            Route::get('/export_pdf', [PeriodeMagangController::class, 'export_pdf']); // ajax export pdf
+        });
     })->middleware('authorize:admin');
 
-   
-      
- 
+
+
+
     // Rute untuk dosen
     Route::prefix('dosen')->name('dosen.')->group(function () {
         // dashboard
@@ -124,4 +141,6 @@ Route::group(['middleware' => 'auth'], function () {
             return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
         })->name('log.harian');
     })->middleware('authorize:mahasiswa');
+
+
 });

@@ -42,7 +42,7 @@
                             class="nav-link text-muted bg-light-softer">Mitra</a></li>
                     <li><a href="{{ url('/admin/management-pengguna') }}"
                             class="nav-link text-muted bg-light-softer">Pengguna</a></li>
-                    <li><a href="{{ url('/roles/admin/management-periode') }}"
+                    <li><a href="{{ url('/admin/management-periode-magang') }}"
                             class="nav-link text-muted bg-light-softer">Periode</a></li>
                     <li><a href="{{ url('/admin/management-prodi') }}"
                             class="nav-link text-muted bg-light-softer">Program Studi</a></li>

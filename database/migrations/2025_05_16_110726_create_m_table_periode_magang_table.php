@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTablePeriodeMagangTable extends Migration
+return new class extends Migration
 {
-    public function up()
+  public function up()
     {
         Schema::create('m_periode_magang', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('periode_id');
             $table->string('nama', 255);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
@@ -20,4 +20,5 @@ class CreateMTablePeriodeMagangTable extends Migration
     public function down()
     {
         Schema::dropIfExists('m_periode_magang');
-    }};
+    }
+};

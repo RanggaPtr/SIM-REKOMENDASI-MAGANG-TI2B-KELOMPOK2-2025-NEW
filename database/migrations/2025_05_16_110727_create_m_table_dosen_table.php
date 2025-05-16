@@ -4,20 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableDosenTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
         Schema::create('m_dosen', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('dosen_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('nidn', 20)->unique();
-            $table->unsignedBigInteger('program_studi_id')->nullable();
+            $table->string('nik', 20);
+            $table->unsignedBigInteger('prodi_id');
             $table->integer('jumlah_bimbingan')->default(0);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
-            $table->foreign('program_studi_id')->references('id')->on('m_program_studi')->onDelete('restrict');
+            $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');
+            $table->foreign('prodi_id')->references('prodi_id')->on('m_program_studi')->onDelete('cascade');
         });
     }
 

@@ -4,18 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMTableAdminTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
         Schema::create('m_admin', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('admin_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('nik', 20)->nullable()->unique();
-            $table->string('jabatan', 255)->nullable();
+            $table->string('nik', 20);
+            $table->string('jabatan', 100);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('m_users')->onDelete('restrict');
+            $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');
         });
     }
 

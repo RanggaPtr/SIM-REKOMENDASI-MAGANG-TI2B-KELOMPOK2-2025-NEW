@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsersSeeder::class,
             ProgramStudiSeeder::class,
-            LokasiSeeder::class,
-            MinatSeeder::class,
+            WilayahSeeder::class,
+            // MinatSeeder::class,
             SkemaSeeder::class,
             KompetensiSeeder::class,
             KeahlianSeeder::class,
@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             EvaluasiMagangSeeder::class,
             BookmarkSeeder::class,
             LogAktivitasSeeder::class,
+            
         ]);
     }
 }

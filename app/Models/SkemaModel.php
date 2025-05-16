@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class SkemaModel extends Model
 {
     protected $table = 'm_skema';
+    protected $primaryKey = 'skema_id';
+    public $incrementing = true;
+    public $timestamps = true;
 
     protected $fillable = ['nama', 'deskripsi'];
 
-    // public function mahasiswa()
-    // {
-    //     return $this->hasMany(MahasiswaModel::class, 'skema_id');
-    // }
-
     public function lowonganMagang()
     {
-        return $this->hasMany(LowonganMagangModel::class, 'skema_id');
+        return $this->hasMany(LowonganMagangModel::class, 'skema_id', 'skema_id');
     }
 }

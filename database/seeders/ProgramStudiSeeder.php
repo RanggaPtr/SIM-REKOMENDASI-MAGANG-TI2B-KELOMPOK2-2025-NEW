@@ -9,8 +9,14 @@ class ProgramStudiSeeder extends Seeder
 {
     public function run()
     {
-        ProgramStudiModel::create(['nama' => 'Teknik Informatika']);
-        ProgramStudiModel::create(['nama' => 'Sistem Informasi']);
-        ProgramStudiModel::create(['nama' => 'Manajemen Informatika']);
+        $programStudi = [
+            ['nama' => 'Teknik Informatika', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Sistem Informasi', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Manajemen Informatika', 'created_at' => now(), 'updated_at' => now()],
+        ];
+
+        foreach ($programStudi as $prodi) {
+            ProgramStudiModel::create($prodi);
+        }
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersSeeder extends Seeder
 {
-   public function run()
+  public function run()
     {
         $users = [
             [
@@ -26,7 +26,7 @@ class UsersSeeder extends Seeder
             [
                 'nama' => 'Dr. Budi Santoso',
                 'username' => 'budi.santoso',
-                'email' => 'budi.santoso@univ.ac.id',
+                'email' => 'dosen1@simmagang.com', // Sesuaikan dengan DosenSeeder
                 'password' => Hash::make('dosen123'),
                 'role' => 'dosen',
                 'foto_profile' => 'budi.jpg',
@@ -38,7 +38,7 @@ class UsersSeeder extends Seeder
             [
                 'nama' => 'Andi Wijaya',
                 'username' => 'andi.wijaya',
-                'email' => 'andi.wijaya@univ.ac.id',
+                'email' => 'mahasiswa1@simmagang.com', // Sesuaikan dengan MahasiswaSeeder
                 'password' => Hash::make('mahasiswa123'),
                 'role' => 'mahasiswa',
                 'foto_profile' => 'andi.jpg',
@@ -76,5 +76,7 @@ class UsersSeeder extends Seeder
         foreach ($users as $user) {
             UsersModel::create($user);
         }
+
+        $this->command->info('Data pengguna berhasil diimpor.');
     }
 }

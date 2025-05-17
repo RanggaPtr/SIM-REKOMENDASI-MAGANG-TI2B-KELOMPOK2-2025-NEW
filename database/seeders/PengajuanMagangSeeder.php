@@ -11,19 +11,41 @@ use Illuminate\Database\Seeder;
 
 class PengajuanMagangSeeder extends Seeder
 {
-    public function run()
+   public function run()
     {
         $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
         $lowongan = LowonganMagangModel::where('judul', 'Magang Pengembang Web')->first();
-        $dosen = DosenModel::where('nidn', '1234567890')->first();
+        $dosen = DosenModel::where('nik', '1234567890')->first();
         $periode = PeriodeMagangModel::where('nama', 'Januari-Juni 2025')->first();
 
+        if (!$mahasiswa) {
+            $this->command->error('Mahasiswa dengan nim 123456789 tidak ditemukan. Pastikan MahasiswaSeeder membuat data ini.');
+            return;
+        }
+
+        if (!$lowongan) {
+            $this->command->error('Lowongan Magang Pengembang Web tidak ditemukan. Pastikan LowonganMagangSeeder membuat data ini.');
+            return;
+        }
+
+        if (!$dosen) {
+            $this->command->error('Dosen dengan nik 1234567890 tidak ditemukan. Pastikan DosenSeeder membuat data ini.');
+            return;
+        }
+
+        if (!$periode) {
+            $this->command->error('Periode Januari-Juni 2025 tidak ditemukan. Pastikan PeriodeMagangSeeder membuat data ini.');
+            return;
+        }
+
         PengajuanMagangModel::create([
-            'mahasiswa_id' => $mahasiswa->id,
-            'lowongan_id' => $lowongan->id,
-            'dosen_id' => $dosen->id,
-            'periode_id' => $periode->id,
+            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+            'lowongan_id' => $lowongan->lowongan_id,
+            'dosen_id' => $dosen->dosen_id,
+            'periode_id' => $periode->periode_id,
             'status' => 'diajukan'
         ]);
+
+        $this->command->info('Data pengajuan magang berhasil diimpor.');
     }
 }

@@ -11,9 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_table_lowongan_keahlian', function (Blueprint $table) {
-            $table->id();
+        Schema::create('m_lowongan_keahlian', function (Blueprint $table) {
+            $table->bigIncrements('lowongan_keahlian_id');
+            $table->unsignedBigInteger('lowongan_id');
+            $table->unsignedBigInteger('keahlian_id');
             $table->timestamps();
+
+            // Tambahkan foreign key constraints
+            $table->foreign('lowongan_id')->references('lowongan_id')->on('m_lowongan_magang')->onDelete('cascade');
+            $table->foreign('keahlian_id')->references('keahlian_id')->on('m_keahlian')->onDelete('cascade');
         });
     }
 
@@ -22,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_table_lowongan_keahlian');
+        Schema::dropIfExists('m_lowongan_keahlian');
     }
 };

@@ -12,10 +12,17 @@ class EvaluasiMagangSeeder extends Seeder
     {
         $pengajuan = PengajuanMagangModel::where('status', 'diajukan')->first();
 
+        if (!$pengajuan) {
+            $this->command->error('Pengajuan dengan status "diajukan" tidak ditemukan. Pastikan PengajuanMagangSeeder membuat data ini.');
+            return;
+        }
+
         EvaluasiMagangModel::create([
-            'pengajuan_id' => $pengajuan->id,
+            'pengajuan_id' => $pengajuan->pengajuan_id, // Gunakan primary key yang benar
             'nilai' => 85,
             'komentar' => 'Kinerja baik, perlu meningkatkan komunikasi'
         ]);
+
+        $this->command->info('Data evaluasi magang berhasil diimpor.');
     }
 }

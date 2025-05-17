@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_table_minat', function (Blueprint $table) {
+        Schema::create('m_minat', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_table_minat');
+        Schema::dropIfExists('m_minat');
     }
 };

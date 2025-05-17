@@ -38,7 +38,7 @@
                     <i class="fas fa-database me-4"></i><b>Manajemen Data</b> <i class="fas fa-caret-right ms-auto pe-2"></i>
                 </div>
                 <ul class="nav-submenu ps-5 bg-light-softer">
-                    <li><a href="{{ url('/roles/admin/management-mitra') }}"
+                    <li><a href="{{ url('/admin/management-mitra') }}"
                             class="nav-link text-muted bg-light-softer">Mitra</a></li>
                     <li><a href="{{ url('/admin/management-pengguna') }}"
                             class="nav-link text-muted bg-light-softer">Pengguna</a></li>

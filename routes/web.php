@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PeriodeMagangController;
+use App\Http\Controllers\Admin\PerusahaanController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
@@ -107,6 +108,23 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/import_ajax', [PeriodeMagangController::class, 'import_ajax']); // menyimpan data User dari file import
             Route::get('/export_excel', [PeriodeMagangController::class, 'export_excel']); // ajax export excel
             Route::get('/export_pdf', [PeriodeMagangController::class, 'export_pdf']); // ajax export pdf
+        });
+
+        //Manajemen Perusahaan Mitra 
+        Route::group(['prefix' => 'management-mitra'], function () {
+            Route::get('/', [PerusahaanController::class, 'index'])->name('perusahaan.index');
+            Route::post('/list', [PerusahaanController::class, 'list'])->name('perusahaan.list');
+            Route::get('/create_ajax', [PerusahaanController::class, 'create_ajax']); 
+            Route::post('/ajax', [PerusahaanController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [PerusahaanController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [PerusahaanController::class, 'edit_ajax']); 
+            Route::put('/{id}/update_ajax', [PerusahaanController::class, 'update_ajax']); 
+            Route::get('/{id}/delete_ajax', [PerusahaanController::class, 'confirm_ajax']); 
+            Route::delete('/{id}/delete_ajax', [PerusahaanController::class, 'delete_ajax']); 
+            Route::get('/import', [PerusahaanController::class, 'import']); 
+            Route::post('/import_ajax', [PerusahaanController::class, 'import_ajax']); 
+            Route::get('/export_excel', [PerusahaanController::class, 'export_excel']); 
+            Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf']);
         });
     })->middleware('authorize:admin');
 

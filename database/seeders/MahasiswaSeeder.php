@@ -11,11 +11,11 @@ use Illuminate\Database\Seeder;
 
 class MahasiswaSeeder extends Seeder
 {
-   public function run()
+ public function run()
     {
         $user = UsersModel::where('email', 'mahasiswa1@simmagang.com')->first();
         $programStudi = ProgramStudiModel::where('nama', 'Teknik Informatika')->first();
-        $wilayah = WilayahModel::where('nama', 'KOTA MALANG')->first(); // Sesuaikan dengan format di CSV
+        $wilayah = WilayahModel::where('nama', 'KOTA MALANG')->first();
         $skema = SkemaModel::where('nama', 'Magang Reguler')->first();
 
         if (!$user) {
@@ -42,8 +42,8 @@ class MahasiswaSeeder extends Seeder
             'user_id' => $user->user_id,
             'nim' => '123456789',
             'program_studi_id' => $programStudi->prodi_id,
-            'lokasi_id' => $wilayah->kode_wilayah, // Sesuaikan dengan primary key WilayahModel
-            'skema_id' => $skema->id,
+            'wilayah_id' => $wilayah->wilayah_id,
+            'skema_id' => $skema->skema_id,
             'ipk' => 3.75
         ]);
 

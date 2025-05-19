@@ -4,85 +4,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Magang.in</title>
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f9f6eb;
+            background-color: #fdf6e3;
+            font-family: 'Poppins', Arial, Helvetica, sans-serif;
+            color: #1a237e;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: radial-gradient(rgba(255, 215, 79, 0.15) 1px, transparent 1px);
+            background-size: 18px 18px;
         }
         .register-container {
             max-width: 900px;
-            margin: 50px auto;
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin: 70px auto 0 auto;
+            background: transparent;
+            box-shadow: none;
+            border-radius: 0;
         }
         .register-left {
-            background-color: #ffd54f;
-            padding: 40px;
-            color: #333;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
         }
         .register-right {
-            padding: 40px;
+            background: #fffbe7;
+            padding: 50px 40px 40px 40px;
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(255, 215, 79, 0.10);
+            border: 1.5px solid #ffe082;
+            position: relative;
+            z-index: 1;
         }
         .register-right h2 {
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 18px;
+            color: #1a237e;
+        }
+        .register-right h2 strong span {
+            font-weight: 700;
+        }
+        .register-right h2 strong span:first-child {
+            color: #1976d2;
+        }
+        .register-right h2 strong span:last-child {
+            color: #ffd54f;
+        }
+        .register-right label {
+            color: #1a237e;
+            font-weight: 500;
+        }
+        .form-control, .form-select {
+            background-color: #fdf6e3;
+            border: 1.5px solid #ffe082;
+            color: #1a237e;
+            font-weight: 500;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #ffd600;
+            box-shadow: 0 0 0 0.2rem rgba(255, 214, 79, 0.15);
         }
         .btn-primary {
-            background-color: #ffd54f;
+            background: #ffd600;
+            color: #1a237e;
+            font-weight: 700;
             border: none;
-            color: #333;
-            font-weight: bold;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
         }
-        .btn-primary:hover {
-            background-color: #ffcc00;
+        .btn-primary:hover, .btn-primary:focus {
+            background: #ffb300;
+            color: #fff;
         }
-        .form-control {
-            background-color: #f9f6eb;
+        a {
+            color: #1a237e;
+            text-decoration: underline;
+            font-weight: 600;
         }
-        .carousel-caption-bottom {
-            position: static;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 15px;
-            margin-top: 10px;
-            text-align: center;
+        a:hover {
+            color: #ffd600;
+            text-decoration: underline;
         }
         .alert {
-            margin-bottom: 20px;
+            border-radius: 7px;
+            font-size: 0.98rem;
+            font-weight: 500;
         }
-        @media (max-width: 768px) {
-            .register-left, .register-right {
-                padding: 20px;
-            }
+        .carousel-caption-bottom h5 {
+            color: #1a237e;
+            font-weight: 700;
+        }
+        .carousel-caption-bottom span {
+            color: #ffd54f;
+            font-weight: 700;
+        }
+        .carousel-caption-bottom {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            margin-top: 10px;
+            color: #1a237e;
+            font-weight: 500;
+            padding: 15px;
+            text-align: center;
+        }
+        @media (max-width: 991.98px) {
             .register-container {
-                margin: 20px;
+                max-width: 98vw;
+                margin-top: 30px;
+            }
+            .register-right {
+                padding: 30px 10px;
+            }
+        }
+        @media (max-width: 767.98px) {
+            .register-container {
+                flex-direction: column;
+            }
+            .register-left, .register-right {
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 20px 5px;
+            }
+            .register-right {
+                margin-top: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="register-container row">
+    <div class="container register-container row g-0 shadow">
+        <!-- Slideshow Kiri -->
         <div class="register-left col-md-6 d-flex flex-column justify-content-center align-items-center">
-            <div id="slideshowExample" class="carousel slide" data-bs-ride="carousel" aria-label="Promotional slideshow">
+            <div id="slideshowExample" class="carousel slide w-100" data-bs-ride="carousel" aria-label="Promotional slideshow">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="{{ asset('images/slide1.png') }}" class="d-block w-100" alt="Slide 1">
+                        <img src="{{ asset('images/slide1.png') }}" class="d-block w-100 rounded-3" alt="Slide 1">
                         <div class="carousel-caption-bottom">
-                            <h5><span style="color: #1976d2;">magang.</span><span style="color: #ffd54f;">in</span> mengutamakan keefisiensian</h5>
+                            <h5>
+                                <span style="color: #1976d2;">magang.</span>
+                                <span style="color: #ffd54f;">in</span> mengutamakan keefisiensian
+                            </h5>
                             <p>Temukan magang impian melalui magang.in, efisien dan cocok untuk semua kalangan.</p>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="{{ asset('images/slide2.png') }}" class="d-block w-100" alt="Slide 2">
+                        <img src="{{ asset('images/slide2.png') }}" class="d-block w-100 rounded-3" alt="Slide 2">
                         <div class="carousel-caption-bottom">
-                            <h5>Jelajahi Berbagai Kesempatan Magang</h5>
+                            <h5>
+                                <span style="color: #1976d2;">magang.</span>
+                                <span style="color: #ffd54f;">in</span> Jelajahi Berbagai Kesempatan Magang
+                            </h5>
                             <p>Temukan magang yang sesuai dengan minat dan keahlianmu.</p>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="{{ asset('images/slide3.png') }}" class="d-block w-100" alt="Slide 3">
+                        <img src="{{ asset('images/slide3.png') }}" class="d-block w-100 rounded-3" alt="Slide 3">
                         <div class="carousel-caption-bottom">
-                            <h5>Dapatkan Pengalaman Berharga</h5>
+                            <h5>
+                                <span style="color: #1976d2;">magang.</span>
+                                <span style="color: #ffd54f;">in</span> Dapatkan Pengalaman Berharga
+                            </h5>
                             <p>Tingkatkan keterampilanmu dengan pengalaman magang yang bermanfaat.</p>
                         </div>
                     </div>
@@ -97,17 +191,22 @@
                 </button>
             </div>
         </div>
+        <!-- Form Register Kanan -->
         <div class="register-right col-md-6">
             <img src="{{ asset('images/logo.png') }}" alt="Magang.in" class="mb-3" style="width: 150px;">
-            <h2>Selamat Datang di <strong><span style="color: #1976d2;">magang.</span><span style="color: #ffd54f;">in</span></strong></h2>
-            
+            <h2>
+                Selamat Datang di 
+                <strong>
+                    <span style="color: #1976d2;">magang.</span>
+                    <span style="color: #ffd54f;">in</span>
+                </strong>
+            </h2>
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-
             <form method="POST" action="{{ route('postregister') }}">
                 @csrf
                 <div class="mb-3">
@@ -145,12 +244,23 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <input type="hidden" name="role" value="mahasiswa">
+                <div class="mb-3">
+                    <label for="role">Role</label>
+                    <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                        <option value="">Pilih Role</option>
+                        <option value="mahasiswa" {{ old('role') == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                        <option value="dosen" {{ old('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                    </select>
+                    @error('role')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
                 <button type="submit" class="btn btn-primary w-100">Daftar</button>
                 <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
             </form>
         </div>
     </div>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelector('form').addEventListener('submit', function (e) {

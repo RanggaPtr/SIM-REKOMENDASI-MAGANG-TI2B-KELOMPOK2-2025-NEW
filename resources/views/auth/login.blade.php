@@ -9,139 +9,55 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
+     <style>
         body {
-            background-color: #fdf6e3;
-            font-family: 'Poppins', Arial, Helvetica, sans-serif;
-            color: #1a237e;
-            min-height: 100vh;
-            position: relative;
+            background-color: #f9f6eb;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 0;
-            pointer-events: none;
-            background-image: radial-gradient(rgba(255, 215, 79, 0.15) 1px, transparent 1px);
-            background-size: 18px 18px;
-        }
+
         .login-container {
             max-width: 900px;
-            margin: 70px auto 0 auto;
-            background: transparent;
-            box-shadow: none;
-            border-radius: 0;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+
         .login-left {
-            padding: 40px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: none;
+            background-color: #EEB521;
+            padding: 40px;
+            color: #333;
         }
+
         .login-right {
-            background: #fffbe7;
-            padding: 50px 40px 40px 40px;
-            border-radius: 16px;
-            box-shadow: 0 6px 24px rgba(255, 215, 79, 0.10);
-            border: 1.5px solid #ffe082;
-            position: relative;
-            z-index: 1;
+            padding: 40px;
         }
+
         .login-right h2 {
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 18px;
-            color: #1a237e;
+            font-weight: bold;
         }
-        .login-right h2 strong span {
-            font-weight: 700;
-        }
-        .login-right h2 strong span:first-child {
-            color: #1976d2;
-        }
-        .login-right h2 strong span:last-child {
-            color: #ffd54f;
-        }
-        .login-right label {
-            color: #1a237e;
-            font-weight: 500;
-        }
-        .form-control {
-            background-color: #fdf6e3;
-            border: 1.5px solid #ffe082;
-            color: #1a237e;
-            font-weight: 500;
-        }
-        .form-control:focus {
-            border-color: #ffd600;
-            box-shadow: 0 0 0 0.2rem rgba(255, 214, 79, 0.15);
-        }
+
         .btn-primary {
-            background: #ffd600;
-            color: #1a237e;
-            font-weight: 700;
+            background-color: #EEB521;
             border: none;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
+            color: #333;
+            font-weight: bold;
         }
-        .btn-primary:hover, .btn-primary:focus {
-            background: #ffb300;
-            color: #fff;
+
+        .btn-primary:hover {
+            background-color: #EEB521;
         }
-        a {
-            color: #1a237e;
-            text-decoration: underline;
-            font-weight: 600;
+
+        .form-control {
+            background-color: #f9f6eb;
         }
-        a:hover {
-            color: #ffd600;
-            text-decoration: underline;
-        }
-        .alert {
-            border-radius: 7px;
-            font-size: 0.98rem;
-            font-weight: 500;
-        }
-        .carousel-caption-bottom h5 {
-            color: #1a237e;
-            font-weight: 700;
-        }
-        .carousel-caption-bottom span {
-            color: #ffd54f;
-            font-weight: 700;
-        }
+
         .carousel-caption-bottom {
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 8px;
-            margin-top: 10px;
-            color: #1a237e;
-            font-weight: 500;
+            position: static;
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 15px;
+            margin-top: 10px;
             text-align: center;
-        }
-        @media (max-width: 991.98px) {
-            .login-container {
-                max-width: 98vw;
-                margin-top: 30px;
-            }
-            .login-right {
-                padding: 30px 10px;
-            }
-        }
-        @media (max-width: 767.98px) {
-            .login-container {
-                flex-direction: column;
-            }
-            .login-left, .login-right {
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                padding: 20px 5px;
-            }
-            .login-right {
-                margin-top: 20px;
-            }
         }
     </style>
 </head>
@@ -155,8 +71,8 @@
                         <img src="{{ asset('images/slide1.png') }}" class="d-block w-100 rounded-3" alt="Slide 1">
                         <div class="carousel-caption-bottom">
                             <h5>
-                                <span style="color: #1976d2;">magang.</span>
-                                <span style="color: #ffd54f;">in</span> mengutamakan keefisiensian
+                                <span style="color: #092C6B;">magang.</span>
+                                <span style="color: #EEB521;">in</span> mengutamakan keefisiensian
                             </h5>
                             <p>Temukan magang impian melalui magang.in, efisien dan cocok untuk semua kalangan.</p>
                         </div>
@@ -192,8 +108,8 @@
             <h2>
                 Selamat Datang di 
                 <strong>
-                    <span style="color: #1976d2;">magang.</span>
-                    <span style="color: #ffd54f;">in</span>
+                    <span style="color: #092C6B;">magang.</span>
+                    <span style="color: #EEB521;">in</span>
                 </strong>
             </h2>
             @if (session('error'))
@@ -206,7 +122,7 @@
                 @csrf
                 <div class="mb-3">
                     <label for="username">Username</label>
-                    <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username') }}" placeholder="Masukkan username" required>
+                    <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username') }}" placeholder="Masukkan NIM ATAU NIK" required>
                     @error('username')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

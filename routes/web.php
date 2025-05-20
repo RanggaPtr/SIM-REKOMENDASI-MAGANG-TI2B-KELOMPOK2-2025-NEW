@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Dosen\SertifikatController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PeriodeMagangController;
 use App\Http\Controllers\Admin\PerusahaanController;
@@ -32,6 +34,7 @@ Route::post('/postregister', [AuthController::class, 'postregister'])->name('pos
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => 'auth'], function () {
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/home', function () {
         $user = Auth::user();
         switch ($user->role) {

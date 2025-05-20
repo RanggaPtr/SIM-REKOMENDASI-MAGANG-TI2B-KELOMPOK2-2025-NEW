@@ -1,10 +1,6 @@
 @vite(['resources/css/sidebar.css'])
 
-<aside class="bg-light-softer vh-99" id="sidebar">
-    <div class="d-flex justify-content-center my-3 bg-light-softer pb-3">
-        <img src="{{ url('/images/logo.png') }}" style="height: 50px;" class="bg-light-softer" alt="">
-    </div>
-
+   
     <ul class="sidebar-nav nav flex-column gap-1">
         <!-- Dashboard (Tampil untuk semua role) -->
         <li class="nav-item bg-light-softer">

@@ -10,8 +10,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ProfileController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -156,32 +154,14 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
     })->middleware('authorize:dosen');
 
     // Rute untuk mahasiswa
-   Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']);
-    })->name('dashboard');
+    Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
+        })->name('dashboard');
+        Route::get('/log-harian', function () {
+            return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
+        })->name('log.harian');
+    })->middleware('authorize:mahasiswa');
 
-    Route::get('/log-harian', function () {
-        return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
-    })->name('log.harian');
-});
-
-// Manajemen Profil
-Route::middleware('authorize:mahasiswa')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/profile/change-password', [ProfileController::class, 'changePasswordForm'])->name('profile.change_password');
-    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update_password');
-});
-
-    Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/create', [ProfileController::class, 'create'])->name('profile.create');
-    Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-});
 
 });

@@ -10,7 +10,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -136,22 +137,117 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
 
     // Rute untuk dosen
     Route::prefix('dosen')->name('dosen.')->group(function () {
-        // dashboard
-        Route::get('/dashboard', function () {
-            return view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
-        })->name('dashboard');
-        // Monitoring Mahasiswa
-        Route::get('/monitoring-mahasiswa', function () {
-            return view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']);
-        })->name('monitoring.mahasiswa');
-        // Evaluasi Magang
-        Route::get('/evaluasi-magang', function () {
-            return view('roles.dosen.evaluasi-magang', ['activeMenu' => 'evaluasiMagang']);
-        });
-        // Route::get('/management-akun-profile', function () {
-        //     return view('roles.dosen.management-akun-profile', ['activeMenu' => 'managementAkun']);
-        // })->name('management.akun');
-    })->middleware('authorize:dosen');
+    // dashboard
+    Route::get('/dashboard', function () {
+        return view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']); 
+    })->name('dashboard');
+    
+    // Monitoring Mahasiswa
+    Route::get('/monitoring-mahasiswa', function () {
+        return view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']);
+    })->name('monitoring.mahasiswa');
+    
+    // Evaluasi Magang - Index
+    Route::get('/evaluasi-magang', function () {
+        // Menggunakan Query Builder untuk mendapatkan data
+        $evaluasiMagangList = DB::table('evaluasi_magang')->get();
+        // Jika tabel belum ada, gunakan array kosong
+        // $evaluasiMagangList = [];
+        
+        return view('roles.dosen.evaluasi-magang', [
+            'activeMenu' => 'evaluasiMagang',
+            'evaluasiMagangList' => $evaluasiMagangList
+        ]);
+    })->name('evaluasi-magang');
+    
+    // Evaluasi Magang - Create Form
+    Route::get('/evaluasi-magang/create', function () {
+        return view('roles.dosen.evaluasi-magang-form', [
+            'activeMenu' => 'evaluasiMagang',
+            'isEdit' => false
+        ]);
+    })->name('evaluasi-magang.create');
+    
+    // Evaluasi Magang - Store
+    Route::post('/evaluasi-magang', function (Request $request) {
+        // Validasi input
+        $request->validate([
+            'pengajuan_id' => 'required',
+            'nilai' => 'required|numeric|min:0|max:100',
+            'komentar' => 'required|string'
+        ]);
+        
+        // Simpan data ke database
+        DB::table('evaluasi_magang')->insert([
+            'pengajuan_id' => $request->pengajuan_id,
+            'nilai' => $request->nilai,
+            'komentar' => $request->komentar,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
+        return redirect()->route('dosen.evaluasi-magang')
+            ->with('success', 'Data evaluasi magang berhasil ditambahkan');
+    })->name('evaluasi-magang.store');
+    
+    // Evaluasi Magang - Show
+    Route::get('/evaluasi-magang/{id}', function ($id) {
+        $evaluasi = DB::table('evaluasi_magang')->where('id', $id)->first();
+        
+        return view('roles.dosen.evaluasi-magang-detail', [
+            'activeMenu' => 'evaluasiMagang',
+            'evaluasi' => $evaluasi
+        ]);
+    })->name('evaluasi-magang.show');
+    
+    // Evaluasi Magang - Edit Form
+    Route::get('/evaluasi-magang/{id}/edit', function ($id) {
+        $evaluasi = DB::table('evaluasi_magang')->where('id', $id)->first();
+        
+        return view('roles.dosen.evaluasi-magang-form', [
+            'activeMenu' => 'evaluasiMagang',
+            'evaluasi' => $evaluasi,
+            'isEdit' => true
+        ]);
+    })->name('evaluasi-magang.edit');
+    
+    // Evaluasi Magang - Update
+    Route::put('/evaluasi-magang/{id}', function (Request $request, $id) {
+        // Validasi input
+        $request->validate([
+            'pengajuan_id' => 'required',
+            'nilai' => 'required|numeric|min:0|max:100',
+            'komentar' => 'required|string'
+        ]);
+        
+        // Update data
+        DB::table('evaluasi_magang')
+            ->where('id', $id)
+            ->update([
+                'pengajuan_id' => $request->pengajuan_id,
+                'nilai' => $request->nilai,
+                'komentar' => $request->komentar,
+                'updated_at' => now()
+            ]);
+        
+        return redirect()->route('dosen.evaluasi-magang')
+            ->with('success', 'Data evaluasi magang berhasil diperbarui');
+    })->name('evaluasi-magang.update');
+    
+    // Evaluasi Magang - Delete
+    Route::delete('/evaluasi-magang/{id}', function ($id) {
+        // Hapus data
+        DB::table('evaluasi_magang')->where('id', $id)->delete();
+        
+        return redirect()->route('dosen.evaluasi-magang')
+            ->with('success', 'Data evaluasi magang berhasil dihapus');
+    })->name('evaluasi-magang.destroy');
+    
+    // Management Akun Profile (dikomentari)
+    // Route::get('/management-akun-profile', function () {
+    //     return view('roles.dosen.management-akun-profile', ['activeMenu' => 'managementAkun']);
+    // })->name('management.akun');
+})->middleware('authorize:dosen');
 
     // Rute untuk mahasiswa
     Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {

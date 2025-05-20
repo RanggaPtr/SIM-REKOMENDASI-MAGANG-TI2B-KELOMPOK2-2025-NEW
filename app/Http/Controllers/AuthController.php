@@ -5,6 +5,7 @@ use App\Models\UsersModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -32,7 +33,7 @@ class AuthController extends Controller
 
     public function postregister(Request $request)
     {
-        \Log::info('Register attempt: ' . json_encode($request->all()));
+        Log::info('Register attempt: ' . json_encode($request->all()));
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
@@ -50,10 +51,10 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
             ]);
-            \Log::info('User created: ' . $user->id);
+            Log::info('User created: ' . $user->id);
             return redirect('login')->with('success', 'Registrasi berhasil, silakan login.');
         } catch (\Exception $e) {
-            \Log::error('Registration failed: ' . $e->getMessage());
+            Log::error('Registration failed: ' . $e->getMessage());
             return redirect('register')->with('error', 'Registrasi gagal: ' . $e->getMessage());
         }
     }

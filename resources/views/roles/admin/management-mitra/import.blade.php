@@ -56,9 +56,6 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            if (typeof dataPerusahaan !== 'undefined') {
-                                dataPerusahaan.ajax.reload();
-                            }
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function (prefix, val) {

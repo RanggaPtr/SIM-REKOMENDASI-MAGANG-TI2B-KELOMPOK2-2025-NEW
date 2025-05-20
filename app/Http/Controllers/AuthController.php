@@ -31,33 +31,33 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function postregister(Request $request)
-    {
-        Log::info('Register attempt: ' . json_encode($request->all()));
+  public function postregister(Request $request)
+{
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'username' => 'required|string|unique:m_users,username|unique:m_users,nim_nik',
+        'email' => 'required|email|unique:m_users',
+        'password' => 'required|string|min:8',
+        'role' => 'required|in:dosen,mahasiswa',
+    ]);
 
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'username' => 'required|string|unique:m_users',
-            'email' => 'required|email|unique:m_users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,dosen,mahasiswa',
+    try {
+        $user = UsersModel::create([
+            'nama' => $request->nama,
+            'nim_nik' => $request->username, 
+            'username' => $request->username,// Gunakan username sebagai nim_nik
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
-        try {
-            $user = UsersModel::create([
-                'nama' => $request->nama,
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $request->role,
-            ]);
-            Log::info('User created: ' . $user->id);
-            return redirect('login')->with('success', 'Registrasi berhasil, silakan login.');
-        } catch (\Exception $e) {
-            Log::error('Registration failed: ' . $e->getMessage());
-            return redirect('register')->with('error', 'Registrasi gagal: ' . $e->getMessage());
-        }
+        \Log::info('Registrasi berhasil: ' . $request->username . ' (' . $request->nama . ') sebagai ' . $request->role);
+        return redirect('login')->with('success', 'Registrasi berhasil, silakan login.');
+    } catch (\Exception $e) {
+        \Log::error('Registrasi gagal: ' . $request->username . ' (' . $request->nama . ') - Error: ' . $e->getMessage());
+        return redirect('register')->with('error', 'Registrasi gagal: ' . $e->getMessage());
     }
+}
 
     public function logout(Request $request)
     {

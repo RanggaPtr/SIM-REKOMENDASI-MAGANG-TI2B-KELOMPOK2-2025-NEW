@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Dosen\SertifikatController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PeriodeMagangController;
 use App\Http\Controllers\Admin\PerusahaanController;
@@ -32,6 +34,7 @@ Route::post('/postregister', [AuthController::class, 'postregister'])->name('pos
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => 'auth'], function () {
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/home', function () {
         $user = Auth::user();
         switch ($user->role) {
@@ -151,14 +154,32 @@ Route::group(['middleware' => 'auth'], function () {
     })->middleware('authorize:dosen');
 
     // Rute untuk mahasiswa
-    Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
-        })->name('dashboard');
-        Route::get('/log-harian', function () {
-            return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
-        })->name('log.harian');
-    })->middleware('authorize:mahasiswa');
+   Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']);
+    })->name('dashboard');
 
+    Route::get('/log-harian', function () {
+        return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
+    })->name('log.harian');
+});
+
+// Manajemen Profil
+Route::middleware('authorize:mahasiswa')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/change-password', [ProfileController::class, 'changePasswordForm'])->name('profile.change_password');
+    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update_password');
+});
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/create', [ProfileController::class, 'create'])->name('profile.create');
+    Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+});
 
 });

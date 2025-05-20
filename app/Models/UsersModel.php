@@ -12,7 +12,8 @@ class UsersModel extends Authenticatable
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['nama', 'username', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
+   protected $fillable = ['nama', 'username', 'nim_nik', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
+
     protected $hidden = ['password'];
     protected $casts = ['password' => 'hashed'];
 

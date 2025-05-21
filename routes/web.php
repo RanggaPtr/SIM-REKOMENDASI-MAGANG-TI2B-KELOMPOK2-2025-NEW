@@ -10,6 +10,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\LandingPageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +25,8 @@ use Illuminate\Support\Facades\Auth;
 */
 // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-Route::get('/', function () {
-    return view('landing-page');
-})->name('landingPage');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
+Route::get('/mitra-ajax', [LandingPageController::class, 'mitraAjax'])->name('landing-page.mitra');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/postlogin', [AuthController::class, 'postlogin'])->name('postlogin');
@@ -34,7 +35,7 @@ Route::post('/postregister', [AuthController::class, 'postregister'])->name('pos
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => 'auth'], function () {
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/home', function () {
         $user = Auth::user();
         switch ($user->role) {
@@ -100,7 +101,7 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
         Route::group(['prefix' => 'management-periode-magang'], function () {
             Route::get('/', [PeriodeMagangController::class, 'index'])->name('programstudi.index');
             Route::post('/list', [PeriodeMagangController::class, 'list'])->name('programstudi.list');
-             Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']); // menampilkan halaman form tambah user ajax
+            Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']); // menampilkan halaman form tambah user ajax
             Route::post('/ajax', [PeriodeMagangController::class, 'store_ajax']); // menyimpan data user baru ajax
             Route::get('/{id}/show_ajax', [PeriodeMagangController::class, 'show_ajax']); // menampilkan detail user ajax
             Route::get('/{id}/edit_ajax', [PeriodeMagangController::class, 'edit_ajax']); // menampilkan halaman form edit user ajax
@@ -117,20 +118,19 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
         Route::group(['prefix' => 'management-mitra'], function () {
             Route::get('/', [PerusahaanController::class, 'index'])->name('perusahaan.index');
             Route::post('/list', [PerusahaanController::class, 'list'])->name('perusahaan.list');
-            Route::get('/create_ajax', [PerusahaanController::class, 'create_ajax']); 
+            Route::get('/create_ajax', [PerusahaanController::class, 'create_ajax']);
             Route::post('/ajax', [PerusahaanController::class, 'store_ajax']);
             Route::get('/{id}/show_ajax', [PerusahaanController::class, 'show_ajax']);
-            Route::get('/{id}/edit_ajax', [PerusahaanController::class, 'edit_ajax']); 
-            Route::put('/{id}/update_ajax', [PerusahaanController::class, 'update_ajax']); 
-            Route::get('/{id}/delete_ajax', [PerusahaanController::class, 'confirm_ajax']); 
-            Route::delete('/{id}/delete_ajax', [PerusahaanController::class, 'delete_ajax']); 
-            Route::get('/import', [PerusahaanController::class, 'import']); 
-            Route::post('/import_ajax', [PerusahaanController::class, 'import_ajax']); 
-            Route::get('/export_excel', [PerusahaanController::class, 'export_excel']); 
+            Route::get('/{id}/edit_ajax', [PerusahaanController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [PerusahaanController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [PerusahaanController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [PerusahaanController::class, 'delete_ajax']);
+            Route::get('/import', [PerusahaanController::class, 'import']);
+            Route::post('/import_ajax', [PerusahaanController::class, 'import_ajax']);
+            Route::get('/export_excel', [PerusahaanController::class, 'export_excel']);
             Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf']);
         });
     })->middleware('authorize:admin');
-
 
 
 
@@ -155,13 +155,12 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
 
     // Rute untuk mahasiswa
     Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('roles.mahasiswa.dashboard', ['activeMenu' => 'dashboard']); // Perbaiki di sini
-        })->name('dashboard');
+        Route::get('/dashboard', [MahasiswaDashboardController::class, 'index']);
+        Route::get('/management-akun-profile', function () {
+            return view('roles.mahasiswa.manajemenProfile', ['activeMenu' => 'managementAkun']);
+        })->name('management.akun');
         Route::get('/log-harian', function () {
             return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
         })->name('log.harian');
     })->middleware('authorize:mahasiswa');
-
-
 });

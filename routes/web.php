@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LowonganMagangController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\LandingPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,9 +27,8 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
-Route::get('/', function () {
-    return view('landing-page');
-})->name('landingPage');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
+Route::get('/mitra-ajax', [LandingPageController::class, 'mitraAjax'])->name('landing-page.mitra');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/postlogin', [AuthController::class, 'postlogin'])->name('postlogin');

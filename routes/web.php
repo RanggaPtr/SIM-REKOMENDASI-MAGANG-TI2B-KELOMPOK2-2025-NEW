@@ -228,7 +228,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Rute untuk mahasiswa
     Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-        Route::get('/dashboard', [MahasiswaDashboardController::class, 'index']);
+        Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
         Route::get('/log-harian', function () {
             return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
         })->name('log.harian');

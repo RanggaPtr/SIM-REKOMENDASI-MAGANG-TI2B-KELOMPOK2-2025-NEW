@@ -50,13 +50,13 @@
                                         <td>{{ $evaluasi->updated_at ?? '-' }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('dosen.evaluasi-magang.show', $evaluasi->id) }}" class="btn btn-info btn-sm">
+                                                <a href="{{ route('dosen.evaluasi-magang.show', $evaluasi->evaluasi_id ?? $evaluasi->id) }}" class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i> Detail
                                                 </a>
-                                                <a href="{{ route('dosen.evaluasi-magang.edit', $evaluasi->id) }}" class="btn btn-warning btn-sm">
+                                                <a href="{{ route('dosen.evaluasi-magang.edit', $evaluasi->evaluasi_id ?? $evaluasi->id) }}" class="btn btn-warning btn-sm">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
-                                                <form action="{{ route('dosen.evaluasi-magang.destroy', $evaluasi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');" class="d-inline">
+                                                <form action="{{ route('dosen.evaluasi-magang.destroy', $evaluasi->evaluasi_id ?? $evaluasi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm">

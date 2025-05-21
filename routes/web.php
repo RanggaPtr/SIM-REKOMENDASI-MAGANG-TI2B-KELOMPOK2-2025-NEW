@@ -1,20 +1,18 @@
 <?php
 
-use App\Http\Controllers\Dosen\SertifikatController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\LowonganMagangController;
 use App\Http\Controllers\Admin\PeriodeMagangController;
 use App\Http\Controllers\Admin\PerusahaanController;
 use App\Http\Controllers\Admin\ProgramStudiController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\LowonganMagangController;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\ProfileController;
+use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,17 +25,23 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
+// Public Routes
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
 Route::get('/mitra-ajax', [LandingPageController::class, 'mitraAjax'])->name('landing-page.mitra');
 
+// Authentication Routes
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/postlogin', [AuthController::class, 'postlogin'])->name('postlogin');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/postregister', [AuthController::class, 'postregister'])->name('postregister');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Authenticated Routes
 Route::group(['middleware' => 'auth'], function () {
+    // Profile Update
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Home Redirect Based on Role
     Route::get('/home', function () {
         $user = Auth::user();
         switch ($user->role) {
@@ -50,18 +54,17 @@ Route::group(['middleware' => 'auth'], function () {
             case 'perusahaan':
                 return redirect()->route('perusahaan.dashboard');
             default:
-                return redirect('login');
+                return redirect()->route('login');
         }
     })->name('home');
 
-    // Rute untuk admin
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('roles.admin.dashboard', ['activeMenu' => 'dashboard']);
-        })->name('dashboard');
+    // Admin Routes
+    Route::prefix('admin')->name('admin.')->middleware('authorize:admin')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', fn() => view('roles.admin.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
 
         // Manajemen Lowongan Magang
-        Route::group(['prefix' => 'management-lowongan-magang'], function () {
+        Route::prefix('management-lowongan-magang')->group(function () {
             Route::get('/', [LowonganMagangController::class, 'index'])->name('lowongan.index');
             Route::get('/create', [LowonganMagangController::class, 'create'])->name('lowongan.create');
             Route::post('/', [LowonganMagangController::class, 'store'])->name('lowongan.store');
@@ -70,8 +73,14 @@ Route::group(['middleware' => 'auth'], function () {
             Route::delete('/{id}', [LowonganMagangController::class, 'destroy'])->name('lowongan.destroy');
         });
 
+        // Manajemen Pengajuan Magang (Placeholder)
+        Route::prefix('management-pengajuan-magang')->group(function () {
+            Route::get('/', fn() => view('roles.admin.management-pengajuan-magang.index', ['activeMenu' => 'manajemenMagang']))->name('pengajuan.index');
+            // Tambahkan rute lain seperti create, store, dll. jika diperlukan
+        });
+
         // Manajemen Pengguna
-        Route::group(['prefix' => 'management-pengguna'], function () {
+        Route::prefix('management-pengguna')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('user.index');
             Route::post('/list', [UserController::class, 'list'])->name('user.list');
             Route::get('/create_ajax', [UserController::class, 'create_ajax']);
@@ -88,7 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Manajemen Program Studi
-        Route::group(['prefix' => 'management-prodi'], function () {
+        Route::prefix('management-prodi')->group(function () {
             Route::get('/', [ProgramStudiController::class, 'index'])->name('programstudi.index');
             Route::post('/list', [ProgramStudiController::class, 'list'])->name('programstudi.list');
             Route::get('/create_ajax', [ProgramStudiController::class, 'create_ajax']);
@@ -104,10 +113,11 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_pdf', [ProgramStudiController::class, 'export_pdf']);
         });
 
-        Route::group(['prefix' => 'management-periode-magang'], function () {
+        // Manajemen Periode Magang
+        Route::prefix('management-periode-magang')->group(function () {
             Route::get('/', [PeriodeMagangController::class, 'index'])->name('periode.index');
             Route::post('/list', [PeriodeMagangController::class, 'list'])->name('periode.list');
-            Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']);
+            Route::get('/create_ajax', [PeriodeMagangController::class, 'index']);
             Route::post('/ajax', [PeriodeMagangController::class, 'store_ajax']);
             Route::get('/{id}/show_ajax', [PeriodeMagangController::class, 'show_ajax']);
             Route::get('/{id}/edit_ajax', [PeriodeMagangController::class, 'edit_ajax']);
@@ -121,7 +131,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Manajemen Perusahaan Mitra
-        Route::group(['prefix' => 'management-mitra'], function () {
+        Route::prefix('management-mitra')->group(function () {
             Route::get('/', [PerusahaanController::class, 'index'])->name('perusahaan.index');
             Route::post('/list', [PerusahaanController::class, 'list'])->name('perusahaan.list');
             Route::get('/create_ajax', [PerusahaanController::class, 'create_ajax']);
@@ -136,108 +146,114 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [PerusahaanController::class, 'export_excel']);
             Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf']);
         });
-    })->middleware('authorize:admin');
 
-    // Rute untuk dosen
-    Route::prefix('dosen')->name('dosen.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']);
-        })->name('dashboard');
+        // Statistik Tren (Placeholder)
+        Route::get('/statistik-data-tren', fn() => view('roles.admin.statistik-data-tren', ['activeMenu' => 'analitik']))->name('statistik.tren');
+    });
 
-        Route::get('/monitoring-mahasiswa', function () {
-            return view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']);
-        })->name('monitoring.mahasiswa');
+    // Dosen Routes
+    Route::prefix('dosen')->name('dosen.')->middleware('authorize:dosen')->group(function () {
+        Route::get('/dashboard', fn() => view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
+        Route::get('/monitoring-mahasiswa', fn() => view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']))->name('monitoring.mahasiswa');
 
-        Route::get('/evaluasi-magang', function () {
-            $evaluasiMagangList = DB::table('t_evaluasi_magang')->get();
-            return view('roles.dosen.evaluasi-magang', [
-                'activeMenu' => 'evaluasiMagang',
-                'evaluasiMagangList' => $evaluasiMagangList
-            ]);
-        })->name('evaluasi-magang');
+        // Evaluasi Magang
+        Route::prefix('evaluasi-magang')->group(function () {
+            // Index: Menampilkan daftar evaluasi magang
+            Route::get('/', function () {
+                $evaluasiMagangList = EvaluasiMagangModel::with('pengajuan')->get();
+                return view('roles.dosen.evaluasi-magang', [
+                    'activeMenu' => 'evaluasiMagang',
+                    'evaluasiMagangList' => $evaluasiMagangList
+                ]);
+            })->name('evaluasi-magang');
 
-        Route::get('/evaluasi-magang/create', function () {
-            return view('roles.dosen.evaluasi-magang-form', [
-                'activeMenu' => 'evaluasiMagang',
-                'isEdit' => false
-            ]);
-        })->name('evaluasi-magang.create');
+            // Create: Form untuk membuat evaluasi baru
+            Route::get('/create', function () {
+                return view('roles.dosen.evaluasi-magang-form', [
+                    'activeMenu' => 'evaluasiMagang',
+                    'isEdit' => false
+                ]);
+            })->name('evaluasi-magang.create');
 
-        Route::post('/evaluasi-magang', function (Request $request) {
-            $request->validate([
-                'pengajuan_id' => 'required',
-                'nilai' => 'required|numeric|min:0|max:100',
-                'komentar' => 'required|string'
-            ]);
+            // Store: Menyimpan evaluasi baru
+            Route::post('/', function (Request $request) {
+                $request->validate([
+                    'pengajuan_id' => 'required|exists:t_pengajuan_magang,pengajuan_id',
+                    'nilai' => 'required|numeric|min:0|max:100',
+                    'komentar' => 'required|string'
+                ]);
 
-            DB::table('t_evaluasi_magang')->insert([
-                'pengajuan_id' => $request->pengajuan_id,
-                'nilai' => $request->nilai,
-                'komentar' => $request->komentar,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            return redirect()->route('dosen.evaluasi-magang')
-                ->with('success', 'Data evaluasi magang berhasil ditambahkan');
-        })->name('evaluasi-magang.store');
-
-        Route::get('/evaluasi-magang/{id}', function ($id) {
-            $evaluasi = DB::table('t_evaluasi_magang')->where('id', $id)->first();
-            return view('roles.dosen.evaluasi-magang-detail', [
-                'activeMenu' => 'evaluasiMagang',
-                'evaluasi' => $evaluasi
-            ]);
-        })->name('evaluasi-magang.show');
-
-        Route::get('/evaluasi-magang/{id}/edit', function ($id) {
-            $evaluasi = DB::table('t_evaluasi_magang')->where('id', $id)->first();
-            return view('roles.dosen.evaluasi-magang-form', [
-                'activeMenu' => 'evaluasiMagang',
-                'evaluasi' => $evaluasi,
-                'isEdit' => true
-            ]);
-        })->name('evaluasi-magang.edit');
-
-        Route::put('/evaluasi-magang/{id}', function (Request $request, $id) {
-            $request->validate([
-                'pengajuan_id' => 'required',
-                'nilai' => 'required|numeric|min:0|max:100',
-                'komentar' => 'required|string'
-            ]);
-
-            DB::table('t_evaluasi_magang')
-                ->where('id', $id)
-                ->update([
+                EvaluasiMagangModel::create([
                     'pengajuan_id' => $request->pengajuan_id,
                     'nilai' => $request->nilai,
                     'komentar' => $request->komentar,
-                    'updated_at' => now()
                 ]);
 
-            return redirect()->route('dosen.evaluasi-magang')
-                ->with('success', 'Data evaluasi magang berhasil diperbarui');
-        })->name('evaluasi-magang.update');
+                return redirect()->route('dosen.evaluasi-magang')
+                    ->with('success', 'Data evaluasi magang berhasil ditambahkan');
+            })->name('evaluasi-magang.store');
 
-        Route::delete('/evaluasi-magang/{id}', function ($id) {
-            DB::table('t_evaluasi_magang')->where('id', $id)->delete();
-            return redirect()->route('dosen.evaluasi-magang')
-                ->with('success', 'Data evaluasi magang berhasil dihapus');
-        })->name('evaluasi-magang.destroy');
-    })->middleware('authorize:dosen');
+            // Show: Menampilkan detail evaluasi
+            Route::get('/{evaluasi_magang_id}', function ($evaluasi_magang_id) {
+                $evaluasi = EvaluasiMagangModel::with('pengajuan')->findOrFail($evaluasi_magang_id);
+                return view('roles.dosen.evaluasi-magang-detail', [
+                    'activeMenu' => 'evaluasiMagang',
+                    'evaluasi' => $evaluasi
+                ]);
+            })->name('evaluasi-magang.show');
 
-    // Rute untuk mahasiswa
-    Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+            // Edit: Form untuk mengedit evaluasi
+            Route::get('/{evaluasi_magang_id}/edit', function ($evaluasi_magang_id) {
+                $evaluasi = EvaluasiMagangModel::findOrFail($evaluasi_magang_id);
+                return view('roles.dosen.evaluasi-magang-form', [
+                    'activeMenu' => 'evaluasiMagang',
+                    'evaluasi' => $evaluasi,
+                    'isEdit' => true
+                ]);
+            })->name('evaluasi-magang.edit');
+
+            // Update: Memperbarui evaluasi
+            Route::put('/{evaluasi_magang_id}', function (Request $request, $evaluasi_magang_id) {
+                $request->validate([
+                    'pengajuan_id' => 'required|exists:t_pengajuan_magang,pengajuan_id',
+                    'nilai' => 'required|numeric|min:0|max:100',
+                    'komentar' => 'required|string'
+                ]);
+
+                $evaluasi = EvaluasiMagangModel::findOrFail($evaluasi_magang_id);
+                $evaluasi->update([
+                    'pengajuan_id' => $request->pengajuan_id,
+                    'nilai' => $request->nilai,
+                    'komentar' => $request->komentar,
+                ]);
+
+                return redirect()->route('dosen.evaluasi-magang')
+                    ->with('success', 'Data evaluasi magang berhasil diperbarui');
+            })->name('evaluasi-magang.update');
+
+            // Destroy: Menghapus evaluasi
+            Route::delete('/{evaluasi_magang_id}', function ($evaluasi_magang_id) {
+                $evaluasi = EvaluasiMagangModel::findOrFail($evaluasi_magang_id);
+                $evaluasi->delete();
+                return redirect()->route('dosen.evaluasi-magang')
+                    ->with('success', 'Data evaluasi magang berhasil dihapus');
+            })->name('evaluasi-magang.destroy');
+        });
+    });
+
+    // Mahasiswa Routes
+    Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/log-harian', function () {
-            return view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']);
-        })->name('log.harian');
-    })->middleware('authorize:mahasiswa');
+        Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('log.harian');
 
-    // Rute untuk perusahaan
-    Route::prefix('perusahaan')->name('perusahaan.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('roles.perusahaan.dashboard', ['activeMenu' => 'dashboard']);
-        })->name('dashboard');
-    })->middleware('authorize:perusahaan');
+        // Placeholder Routes for Mahasiswa
+        Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
+        Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');
+        Route::get('/feedback', fn() => view('roles.mahasiswa.feedback', ['activeMenu' => 'sertifikasiFeedback']))->name('feedback');
+    });
+
+    // Perusahaan Routes
+    Route::prefix('perusahaan')->name('perusahaan.')->middleware('authorize:perusahaan')->group(function () {
+        Route::get('/dashboard', fn() => view('roles.perusahaan.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
+    });
 });

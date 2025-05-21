@@ -1,6 +1,10 @@
 @vite(['resources/css/sidebar.css'])
 
-   
+<aside class="bg-light-softer vh-99" id="sidebar">
+    <div class="d-flex justify-content-center my-3 bg-light-softer pb-3">
+        <img src="{{ url('/images/logo.png') }}" style="height: 50px;" class="bg-light-softer" alt="Logo">
+    </div>
+
     <ul class="sidebar-nav nav flex-column gap-1">
         <!-- Dashboard (Tampil untuk semua role) -->
         <li class="nav-item bg-light-softer">
@@ -18,7 +22,7 @@
                     <i class="fas fa-briefcase me-4"></i><b>Manajemen Magang</b> <i class="fas fa-caret-right ms-auto pe-2"></i>
                 </div>
                 <ul class="nav-submenu ps-5 bg-light-softer">
-                    <li><a href="{{ url('/roles/admin/management-lowongan-magang') }}"
+                    <li><a href="{{ route('admin.lowongan.index') }}"
                             class="nav-link text-muted bg-light-softer">Lowongan Magang</a></li>
                     <li><a href="{{ url('/roles/admin/management-pengajuan-magang') }}"
                             class="nav-link text-muted bg-light-softer">Pengajuan Magang</a></li>

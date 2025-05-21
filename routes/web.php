@@ -148,7 +148,7 @@ Route::group(['middleware' => 'auth'], function () {
         })->name('monitoring.mahasiswa');
 
         Route::get('/evaluasi-magang', function () {
-            $evaluasiMagangList = DB::table('evaluasi_magang')->get();
+            $evaluasiMagangList = DB::table('t_evaluasi_magang')->get();
             return view('roles.dosen.evaluasi-magang', [
                 'activeMenu' => 'evaluasiMagang',
                 'evaluasiMagangList' => $evaluasiMagangList
@@ -169,7 +169,7 @@ Route::group(['middleware' => 'auth'], function () {
                 'komentar' => 'required|string'
             ]);
 
-            DB::table('evaluasi_magang')->insert([
+            DB::table('t_evaluasi_magang')->insert([
                 'pengajuan_id' => $request->pengajuan_id,
                 'nilai' => $request->nilai,
                 'komentar' => $request->komentar,
@@ -182,7 +182,7 @@ Route::group(['middleware' => 'auth'], function () {
         })->name('evaluasi-magang.store');
 
         Route::get('/evaluasi-magang/{id}', function ($id) {
-            $evaluasi = DB::table('evaluasi_magang')->where('id', $id)->first();
+            $evaluasi = DB::table('t_evaluasi_magang')->where('id', $id)->first();
             return view('roles.dosen.evaluasi-magang-detail', [
                 'activeMenu' => 'evaluasiMagang',
                 'evaluasi' => $evaluasi
@@ -190,7 +190,7 @@ Route::group(['middleware' => 'auth'], function () {
         })->name('evaluasi-magang.show');
 
         Route::get('/evaluasi-magang/{id}/edit', function ($id) {
-            $evaluasi = DB::table('evaluasi_magang')->where('id', $id)->first();
+            $evaluasi = DB::table('t_evaluasi_magang')->where('id', $id)->first();
             return view('roles.dosen.evaluasi-magang-form', [
                 'activeMenu' => 'evaluasiMagang',
                 'evaluasi' => $evaluasi,
@@ -205,7 +205,7 @@ Route::group(['middleware' => 'auth'], function () {
                 'komentar' => 'required|string'
             ]);
 
-            DB::table('evaluasi_magang')
+            DB::table('t_evaluasi_magang')
                 ->where('id', $id)
                 ->update([
                     'pengajuan_id' => $request->pengajuan_id,
@@ -219,7 +219,7 @@ Route::group(['middleware' => 'auth'], function () {
         })->name('evaluasi-magang.update');
 
         Route::delete('/evaluasi-magang/{id}', function ($id) {
-            DB::table('evaluasi_magang')->where('id', $id)->delete();
+            DB::table('t_evaluasi_magang')->where('id', $id)->delete();
             return redirect()->route('dosen.evaluasi-magang')
                 ->with('success', 'Data evaluasi magang berhasil dihapus');
         })->name('evaluasi-magang.destroy');

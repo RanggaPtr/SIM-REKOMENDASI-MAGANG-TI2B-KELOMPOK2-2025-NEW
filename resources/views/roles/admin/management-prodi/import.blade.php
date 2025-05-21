@@ -1,30 +1,28 @@
 <form action="{{ url('/admin/management-prodi/import_ajax') }}" method="POST" id="form-import"
     enctype="multipart/form-data">
     @csrf
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Program Studi</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title">Import Data Program Studi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Download Template</label>
                     <a href="{{ asset('template_program_studi.xlsx') }}" class="btn btn-info btn-sm" download>
                         <i class="fa fa-file-excel"></i> Download
                     </a>
-                    <small id="error-level_id" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label>Pilih File</label>
-                    <input type="file" name="file_program_studi" id="file_program_studi" class="form-control" required>
+                    <input type="file" name="file_program_studi" id="file_program_studi" class="form-control"
+                        accept=".xlsx" required>
                     <small id="error-file_program_studi" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="button" data-bs-dismiss="modal" class="btn btn-warning">Batal</button>
                 <button type="submit" class="btn btn-primary">Upload</button>
             </div>
         </div>
@@ -33,57 +31,47 @@
 
 <script>
     $(document).ready(function () {
-        $("#form-import").validate({
-            rules: {
-                file_program_studi: {
-                    required: true,
-                    extension: "xlsx"
-                },
-            },
-            submitHandler: function (form) {
-                var formData = new FormData(form);
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.status) {
-                            $('#myModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
-                            dataProgramStudi.ajax.reload(); // Menyesuaikan jika Anda menggunakan DataTables
-                        } else {
-                            $('.error-text').text('');
+        $('#form-import').on('submit', function (e) {
+            e.preventDefault();
+            var form = this;
+            var formData = new FormData(form);
+            $.ajax({
+                url: form.action,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.status) {
+                        $('#myModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message
+                        });
+                        if (window.tableProdi) window.tableProdi.ajax.reload();
+                    } else {
+                        $('.error-text').text('');
+                        if (response.msgField) {
                             $.each(response.msgField, function (prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
                             });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message,
-                                footer: JSON.stringify(response.msgField)
-                            });
                         }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: response.message
+                        });
                     }
-                });
-                return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function (error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
-            }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Gagal mengimport data!'
+                    });
+                }
+            });
         });
     });
 </script>

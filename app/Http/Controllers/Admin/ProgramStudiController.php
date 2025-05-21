@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -11,7 +12,6 @@ class ProgramStudiController extends Controller
 {
     public function index()
     {
-
         $breadcrumb = (object) [
             'title' => 'Daftar Program Studi',
             'list' => ['Home', 'Program Studi']
@@ -30,12 +30,11 @@ class ProgramStudiController extends Controller
         ]);
     }
 
-
     public function list(Request $request)
     {
         $programstudi = ProgramStudiModel::select('prodi_id', 'nama');
 
-        // Filter berdasarkan nama jika ada (optional)
+        // Filter berdasarkan nama jika ada
         if ($request->nama) {
             $programstudi->where('nama', 'like', '%' . $request->nama . '%');
         }
@@ -43,19 +42,25 @@ class ProgramStudiController extends Controller
         return DataTables::of($programstudi)
             ->addIndexColumn()
             ->addColumn('aksi', function ($programstudi) {
-                $btn = '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
-                    '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
-                    '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-prodi/' . $programstudi->prodi_id .
-                    '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
+                $showUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/show_ajax');
+                $editUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/edit_ajax');
+                $deleteUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/delete_ajax');
 
-                return $btn;
+                return '
+                <button onclick="modalAction(\'' . $showUrl . '\')" class="btn btn-info btn-sm">
+                    <i class=\"fa fa-eye\"></i> Detail
+                </button>
+                <button onclick="modalAction(\'' . $editUrl . '\')" class="btn btn-warning btn-sm">
+                    <i class=\"fa fa-edit\"></i> Edit
+                </button>
+                <button onclick="modalAction(\'' . $deleteUrl . '\')" class="btn btn-danger btn-sm">
+                    <i class=\"fa fa-trash\"></i> Hapus
+                </button>
+            ';
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
-
 
     public function create_ajax()
     {
@@ -64,26 +69,32 @@ class ProgramStudiController extends Controller
 
     public function store_ajax(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama' => 'required|min:3|max:100',
         ]);
 
-        // Simpan data program studi
-        try {
-            $programStudi = new ProgramStudiModel();
-            $programStudi->nama = $request->nama;
-            $programStudi->save();
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal',
+                'msgField' => $validator->errors()
+            ]);
+        }
 
+        try {
+            $prodi = ProgramStudiModel::create([
+                'nama' => $request->nama,
+            ]);
             return response()->json([
                 'status' => true,
-                'message' => 'Program Studi berhasil ditambahkan.'
+                'message' => 'Data berhasil ditambahkan',
+                'id' => $prodi->prodi_id,
+                'nama' => $prodi->nama
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data.',
-                'msgField' => []
+                'message' => 'Gagal menambah data: ' . $e->getMessage()
             ]);
         }
     }
@@ -96,58 +107,53 @@ class ProgramStudiController extends Controller
 
     public function update_ajax(Request $request, $prodi_id)
     {
-        // Validasi data yang masuk
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama' => 'required|min:3|max:100',
         ]);
 
-        $programStudi = ProgramStudiModel::find($prodi_id);
-
-        // Jika data tidak ditemukan, kembalikan respons error
-        if (!$programStudi) {
+        if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Program Studi tidak ditemukan',
+                'message' => 'Validasi gagal',
+                'msgField' => $validator->errors()
             ]);
         }
 
-        $programStudi->nama = $validatedData['nama'];
+        $programStudi = ProgramStudiModel::find($prodi_id);
+        if (!$programStudi) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        $programStudi->nama = $request->nama;
         $programStudi->save();
 
-        // Kembalikan respons sukses dengan redirect URL
         return response()->json([
             'status' => true,
-            'message' => 'Data berhasil diperbarui',
-            'redirect' => url('/admin/management-prodi'),  // Redirect ke daftar program studi
+            'message' => 'Data berhasil diupdate',
+            'id' => $programStudi->prodi_id,
+            'nama' => $programStudi->nama
         ]);
     }
 
-    public function confirm_ajax(string $prodi_id)
+    public function confirm_ajax($prodi_id)
     {
         $programStudi = ProgramStudiModel::find($prodi_id);
-        return view('roles.admin.management-prodi.confirm_ajax', ['programStudi' => $programStudi]);
+        return view('roles.admin.management-prodi.confirm_ajax', compact('programStudi'));
     }
 
     public function delete_ajax($prodi_id)
     {
         $programStudi = ProgramStudiModel::find($prodi_id);
-
         if ($programStudi) {
-            try {
-                $programStudi->delete();
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Program Studi berhasil dihapus.'
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan saat menghapus data.'
-                ]);
-            }
+            $programStudi->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil dihapus'
+            ]);
         }
-
         return response()->json([
             'status' => false,
             'message' => 'Data Program Studi tidak ditemukan.'
@@ -160,29 +166,9 @@ class ProgramStudiController extends Controller
         return view('roles.admin.management-prodi.show_ajax', compact('programStudi'));
     }
 
-    public function create()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Tambah Program Studi',
-            'list' => ['Home', 'Program Studi', 'Tambah']
-        ];
-
-        $page = (object) [
-            'title' => 'Tambah program studi baru'
-        ];
-
-        $activeMenu = 'programStudi'; 
-
-        return view('roles.admin.management-prodi.create', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-
     //public function import()
     //{
-    //   return view('roles.admin.management-prodi.import');  // Mengembalikan view import untuk program studi
+    //   return view('roles.admin.management-prodi.import');  
     //}
 
     //public function import_ajax(Request $request)
@@ -248,11 +234,11 @@ class ProgramStudiController extends Controller
     //    // Ambil data program studi yang akan diekspor
     //    $programStudi = ProgramStudiModel::all();
 
-        // Membuat spreadsheet baru
+    // Membuat spreadsheet baru
     //    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     //    $sheet = $spreadsheet->getActiveSheet();
 
-        // Set header kolom
+    // Set header kolom
     //    $sheet->setCellValue('A1', 'No');
     //    $sheet->setCellValue('B1', 'Nama Program Studi');
     //    $sheet->getStyle('A1:B1')->getFont()->setBold(true); // Bold header
@@ -260,7 +246,7 @@ class ProgramStudiController extends Controller
     //    $no = 1;
     //    $baris = 2;
 
-        // Mengisi data program studi
+    // Mengisi data program studi
     //    foreach ($programStudi as $key => $value) {
     //        $sheet->setCellValue('A' . $baris, $no);
     //        $sheet->setCellValue('B' . $baris, $value->nama);
@@ -268,19 +254,19 @@ class ProgramStudiController extends Controller
     //        $no++;
     //    }
 
-        // Set auto size untuk kolom
+    // Set auto size untuk kolom
     //    foreach (range('A', 'B') as $columnID) {
     //        $sheet->getColumnDimension($columnID)->setAutoSize(true);
     //    }
 
-        // Set judul sheet
+    // Set judul sheet
     //    $sheet->setTitle('Data Program Studi');
 
-        // Membuat writer dan mengunduh file excel
+    // Membuat writer dan mengunduh file excel
     //   $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
     //    $filename = 'Data Program Studi ' . date('Y-m-d H:i:s') . '.xlsx';
 
-        // Header untuk download
+    // Header untuk download
     //    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     //    header('Content-Disposition: attachment;filename="' . $filename . '"');
     //    header('Cache-Control: max-age=0');
@@ -290,17 +276,16 @@ class ProgramStudiController extends Controller
     //    header('Cache-Control: cache, must-revalidate');
     //    header('Pragma: public');
 
-        // Menyimpan dan mengekspor file
+    // Menyimpan dan mengekspor file
     //    $writer->save('php://output');
     //    exit;
     //}
 
     //public function export_pdf()
     //{
-        // Ambil data program studi
+    // Ambil data program studi
     //    $programStudi = ProgramStudiModel::all();
 
-        // Membuat PDF dengan data program studi
     //    $pdf = Pdf::loadView('barang.export_pdf', ['programStudi' => $programStudi]);
     //    $pdf->setPaper('a4', 'portrait');
     //    $pdf->setOption('isRemoteEnabled', true);

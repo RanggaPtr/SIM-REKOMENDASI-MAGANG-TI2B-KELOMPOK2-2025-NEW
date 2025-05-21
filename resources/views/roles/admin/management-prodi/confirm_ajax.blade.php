@@ -1,90 +1,81 @@
 @empty($programStudi)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-danger">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data program studi yang Anda cari tidak ditemukan.
-                </div>
-                <a href="{{ url('/admin/management-prodi') }}" class="btn btn-warning">Kembali</a>
+                <div class="alert alert-danger">Data program studi tidak ditemukan.</div>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/management-prodi/' . $programStudi->prodi_id . '/delete_ajax') }}" method="POST" id="form-delete-prodi">
+    <form action="{{ url('/admin/management-prodi/' . $programStudi->prodi_id . '/delete_ajax') }}" method="POST"
+        id="form-delete-prodi">
         @csrf
         @method('DELETE')
-        <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Hapus Data Program Studi</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
                         Apakah Anda yakin ingin menghapus data program studi berikut?
                     </div>
-                    <table class="table table-sm table-bordered table-striped">
+                    <table class="table table-sm table-bordered">
                         <tr>
-                            <th class="text-right col-4">Nama Prodi:</th>
-                            <td class="col-8">{{ $programStudi->nama }}</td>
+                            <th>Nama Prodi:</th>
+                            <td>{{ $programStudi->nama }}</td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Batal</button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Batal</button>
                     <button type="submit" class="btn btn-danger">Ya, Hapus</button>
                 </div>
             </div>
         </div>
     </form>
-
     <script>
         $(document).ready(function () {
-            $("#form-delete-prodi").validate({
-                rules: {},
-                submitHandler: function (form) {
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        success: function (response) {
-                            if (response.status) {
-                                $('#myModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message,
-                                    timer: 1500
-                                });
-                                dataProdi.ajax.reload();
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: response.message
-                                });
-                            }
-                        },
-                        error: function (xhr) {
+            $("#form-delete-prodi").on('submit', function (e) {
+                e.preventDefault();
+                var form = this;
+                var formData = new FormData(form);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            $('.modal').modal('hide');
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Terjadi kesalahan saat menghapus data'
+                                title: 'Berhasil',
+                                text: 'Data berhasil dihapus',
+                                confirmButtonText: 'OK'
                             });
+                            tableProdi.ajax.reload(null, false);
+                        } else {
+                            $('.error-text').text('');
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
+                            });
+                            Swal.fire('Gagal', response.message, 'error');
                         }
-                    });
-                    return false;
-                }
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors;
+                        $('.error-text').text('');
+                        $.each(errors, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
+                        });
+                    }
+                });
             });
         });
     </script>

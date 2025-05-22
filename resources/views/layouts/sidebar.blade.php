@@ -59,7 +59,7 @@
 
             <!-- Statistik Tren -->
             <li class="nav-item bg-light-softer">
-                <a href="{{ Route::has('admin.statistik.tren') ? route('admin.statistik.tren') : '#' }}"
+                <a href="{{ Route::has('admin.statistik-data-tren.index') ? route('admin.statistik-data-tren.index') : '#' }}"
                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'analitik' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                     <i class="fas fa-chart-line me-4"></i><b>Statistik Tren</b>
                 </a>

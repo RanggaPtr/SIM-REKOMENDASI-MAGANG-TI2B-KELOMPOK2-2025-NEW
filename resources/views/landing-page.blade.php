@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <title>Magang.in</title>
+    <link rel="icon" type="image/png" href="{{ url('/images/kopermagang.png') }}">
+    <title>@yield('title', 'Magang.In')</title>
     <link rel="icon" href="{{ url('/images/icon.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -158,9 +159,9 @@
         </div>
     </section>
     <!-- Panduan Section -->
-    <section style="height: 50vh; background: transparent; scroll-margin-top: 35vh;" id="panduan">
-        <h1 class="fw-bold text-primary text-center" style="background: transparent;">
-            <span class="text-secondary" style="background: transparent">Panduan</span> Penggunaan
+    <section style="height: 50vh; background: transparent; scroll-margin-top: 30vh;" id="panduan">
+        <h1 class="fw-bold text-primary text-center" style="background: transparent; font-size:4rem;">
+            <span class="text-secondary" style="background: transparent;">Panduan</span> Penggunaan
         </h1>
         <div class="container h-100 d-flex align-items-center justify-content-center" style="background: transparent;">
             <div class="row w-100 justify-content-center" style="background: transparent;">
@@ -210,10 +211,10 @@
 
     <!-- Mitra Section -->
     <section
-        style="height: 100vh; background: transparent; margin-top:25vh;margin-bottom:20vh; scroll-margin-top: 16vh;"
+        style="height: 100vh; background: transparent; margin-top:25vh;margin-bottom:20vh; scroll-margin-top: 11vh;"
         id="mitra">
         <div class="container py-5 h-100" style="background: transparent">
-            <h1 class="fw-bold text-primary mb-4 text-center" style="background: transparent;"><span
+            <h1 class="fw-bold text-primary mb-5 text-center" style="background: transparent; font-size: 4rem"><span
                     class="text-secondary" style="background: transparent">Mitra</span> Perusahaan</h1>
             <div class="d-flex align-items-center justify-content-between" class="background: transparent;">
                 <!-- Kontainer Perusahaan -->

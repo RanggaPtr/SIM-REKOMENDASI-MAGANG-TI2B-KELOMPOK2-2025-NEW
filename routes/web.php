@@ -149,7 +149,9 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Statistik Tren (Placeholder)
-        Route::get('/statistik-data-tren', [StatistikController::class, 'index'])->name('statistik.index');
+        Route::prefix('statistik-data-tren')->name('statistik-data-tren.')->group(function () {
+            Route::get('/', [StatistikController::class, 'index'])->name('index');
+        });
     });
 
     // Dosen Routes

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\LowonganMagangController;
 use App\Http\Controllers\Admin\PeriodeMagangController;
 use App\Http\Controllers\Admin\PerusahaanController;
 use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingPageController;
@@ -148,7 +149,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Statistik Tren (Placeholder)
-        Route::get('/statistik-data-tren', fn() => view('roles.admin.statistik-data-tren', ['activeMenu' => 'analitik']))->name('statistik.tren');
+        Route::get('/statistik-data-tren', [StatistikController::class, 'index'])->name('statistik.index');
     });
 
     // Dosen Routes

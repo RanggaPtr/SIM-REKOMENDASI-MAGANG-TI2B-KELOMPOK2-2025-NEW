@@ -120,7 +120,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::prefix('management-periode-magang')->group(function () {
             Route::get('/', [PeriodeMagangController::class, 'index'])->name('periode.index');
             Route::post('/list', [PeriodeMagangController::class, 'list'])->name('periode.list');
-            Route::get('/create_ajax', [PeriodeMagangController::class, 'index']);
+            Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']);
             Route::post('/ajax', [PeriodeMagangController::class, 'store_ajax']);
             Route::get('/{id}/show_ajax', [PeriodeMagangController::class, 'show_ajax']);
             Route::get('/{id}/edit_ajax', [PeriodeMagangController::class, 'edit_ajax']);

@@ -1,65 +1,51 @@
-@empty($user)
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+<div class="modal fade user-detail-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-danger">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang Anda cari tidak ditemukan
+            @empty($user)
+                <div class="modal-header">
+                    <h5 class="modal-title">Kesalahan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <a href="{{ url('/admin/management-pengguna') }}" class="btn btn-warning">Kembali</a>
-            </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">Data user tidak ditemukan.</div>
+                </div>
+            @else
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Data User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID User</th>
+                            <td>{{ $user->user_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Role</th>
+                            <td>{{ ucfirst($user->role) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Username</th>
+                            <td>{{ $user->username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nama</th>
+                            <td>{{ $user->nama }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ $user->email }}</td>
+                        </tr>
+                        <tr>
+                            <th>No. Telepon</th>
+                            <td>{{ $user->no_telepon ?? '-' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            @endempty
         </div>
     </div>
-@else
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data User</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th class="col-3">ID</th>
-                        <td class="col-9">{{ $user->user_id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Role</th>
-                        <td>{{ ucfirst($user->role) }}</td>
-                    </tr>
-                    <tr>
-                        <th>Username</th>
-                        <td>{{ $user->username }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nama</th>
-                        <td>{{ $user->nama }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td>{{ $user->email }}</td>
-                    </tr>
-                    <tr>
-                        <th>No. Telepon</th>
-                        <td>{{ $user->no_telepon ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Alamat</th>
-                        <td>{{ $user->alamat ?? '-' }}</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-primary">Tutup</button>
-            </div>
-        </div>
-    </div>
-@endempty
+</div>

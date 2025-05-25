@@ -1,4 +1,4 @@
-<div class="container py-2 px-0 d-flex justify-content-between align-items-center text-dark">
+<div class="container-fluid py-2 px-0 d-flex justify-content-between align-items-center text-dark">
     <!-- Kiri: Beranda -->
     <div class="fs-4 text-secondary"><b>Beranda</b></div>
 

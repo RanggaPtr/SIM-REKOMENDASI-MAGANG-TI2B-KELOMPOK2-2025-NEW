@@ -12,7 +12,7 @@
     @endif
 
     {{-- Tombol tambah log --}}
-    <a href="{{ route('mahasiswa.log-harian.create') }}" class="btn btn-primary mb-3">+ Tambah Log</a>
+    <a href="{{ route('mahasiswa.log-harian.create') }}" class="btn btn-primary mb-3">+ Tambah Aktivitas</a>
 
     {{-- Tabel log --}}
     <table class="table table-bordered">
@@ -33,7 +33,9 @@
                     <td>{{ $log->kegiatan }}</td>
                     <td>{{ $log->keterangan ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('mahasiswa.log-harian.edit', $log->id) }}" class="btn btn-sm btn-warning">Edit</a>
+<a href="{{ route('mahasiswa.log-harian.edit', $log->id) }}" class="btn btn-sm btn-warning">Edit</a>
+
+<input type="text" name="kegiatan" value="{{ $logHarian->kegiatan }}">
                         <form action="{{ route('mahasiswa.log-harian.destroy', $log->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus log ini?')">
                             @csrf
                             @method('DELETE')

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProgramStudiModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProgramStudiController extends Controller
@@ -40,7 +42,7 @@ class ProgramStudiController extends Controller
         }
 
         return DataTables::of($programstudi)
-            ->addIndexColumn()
+            ->addIndexColumn() 
             ->addColumn('aksi', function ($programstudi) {
                 $showUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/show_ajax');
                 $editUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/edit_ajax');
@@ -48,13 +50,13 @@ class ProgramStudiController extends Controller
 
                 return '
                 <button onclick="modalAction(\'' . $showUrl . '\')" class="btn btn-info btn-sm">
-                    <i class=\"fa fa-eye\"></i> Detail
+                    <i class="fa fa-eye"></i> Detail
                 </button>
                 <button onclick="modalAction(\'' . $editUrl . '\')" class="btn btn-warning btn-sm">
-                    <i class=\"fa fa-edit\"></i> Edit
+                    <i class="fa fa-edit"></i> Edit
                 </button>
                 <button onclick="modalAction(\'' . $deleteUrl . '\')" class="btn btn-danger btn-sm">
-                    <i class=\"fa fa-trash\"></i> Hapus
+                    <i class="fa fa-trash"></i> Hapus
                 </button>
             ';
             })
@@ -166,131 +168,122 @@ class ProgramStudiController extends Controller
         return view('roles.admin.management-prodi.show_ajax', compact('programStudi'));
     }
 
-    //public function import()
-    //{
-    //   return view('roles.admin.management-prodi.import');  
-    //}
+    public function import()
+    {
+        return view('roles.admin.management-prodi.import');
+    }
 
-    //public function import_ajax(Request $request)
-    //{
-    //    if ($request->ajax() || $request->wantsJson()) {
-    //        // Validasi file yang diupload
-    //        $rules = [
-    //            'file_prodi' => ['required', 'mimes:xlsx', 'max:1024']
-    //        ];
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_prodi' => ['required', 'mimes:xlsx', 'max:1024']
+            ];
 
-    //        $validator = Validator::make($request->all(), $rules);
+            $validator = Validator::make($request->all(), $rules);
 
-    //        if ($validator->fails()) {
-    //            return response()->json([
-    //                'status' => false,
-    //                'message' => 'Validasi Gagal',
-    //                'msgField' => $validator->errors()
-    //            ]);
-    //        }
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
 
-    //        // Memproses file Excel
-    //        $file = $request->file('file_prodi');
-    //        $reader = IOFactory::createReader('Xlsx'); // Membaca file Excel
-    //        $reader->setReadDataOnly(true); // Hanya membaca data
-    //        $spreadsheet = $reader->load($file->getRealPath());
-    //        $sheet = $spreadsheet->getActiveSheet();
-    //        $data = $sheet->toArray(null, false, true, true);
-    //        $insert = [];
+            $file = $request->file('file_prodi');
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+            $insert = [];
 
-    //        // Memasukkan data jika ada lebih dari 1 baris
-    //        if (count($data) > 1) {
-    //            foreach ($data as $baris => $value) {
-    //                if ($baris > 1) { // Mengabaikan header
-    //                    $insert[] = [
-    //                        'nama' => $value['A'],  // Kolom A untuk nama program studi
-    //                        'created_at' => now(),
-    //                    ];
-    //                }
-    //            }
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'nama' => $value['A'],
+                            'created_at' => now(),
+                        ];
+                    }
+                }
 
-    //            // Menyimpan data ke database
-    //            if (count($insert) > 0) {
-    //                ProgramStudiModel::insertOrIgnore($insert);
-    //            }
+                if (count($insert) > 0) {
+                    ProgramStudiModel::insertOrIgnore($insert);
+                }
 
-    //            return response()->json([
-    //                'status' => true,
-    //                'message' => 'Data berhasil diimport'
-    //            ]);
-    //        } else {
-    //            return response()->json([
-    //                'status' => false,
-    //                'message' => 'Tidak ada data yang diimport'
-    //            ]);
-    //        }
-    //    }
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            }
+        }
 
-    //    return redirect('/');
-    //}
+        return redirect('/');
+    }
 
-    //public function export_excel()
-    //{
-    //    // Ambil data program studi yang akan diekspor
-    //    $programStudi = ProgramStudiModel::all();
+    public function export_excel(Request $request)
+    {
+        $programStudi = ProgramStudiModel::select('prodi_id', 'nama')
+            ->orderBy('prodi_id', 'asc') 
+            ->get();
 
-    // Membuat spreadsheet baru
-    //    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    //    $sheet = $spreadsheet->getActiveSheet();
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Set header kolom
-    //    $sheet->setCellValue('A1', 'No');
-    //    $sheet->setCellValue('B1', 'Nama Program Studi');
-    //    $sheet->getStyle('A1:B1')->getFont()->setBold(true); // Bold header
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Program Studi');
+        $sheet->getStyle('A1:B1')->getFont()->setBold(true);
 
-    //    $no = 1;
-    //    $baris = 2;
+        $no = 1;
+        $baris = 2;
+        foreach ($programStudi as $prodi) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $prodi->nama);
+            $no++;
+            $baris++;
+        }
 
-    // Mengisi data program studi
-    //    foreach ($programStudi as $key => $value) {
-    //        $sheet->setCellValue('A' . $baris, $no);
-    //        $sheet->setCellValue('B' . $baris, $value->nama);
-    //        $baris++;
-    //        $no++;
-    //    }
+        foreach (range('A', 'B') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
 
-    // Set auto size untuk kolom
-    //    foreach (range('A', 'B') as $columnID) {
-    //        $sheet->getColumnDimension($columnID)->setAutoSize(true);
-    //    }
+        $sheet->setTitle('Data Program Studi');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_Program_Studi_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-    // Set judul sheet
-    //    $sheet->setTitle('Data Program Studi');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
-    // Membuat writer dan mengunduh file excel
-    //   $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-    //    $filename = 'Data Program Studi ' . date('Y-m-d H:i:s') . '.xlsx';
+        $writer->save('php://output');
+        exit;
+    }
 
-    // Header untuk download
-    //    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    //    header('Content-Disposition: attachment;filename="' . $filename . '"');
-    //    header('Cache-Control: max-age=0');
-    //    header('Cache-Control: max-age=1');
-    //    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    //    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-    //    header('Cache-Control: cache, must-revalidate');
-    //    header('Pragma: public');
+    public function export_pdf()
+    {
+        $programStudi = ProgramStudiModel::all();
 
-    // Menyimpan dan mengekspor file
-    //    $writer->save('php://output');
-    //    exit;
-    //}
+        $data = [
+            'programStudi' => $programStudi,
+            'title' => 'Laporan Data Program Studi'
+        ];
 
-    //public function export_pdf()
-    //{
-    // Ambil data program studi
-    //    $programStudi = ProgramStudiModel::all();
+        $pdf = Pdf::loadView('roles.admin.management-prodi.export_pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption("isRemoteEnabled", true);
+        $pdf->render();
 
-    //    $pdf = Pdf::loadView('barang.export_pdf', ['programStudi' => $programStudi]);
-    //    $pdf->setPaper('a4', 'portrait');
-    //    $pdf->setOption('isRemoteEnabled', true);
-    //    $pdf->render();
-
-    //    return $pdf->stream('Data Program Studi ' . date('Y-m-d H:i:s') . '.pdf');
-    //}
+        return $pdf->stream('Data_Program_Studi_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
 }

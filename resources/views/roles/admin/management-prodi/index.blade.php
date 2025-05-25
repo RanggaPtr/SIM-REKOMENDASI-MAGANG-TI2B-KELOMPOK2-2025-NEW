@@ -5,7 +5,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-prodi/import_ajax') }}')"
+                <button onclick="modalAction('{{ url('/admin/management-prodi/import') }}')"
                     class="btn btn-success btn-sm">
                     <i class="fa fa-file-import"></i>
                     Import Program Studi
@@ -68,9 +68,9 @@
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 },
                 columns: [
-                    { data: "prodi_id", className: "text-center" },
-                    { data: "nama", className: "" },
-                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
+                    { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false, className: "text-center" },
+                    { data: "nama", name: "nama" },
+                    { data: "aksi", name: "aksi", orderable: false, searchable: false, className: "text-center" }
                 ]
             });
         });

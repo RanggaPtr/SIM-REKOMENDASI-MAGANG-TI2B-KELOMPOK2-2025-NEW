@@ -1,55 +1,89 @@
-<form action="{{ url('/admin/management-prodi/import_ajax') }}" method="POST" id="form-import"
-    enctype="multipart/form-data">
-    @csrf
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Import Data Program Studi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Import Data Program Studi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url('/admin/management-prodi/import_ajax') }}" method="POST" id="form-import-prodi"
+            enctype="multipart/form-data">
+            @csrf
             <div class="modal-body">
-                <div class="form-group mb-3">
-                    <label>Download Template</label>
-                    <a href="{{ asset('template_program_studi.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i> Download
-                    </a>
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-info-circle"></i> Petunjuk Import</h5>
+                    <ol>
+                        <li>Download template Excel terlebih dahulu</li>
+                        <li>Isi data sesuai dengan kolom yang tersedia</li>
+                        <li>Pastikan format file adalah .xlsx</li>
+                        <li>Maksimal ukuran file: 1MB</li>
+                    </ol>
+                    <a href="{{ asset('template/template_import_program_studi.xlsx') }}"
+                        class="btn btn-sm btn-outline-primary">Download Template</a>
                 </div>
+
                 <div class="form-group mb-3">
-                    <label>Pilih File</label>
-                    <input type="file" name="file_program_studi" id="file_program_studi" class="form-control"
-                        accept=".xlsx" required>
-                    <small id="error-file_program_studi" class="error-text form-text text-danger"></small>
+                    <label for="file_prodi">File Excel</label>
+                    <input type="file" name="file_prodi" id="file_prodi" class="form-control" accept=".xlsx" required>
+                    <small id="error-file_prodi" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Kolom</th>
+                                <th>Keterangan</th>
+                                <th>Contoh</th>
+                                <th>Wajib</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A</td>
+                                <td>Nama Program Studi</td>
+                                <td>Teknik Informatika</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" data-bs-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Import Data</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 
 <script>
     $(document).ready(function () {
-        $('#form-import').on('submit', function (e) {
+        $("#form-import-prodi").on('submit', function (e) {
             e.preventDefault();
             var form = this;
             var formData = new FormData(form);
+
             $.ajax({
                 url: form.action,
-                type: 'POST',
+                type: form.method,
                 data: formData,
                 processData: false,
                 contentType: false,
+                beforeSend: function () {
+                    $('.btn-primary').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Memproses...');
+                },
                 success: function (response) {
+                    $('.btn-primary').prop('disabled', false).html('Import Data');
                     if (response.status) {
-                        $('#myModal').modal('hide');
+                        $('.modal').modal('hide');
                         Swal.fire({
-                            icon: 'success',
                             title: 'Berhasil',
-                            text: response.message
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
                         });
-                        if (window.tableProdi) window.tableProdi.ajax.reload();
+                        if (typeof dataProdi !== 'undefined') {
+                            dataProdi.ajax.reload(null, false);
+                        }
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {
@@ -58,17 +92,27 @@
                             });
                         }
                         Swal.fire({
+                            title: 'Gagal',
+                            text: response.message,
                             icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: response.message
+                            confirmButtonText: 'OK'
                         });
                     }
                 },
-                error: function () {
+                error: function (xhr) {
+                    $('.btn-primary').prop('disabled', false).html('Import Data');
+                    var errors = xhr.responseJSON?.errors;
+                    $('.error-text').text('');
+                    if (errors) {
+                        $.each(errors, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
+                        });
+                    }
                     Swal.fire({
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat mengimport data',
                         icon: 'error',
-                        title: 'Terjadi Kesalahan',
-                        text: 'Gagal mengimport data!'
+                        confirmButtonText: 'OK'
                     });
                 }
             });

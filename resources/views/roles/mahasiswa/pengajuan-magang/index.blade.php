@@ -5,41 +5,33 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-pengguna/import') }}')" class="btn btn-success btn-sm">
-                    <i class="fa fa-file-import"></i>
-                    Import User
-                </button>
-                <a href="{{ url('/admin/management-pengguna/export_excel') }}" class="btn btn-warning btn-sm">
-                    <i class="fa fa-file-excel"></i> Export Excel</a>
-                <a href="{{ url('/admin/management-pengguna/export_pdf') }}" class="btn btn-warning btn-sm">
-                    <i class="fa fa-file-pdf"></i> Export PDF</a>
-                <button onclick="modalAction('{{ url('/admin/management-pengguna/create_ajax') }}')" class="btn btn-success">
+                <button onclick="modalAction('{{ url('/mahasiswa/pengajuan-magang/create_ajax') }}')" class="btn btn-success">
                     <i class="fa fa-plus"></i>
-                    Tambah User
+                    Ajukan Magang
                 </button>
             </div>
         </div>
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-3">
-                    <label>Filter Role:</label>
-                    <select class="form-control" id="role-filter">
-                        <option value="">- Semua -</option>
-                        <option value="admin">Admin</option>
-                        <option value="dosen">Dosen</option>
-                        <option value="mahasiswa">Mahasiswa</option>
+                    <label>Filter Status:</label>
+                    <select class="form-control" id="status-filter">
+                        <option value="">Semua Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Disetujui</option>
+                        <option value="rejected">Ditolak</option>
                     </select>
                 </div>
             </div>
-            <table class="table table-bordered table-striped" id="table_user">
+            <table class="table table-bordered table-striped" id="table_pengajuan">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>No. Telepon</th>
+                        <th>No</th>
+                        <th>Lowongan</th>
+                        <th>Dosen Pembimbing</th>
+                        <th>Periode</th>
+                        <th>Status</th>
+                        <th>Tanggal Pengajuan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -73,30 +65,40 @@
         }
 
         $(document).ready(function () {
-            window.dataUser = $('#table_user').DataTable({
+            window.tablePengajuan = $('#table_pengajuan').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
-                    url: "{{ url('admin/management-pengguna/list') }}",
+                    url: "{{ url('mahasiswa/pengajuan-magang/list') }}",
                     type: 'POST',
                     data: function(d) {
-                        d.role = $('#role-filter').val();
+                        d.status = $('#status-filter').val();
                         d._token = '{{ csrf_token() }}';
                     }
                 },
                 columns: [
-                    { data: "user_id", className: "text-center" },
-                    { data: "username", className: "" },
-                    { data: "nama", className: "" },
-                    { data: "email", className: "" },
-                    { data: "role", className: "" },
-                    { data: "no_telepon", className: "" },
+                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    { data: "lowongan", className: "" },
+                    { data: "dosen", className: "" },
+                    { data: "periode", className: "" },
+                    { data: "status", className: "text-center" },
+                    { 
+                        data: "created_at", 
+                        className: "",
+                        render: function(data) {
+                            return new Date(data).toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            });
+                        }
+                    },
                     { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ]
             });
 
-            $('#role-filter').change(function() {
-                dataUser.ajax.reload();
+            $('#status-filter').change(function() {
+                tablePengajuan.ajax.reload();
             });
         });
     </script>

@@ -99,7 +99,8 @@
                 </div>
                 <ul class="nav-submenu ps-5 bg-light-softer">
                     <li>
-                        <a href="{{ route('mahasiswa.log.harian') }}" class="nav-link text-muted bg-light-softer">Log Harian</a>
+                        <a href="{{ route('mahasiswa.log-harian.index') }}" class="nav-link text-muted bg-light-softer">Log Harian</a>
+
                     </li>
                 </ul>
             </li>

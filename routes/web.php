@@ -14,6 +14,8 @@ use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Mahasiswa\LogHarianController;
+use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,7 +120,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::prefix('management-periode-magang')->group(function () {
             Route::get('/', [PeriodeMagangController::class, 'index'])->name('periode.index');
             Route::post('/list', [PeriodeMagangController::class, 'list'])->name('periode.list');
-            Route::get('/create_ajax', [PeriodeMagangController::class, 'index']);
+            Route::get('/create_ajax', [PeriodeMagangController::class, 'create_ajax']);
             Route::post('/ajax', [PeriodeMagangController::class, 'store_ajax']);
             Route::get('/{id}/show_ajax', [PeriodeMagangController::class, 'show_ajax']);
             Route::get('/{id}/edit_ajax', [PeriodeMagangController::class, 'edit_ajax']);
@@ -247,12 +249,30 @@ Route::group(['middleware' => 'auth'], function () {
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('log.harian');
+Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('mahasiswa.log.harian');
+
+            Route::resource('log-harian', LogHarianController::class);
+
 
         // Placeholder Routes for Mahasiswa
-        Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
+        // Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
+          Route::prefix('pengajuan-magang')->group(function () {
+            Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan.index');
+            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan.list');
+            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan.create');
+            Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan.store');;
+            Route::get('/{id}/show_ajax', [PengajuanMagangController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [PengajuanMagangController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [PengajuanMagangController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [PengajuanMagangController::class, 'delete_ajax']);
+           
+        });
+
         Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');
         Route::get('/feedback', fn() => view('roles.mahasiswa.feedback', ['activeMenu' => 'sertifikasiFeedback']))->name('feedback');
+
+
     });
 
     // Perusahaan Routes

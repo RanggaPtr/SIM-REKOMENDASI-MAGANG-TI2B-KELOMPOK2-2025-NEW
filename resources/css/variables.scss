@@ -5,13 +5,32 @@ $bg-softer: #FFF8F1; // Background sangat lembut, cocok buat section lain
 $text-muted: #727272; // Abu-abu netral, pas untuk teks sekunder
 $text-dark: #232323; // Hitam pekat, buat teks utama
 
+$card-1: #FEE0CC;
+$card-2: #D4F7ED;
+$card-3: #E2DBFA;
+$card-4: #E0F3FF;
+$card-5: #ECD6E6;
+$card-6: #EBEFF3;
+
 $theme-colors: (
     "primary": $primary,
     "secondary": $accent,
     "light": $bg-light,
     "light-softer": $bg-softer,
     "muted": $text-muted,
-    "dark": $text-dark
+    "dark": $text-dark,
+    "card-1": $card-1,
+    "card-2": $card-2,
+    "card-3": $card-3,
+    "card-4": $card-4,
+    "card-5": $card-5,
+    "card-6": $card-6,
 );
+
+@each $name, $color in $theme-colors {
+  .bg-#{$name} {
+    background-color: $color !important;
+  }
+}
 
 @import "../../node_modules/bootstrap/scss/bootstrap";

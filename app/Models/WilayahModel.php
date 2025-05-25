@@ -12,7 +12,7 @@ class WilayahModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['nama', 'kode_wilayah'];
+    protected $fillable = ['nama', 'kode_wilayah', 'latitude', 'longitude'];
 
     public function perusahaan()
     {

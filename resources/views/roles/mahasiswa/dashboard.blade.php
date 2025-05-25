@@ -2,66 +2,65 @@
 @extends('layouts.template')
 
 @section('content')
-    <div class="container-fluid bg-warning-subtle min-vh-100 py-4">
-        <div class="row">
+    <div class="bg-transparent min-vh-100 pt-1">
+        <div class="row g-2">
             {{-- Main Content --}}
             <div class="col-md-9">
                 <div class="d-flex mb-3">
-                    <input type="text" class="form-control me-2" placeholder="Search">
-                    <select class="form-select w-auto me-2">
+                    <input type="text" class="form-control me-2 rounded-3" placeholder="Search" style="flex: 12">
+                    <select class="form-select w-auto me-2 rounded-3" style="flex: 2">
                         <option>Sort by: Newest</option>
                     </select>
-                    <button class="btn btn-outline-secondary"><i class="bi bi-bookmark"></i></button>
+                    <button class="btn btn-outline-secondary rounded-3" style="flex: 1;"><i class="bi bi-bookmark"></i></button>
                 </div>
-                <div class="row g-3">
-                    @foreach ($lowongans as $lowongan)
-                        <div class="col-md-4">
-                            <div class="card shadow-sm border-0" style="background: #f8f9fa;">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span
-                                            class="badge bg-light text-dark">{{ $lowongan->tanggal_buka->format('d M, Y') }}</span>
-                                        <button class="btn btn-link p-0"><i class="bi bi-bookmark"></i></button>
-                                    </div>
-                                    <div class="mb-1 text-muted">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
-                                    <h5 class="card-title">{{ $lowongan->judul }}</h5>
-                                    <div class="mb-2">
-                                        @foreach (explode(',', $lowongan->bidang_keahlian) as $skill)
-                                            <span class="badge bg-secondary">{{ trim($skill) }}</span>
-                                        @endforeach
-                                    </div>
-                                    <div class="mb-2">
-                                        <span class="fw-bold">Rp.
-                                            {{ number_format($lowongan->tunjangan ?? 0, 0, ',', '.') }}/Bulan</span>
-                                    </div>
-                                    <div class="mb-2 text-muted">{{ $lowongan->perusahaan->kota ?? '-' }},
-                                        {{ $lowongan->perusahaan->provinsi ?? '-' }}</div>
-                                    <a href="#ONGOING" class="btn btn-dark w-100">Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+                @include('component.intern-cards', ['lowongans' => $lowongans])
             </div>
 
             {{-- Sidebar Filter --}}
-            <div class="col-md-3 mb-4">
-                <div class="bg-white rounded p-3 shadow-sm">
+            <div class="col-md-3 rounded-3">
+                <div class="bg-white rounded p-3 shadow-sm rounded-3">
                     <h5>Kategori</h5>
                     <input type="text" class="form-control mb-2" placeholder="Cari kategori...">
-                    <div>
-                        <div><input type="checkbox"> React</div>
-                        <div><input type="checkbox"> Laravel</div>
-                        <div><input type="checkbox"> Next Js</div>
-                        <div><input type="checkbox"> Spring</div>
-                        <div><input type="checkbox"> Rust</div>
-                        <div><input type="checkbox"> Golang</div>
+                    <div class="bg-transparent">
+                        <div class="form-check bg-transparent" style="align-content: center; align-items:center" >
+                            <input class="form-check-input" type="checkbox" id="react">
+                            <label class="form-check-label" for="react">React</label>
+                        </div>
+                        <div class="form-check bg-transparent">
+                            <input class="form-check-input" type="checkbox" id="laravel">
+                            <label class="form-check-label" for="laravel">Laravel</label>
+                        </div>
+                        <div class="form-check bg-transparent">
+                            <input class="form-check-input" type="checkbox" id="nextjs">
+                            <label class="form-check-label" for="nextjs">Next Js</label>
+                        </div>
+                        <div class="form-check bg-transparent">
+                            <input class="form-check-input" type="checkbox" id="spring">
+                            <label class="form-check-label" for="spring">Spring</label>
+                        </div>
+                        <div class="form-check bg-transparent">
+                            <input class="form-check-input" type="checkbox" id="rust">
+                            <label class="form-check-label" for="rust">Rust</label>
+                        </div>
+                        <div class="form-check bg-transparent">
+                            <input class="form-check-input" type="checkbox" id="golang">
+                            <label class="form-check-label" for="golang">Golang</label>
+                        </div>
                     </div>
                     <hr>
                     <h6>Tunjangan</h6>
-                    <div><input type="checkbox"> Rp. 0</div>
-                    <div><input type="checkbox"> Rp. 0 - Rp. 500k</div>
-                    <div><input type="checkbox"> Rp. 500k - Rp. 1.500k</div>
+                    <div class="form-check bg-transparent">
+                        <input class="form-check-input" type="checkbox" id="tunjangan0">
+                        <label class="form-check-label" for="tunjangan0">Rp. 0</label>
+                    </div>
+                    <div class="form-check bg-transparent">
+                        <input class="form-check-input" type="checkbox" id="tunjangan1">
+                        <label class="form-check-label" for="tunjangan1">Rp. 0 - Rp. 500k</label>
+                    </div>
+                    <div class="form-check bg-transparent">
+                        <input class="form-check-input" type="checkbox" id="tunjangan2">
+                        <label class="form-check-label" for="tunjangan2">Rp. 500k - Rp. 1.500k</label>
+                    </div>
                 </div>
             </div>
         </div>

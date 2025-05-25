@@ -14,7 +14,7 @@ use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Mahasiswa\LogHarianController;
+use App\Http\Controllers\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 
 /*
@@ -251,7 +251,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
 Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('mahasiswa.log.harian');
 
-            Route::resource('log-harian', LogHarianController::class);
+Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('mahasiswa.log.harian');
+
+            Route::resource('log-harian', LogAktivitasController::class);
 
 
         // Placeholder Routes for Mahasiswa

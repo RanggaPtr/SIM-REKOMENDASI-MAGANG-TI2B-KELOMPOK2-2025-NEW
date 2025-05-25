@@ -1,12 +1,12 @@
 @push('styles')
     <style>
-        .bookmark-hover:hover {
-            color: #EEB521 !important;
-            font-weight: bold;
-            cursor: pointer;
-            transform: scale(1.2);
-            transition: color 0.2s, transform 0.2s;
-            cursor: pointer;
+        .skills-multiline-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 3.2em;
+            /* adjust if needed for your font-size */
         }
     </style>
 @endpush
@@ -19,16 +19,16 @@
         @endphp
         <div class="col-md-4">
             <div class="card shadow-sm border-0 bg-transparent rounded-4" style="height: 40vh;">
-                <div class="card-body bg-white rounded-4 p-3 d-flex flex-column justify-content-between h-100">
-                    <div class="bg-{{ $cardBg }} p-3 mb-2 rounded-2 h-100">
+                <div class="card-body bg-white rounded-3 p-3 d-flex flex-column justify-content-between h-100">
+                    <div class="bg-{{ $cardBg }} px-3 pt-3 pb2 mb-2 rounded-2 h-100">
                         <div class="d-flex justify-content-between align-items-center mb-2 bg-transparent">
                             <span class="badge bg-white text-dark">{{ $lowongan->tanggal_buka->format('d M, Y') }}</span>
-                            <i class="fa-regular fa-bookmark bookmark-hover bg-transparent"
-                                style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%"></i>
+                            <i class="fa-regular fa-bookmark bg-transparent"
+                                style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer;"></i>
                         </div>
                         <div class="mb-1 text-dark bg-transparent">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
                         <h5 class="card-title bg-transparent">{{ $lowongan->judul }}</h5>
-                        <div class="mb-2 bg-transparent">
+                        <div class="mb-2 bg-transparent skills-multiline-2">
                             @foreach (explode(',', $lowongan->bidang_keahlian) as $skill)
                                 <span class="badge bg-secondary">{{ trim($skill) }}</span>
                             @endforeach

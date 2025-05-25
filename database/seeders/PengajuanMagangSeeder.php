@@ -14,17 +14,11 @@ class PengajuanMagangSeeder extends Seeder
    public function run()
     {
         $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
-        $lowongan = LowonganMagangModel::where('judul', 'Magang Pengembang Web')->first();
         $dosen = DosenModel::where('nik', '1234567890')->first();
         $periode = PeriodeMagangModel::where('nama', 'Januari-Juni 2025')->first();
 
         if (!$mahasiswa) {
             $this->command->error('Mahasiswa dengan nim 123456789 tidak ditemukan. Pastikan MahasiswaSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$lowongan) {
-            $this->command->error('Lowongan Magang Pengembang Web tidak ditemukan. Pastikan LowonganMagangSeeder membuat data ini.');
             return;
         }
 
@@ -40,7 +34,7 @@ class PengajuanMagangSeeder extends Seeder
 
         PengajuanMagangModel::create([
             'mahasiswa_id' => $mahasiswa->mahasiswa_id,
-            'lowongan_id' => $lowongan->lowongan_id,
+            'lowongan_id' => 1,
             'dosen_id' => $dosen->dosen_id,
             'periode_id' => $periode->periode_id,
             'status' => 'diajukan'

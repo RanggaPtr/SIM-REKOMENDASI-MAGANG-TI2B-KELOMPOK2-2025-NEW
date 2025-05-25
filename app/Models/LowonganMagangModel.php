@@ -13,7 +13,7 @@ class LowonganMagangModel extends Model
 
     protected $fillable = [
         'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi',
-        'persyaratan', 'bidang_keahlian', 'tanggal_buka', 'tanggal_tutup'
+        'persyaratan', 'tanggal_buka', 'tanggal_tutup'
     ];
 
     protected $casts = [

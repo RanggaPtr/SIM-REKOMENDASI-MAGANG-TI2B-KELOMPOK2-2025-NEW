@@ -3,46 +3,85 @@
 namespace Database\Seeders;
 
 use App\Models\LowonganMagangModel;
-use App\Models\PerusahaanModel;
-use App\Models\PeriodeMagangModel;
-use App\Models\SkemaModel;
 use Illuminate\Database\Seeder;
 
 class LowonganMagangSeeder extends Seeder
 {
-public function run()
+    public function run()
     {
-        $perusahaan = PerusahaanModel::where('nama', 'PT Teknologi Nusantara')->first(); // Sesuaikan dengan PerusahaanSeeder
-        $periode = PeriodeMagangModel::where('nama', 'Januari-Juni 2025')->first();
-        $skema = SkemaModel::where('nama', 'Magang Reguler')->first();
+        $data = [
+            [
+                "perusahaan_id" => 1,
+                "periode_id" => 1,
+                "skema_id" => 1,
+                "judul" => "Magang Web Developer",
+                "deskripsi" => "Membantu pengembangan aplikasi web berbasis Laravel.",
+                "persyaratan" => "1. IPK minimal 3.0\n2. Mahasiswa aktif\n3. Memiliki laptop pribadi",
+                "tunjangan" => 1500000,
+                "tanggal_buka" => "2024-11-01",
+                "tanggal_tutup" => "2024-12-31"
+            ],
+            [
+                "perusahaan_id" => 2,
+                "periode_id" => 1,
+                "skema_id" => 2,
+                "judul" => "Magang Data Analyst",
+                "deskripsi" => "Analisis data dan pembuatan dashboard.",
+                "persyaratan" => "1. IPK minimal 3.2\n2. Pernah mengikuti organisasi\n3. Memiliki ketelitian tinggi",
+                "tunjangan" => 1200000,
+                "tanggal_buka" => "2024-11-10",
+                "tanggal_tutup" => "2024-12-25"
+            ],
+            [
+                "perusahaan_id" => 3,
+                "periode_id" => 2,
+                "skema_id" => 1,
+                "judul" => "Magang Content Creator",
+                "deskripsi" => "Membuat konten digital untuk media sosial.",
+                "persyaratan" => "1. IPK minimal 2.8\n2. Aktif di media sosial\n3. Kreatif dan komunikatif",
+                "tunjangan" => 1000000,
+                "tanggal_buka" => "2025-05-01",
+                "tanggal_tutup" => "2025-06-15"
+            ],
+            [
+                "perusahaan_id" => 4,
+                "periode_id" => 2,
+                "skema_id" => 2,
+                "judul" => "Magang Mobile Developer",
+                "deskripsi" => "Pengembangan aplikasi mobile Android.",
+                "persyaratan" => "1. IPK minimal 3.0\n2. Mampu bekerja secara tim\n3. Bersedia kerja remote",
+                "tunjangan" => 1300000,
+                "tanggal_buka" => "2025-07-01",
+                "tanggal_tutup" => "2025-08-31"
+            ],
+            [
+                "perusahaan_id" => 5,
+                "periode_id" => 1,
+                "skema_id" => 1,
+                "judul" => "Magang UI/UX Designer",
+                "deskripsi" => "Mendesain tampilan aplikasi digital.",
+                "persyaratan" => "1. IPK minimal 3.0\n2. Punya portofolio desain\n3. Detail-oriented",
+                "tunjangan" => 1100000,
+                "tanggal_buka" => "2024-11-15",
+                "tanggal_tutup" => "2024-12-20"
+            ],
+            [
+                "perusahaan_id" => 6,
+                "periode_id" => 2,
+                "skema_id" => 2,
+                "judul" => "Magang Backend Developer",
+                "deskripsi" => "Membangun API dan backend aplikasi.",
+                "persyaratan" => "1. IPK minimal 3.0\n2. Bisa bekerja di bawah tekanan\n3. Mahasiswa semester akhir",
+                "tunjangan" => 1400000,
+                "tanggal_buka" => "2025-07-10",
+                "tanggal_tutup" => "2025-09-01"
+            ]
+        ];
 
-        if (!$perusahaan) {
-            $this->command->error('Perusahaan PT Teknologi Nusantara tidak ditemukan. Pastikan PerusahaanSeeder membuat data ini.');
-            return;
+        foreach ($data as $item) {
+            LowonganMagangModel::create($item);
         }
 
-        if (!$periode) {
-            $this->command->error('Periode Januari-Juni 2025 tidak ditemukan. Pastikan PeriodeMagangSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$skema) {
-            $this->command->error('Skema Magang Reguler tidak ditemukan. Pastikan SkemaSeeder membuat data ini.');
-            return;
-        }
-
-        LowonganMagangModel::create([
-            'perusahaan_id' => $perusahaan->perusahaan_id, // Gunakan primary key yang benar
-            'periode_id' => $periode->periode_id,
-            'skema_id' => $skema->skema_id,
-            'judul' => 'Magang Pengembang Web',
-            'deskripsi' => 'Mengembangkan aplikasi web menggunakan Laravel',
-            'persyaratan' => 'Mahir PHP, mengerti Laravel',
-            'bidang_keahlian' => 'Pengembangan Web',
-            'tanggal_buka' => '2024-11-01',
-            'tanggal_tutup' => '2024-12-31'
-        ]);
-
-        $this->command->info('Data lowongan magang berhasil diimpor.');
+        $this->command->info('Data dummy lowongan magang berhasil diimpor.');
     }
 }

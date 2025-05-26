@@ -1,98 +1,170 @@
-<form action="{{ url('/admin/management-mitra/import_ajax') }}" method="POST" id="form-import-perusahaan"
-    enctype="multipart/form-data">
-    @csrf
-    <div id="modal-import-perusahaan" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Import Data Perusahaan Mitra</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Import Data Perusahaan Mitra</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url('/admin/management-mitra/import_ajax') }}" method="POST" id="form-import-mitra"
+            enctype="multipart/form-data">
+            @csrf
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Download Template</label>
-                    <a href="{{ asset('template_perusahaan.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i> Download
-                    </a>
-                    <small id="error-template" class="error-text form-text text-danger"></small>
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-info-circle"></i> Petunjuk Import</h5>
+                    <ol>
+                        <li>Download template Excel terlebih dahulu</li>
+                        <li>Isi data sesuai dengan kolom yang tersedia</li>
+                        <li>Pastikan format file adalah .xlsx</li>
+                        <li>Maksimal ukuran file: 1MB</li>
+                    </ol>
+                    <a href="{{ asset('template/template_import_perusahaan.xlsx') }}" class="btn btn-sm btn-outline-primary">
+                        Download Template</a>
                 </div>
-                <div class="form-group">
-                    <label>Pilih File Excel</label>
-                    <input type="file" name="file_perusahaan" id="file_perusahaan" class="form-control" required>
+
+                <div class="form-group mb-3">
+                    <label for="file_perusahaan">File Excel</label>
+                    <input type="file" name="file_perusahaan" id="file_perusahaan" class="form-control" accept=".xlsx"
+                        required>
                     <small id="error-file_perusahaan" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Kolom</th>
+                                <th>Keterangan</th>
+                                <th>Contoh</th>
+                                <th>Wajib</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>A</td>
+                                <td>Nama</td>
+                                <td>PT Contoh Mitra</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>B</td>
+                                <td>Ringkasan</td>
+                                <td>Deskripsi singkat</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>C</td>
+                                <td>Deskripsi</td>
+                                <td>Penjelasan lengkap</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>D</td>
+                                <td>Bidang Industri</td>
+                                <td>Teknologi</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>E</td>
+                                <td>Alamat</td>
+                                <td>Jl. Contoh No.1</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>F</td>
+                                <td>Wilayah</td>
+                                <td>KOTA JAKARTA PUSAT</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>G</td>
+                                <td>Kontak</td>
+                                <td>081234567890</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>H</td>
+                                <td>Rating</td>
+                                <td>4.5</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                            <tr>
+                                <td>I</td>
+                                <td>Deskripsi Rating</td>
+                                <td>Sangat Baik</td>
+                                <td><span class="badge bg-success">Ya</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Import Data</button>
             </div>
-        </div>
+        </form>
     </div>
-</form>
+</div>
 
 <script>
     $(document).ready(function () {
-        $("#form-import-perusahaan").validate({
-            rules: {
-                file_perusahaan: {
-                    required: true,
-                    extension: "xlsx"
-                }
-            },
-            submitHandler: function (form) {
-                var formData = new FormData(form);
-                $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.status) {
-                            $('#modal-import-perusahaan').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
-                            if (typeof dataPerusahaan !== 'undefined') {
-                                dataPerusahaan.ajax.reload();
-                            }
-                        } else {
-                            $('.error-text').text('');
-                            $.each(response.msgField, function (prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message,
-                                footer: JSON.stringify(response.msgField)
+        $('#form-import-mitra').on('submit', function (e) {
+            e.preventDefault();
+            var form = this;
+            var formData = new FormData(form);
+
+            $.ajax({
+                url: form.action,
+                type: form.method,
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $('.btn-primary').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Memproses...');
+                },
+                success: function (response) {
+                    $('.btn-primary').prop('disabled', false).html('Import Data');
+                    if (response.status) {
+                        $('.modal').modal('hide');
+                        Swal.fire({
+                            title: 'Berhasil',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        if (typeof tableMitra !== 'undefined') {
+                            tableMitra.ajax.reload(null, false);
+                        }
+                    } else {
+                        $('.error-text').text('');
+                        if (response.msgField) {
+                            $.each(response.msgField, function (key, val) {
+                                $('#error-' + key).text(val[0]);
                             });
                         }
-                    },
-                    error: function () {
                         Swal.fire({
-                            icon: 'error',
                             title: 'Gagal',
-                            text: 'Terjadi kesalahan saat mengupload file.'
+                            text: response.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
                         });
                     }
-                });
-                return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function (error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function (element) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function (element) {
-                $(element).removeClass('is-invalid');
-            }
+                },
+                error: function (xhr) {
+                    $('.btn-primary').prop('disabled', false).html('Import Data');
+                    var errors = xhr.responseJSON?.errors;
+                    $('.error-text').text('');
+                    if (errors) {
+                        $.each(errors, function (key, val) {
+                            $('#error-' + key).text(val[0]);
+                        });
+                    }
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat mengimport data',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
         });
     });
 </script>

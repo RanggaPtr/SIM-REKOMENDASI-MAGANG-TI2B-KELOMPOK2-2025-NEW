@@ -36,6 +36,16 @@
                 @endif
 
                 @if (Auth::check())
+                    @php
+                        $dosen = null;
+                        $mahasiswa = null;
+                        if (Auth::user()->role === 'dosen') {
+                            $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
+                        } elseif (Auth::user()->role === 'mahasiswa') {
+                            $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
+                        }
+                    @endphp
+
                     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -73,148 +83,83 @@
                             @enderror
                         </div>
 
-                        <!-- Field Khusus Berdasarkan Role -->
+                        <!-- Role khusus: Dosen -->
                         @if (Auth::user()->role === 'dosen')
-                            @php
-                                $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
-                            @endphp
-                            @if ($dosen)
-                                <div class="mb-3">
-                                    <label for="nik" class="form-label fw-bold">NIK</label>
-                                    <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $dosen->nik) }}" required>
-                                    @error('nik')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="prodi_id" name="prodi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('prodi_id', $dosen->prodi_id) == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('prodi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    Data dosen belum lengkap. Silakan lengkapi data di bawah ini.
-                                </div>
-                                <div class="mb-3">
-                                    <label for="nik" class="form-label fw-bold">NIK</label>
-                                    <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik') }}" required>
-                                    @error('nik')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="prodi_id" name="prodi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('prodi_id') == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('prodi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @endif
-                        @elseif (Auth::user()->role === 'mahasiswa')
-                            @php
-                                $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
-                            @endphp
-                            @if ($mahasiswa)
-                                <div class="mb-3">
-                                    <label for="nim" class="form-label fw-bold">NIM</label>
-                                    <input type="text" class="form-control" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" required>
-                                    @error('nim')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="program_studi_id" name="program_studi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('program_studi_id', $mahasiswa->program_studi_id) == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('program_studi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                                    <select class="form-control" id="wilayah_id" name="wilayah_id" required>
-                                        @foreach (\App\Models\WilayahModel::all() as $wilayah)
-                                            <option value="{{ $wilayah->wilayah_id }}" {{ old('wilayah_id', $mahasiswa->wilayah_id) == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                                {{ $wilayah->nama_wilayah }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('wilayah_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ipk" class="form-label fw-bold">IPK</label>
-                                    <input type="number" step="0.01" class="form-control" id="ipk" name="ipk" value="{{ old('ipk', $mahasiswa->ipk) }}" required>
-                                    @error('ipk')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    Data mahasiswa belum lengkap. Silakan lengkapi data di bawah ini.
-                                </div>
-                                <div class="mb-3">
-                                    <label for="nim" class="form-label fw-bold">NIM</label>
-                                    <input type="text" class="form-control" id="nim" name="nim" value="{{ old('nim') }}" required>
-                                    @error('nim')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="program_studi_id" name="program_studi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('program_studi_id') == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('program_studi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                                    <select class="form-control" id="wilayah_id" name="wilayah_id" required>
-                                        @foreach (\App\Models\WilayahModel::all() as $wilayah)
-                                            <option value="{{ $wilayah->wilayah_id }}" {{ old('wilayah_id') == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                                {{ $wilayah->nama_wilayah }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('wilayah_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ipk" class="form-label fw-bold">IPK</label>
-                                    <input type="number" step="0.01" class="form-control" id="ipk" name="ipk" value="{{ old('ipk') }}" required>
-                                    @error('ipk')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @endif
-                        @elseif (Auth::user()->role === 'perusahaan')
+                            <div class="mb-3">
+                                <label for="nik" class="form-label fw-bold">NIK</label>
+                                <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $dosen->nik ?? '') }}" required>
+                                @error('nik')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
+                                <select class="form-control" id="prodi_id" name="prodi_id" required>
+                                    <option value="">-- Pilih Program Studi --</option>
+                                    @foreach ($programStudi as $prodi)
+                                        <option value="{{ $prodi->prodi_id }}" {{ (old('prodi_id') ?? ($dosen->prodi_id ?? '')) == $prodi->prodi_id ? 'selected' : '' }}>
+                                            {{ $prodi->nama_prodi }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('prodi_id')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
+
+                        <!-- Role khusus: Mahasiswa -->
+                        @if (Auth::user()->role === 'mahasiswa')
+                            <div class="mb-3">
+                                <label for="nim" class="form-label fw-bold">NIM</label>
+                                <input type="text" class="form-control" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim ?? '') }}" required>
+                                @error('nim')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
+                                <select class="form-control" id="program_studi_id" name="program_studi_id" required>
+                                    <option value="">-- Pilih Program Studi --</option>
+                                    @foreach ($programStudi as $prodi)
+                                        <option value="{{ $prodi->prodi_id }}" {{ (old('program_studi_id') ?? ($mahasiswa->program_studi_id ?? '')) == $prodi->prodi_id ? 'selected' : '' }}>
+                                            {{ $prodi->nama_prodi }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('program_studi_id')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
+                                <select class="form-control" id="wilayah_id" name="wilayah_id" required>
+                                    <option value="">-- Pilih Wilayah --</option>
+                                    @foreach ($wilayah as $w)
+                                        <option value="{{ $w->wilayah_id }}" {{ (old('wilayah_id') ?? ($mahasiswa->wilayah_id ?? '')) == $w->wilayah_id ? 'selected' : '' }}>
+                                            {{ $w->nama_wilayah }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('wilayah_id')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="ipk" class="form-label fw-bold">IPK</label>
+                                <input type="number" step="0.01" class="form-control" id="ipk" name="ipk" value="{{ old('ipk', $mahasiswa->ipk ?? '') }}" required>
+                                @error('ipk')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
+
+                        <!-- Role khusus: Perusahaan -->
+                        @if (Auth::user()->role === 'perusahaan')
                             @php
                                 $perusahaan = \App\Models\PerusahaanModel::where('user_id', Auth::user()->user_id)->first();
                             @endphp

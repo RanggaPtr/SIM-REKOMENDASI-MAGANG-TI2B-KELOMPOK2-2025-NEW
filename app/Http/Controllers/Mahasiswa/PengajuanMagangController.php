@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanMagangModel;
 use App\Models\LowonganMagangModel;
 use App\Models\DosenModel;
+use App\Models\MahasiswaModel;
 use App\Models\PeriodeMagangModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +45,8 @@ class PengajuanMagangController extends Controller
     public function list(Request $request)
     {
         // Only show applications for the logged in student
-        $mahasiswa_id = auth()->user()->mahasiswa->mahasiswa_id;
+        $user_id = auth()->user()->user_id;
+        $mahasiswa_id = MahasiswaModel::find($user_id);
         $pengajuan = PengajuanMagangModel::with(['lowongan', 'dosen', 'periode'])
             ->where('mahasiswa_id', $mahasiswa_id)
             ->select('pengajuan_id', 'mahasiswa_id', 'lowongan_id', 'dosen_id', 'periode_id', 'status', 'created_at');

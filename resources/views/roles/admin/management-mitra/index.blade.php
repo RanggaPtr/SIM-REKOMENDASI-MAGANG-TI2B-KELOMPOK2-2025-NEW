@@ -26,6 +26,7 @@
                     <tr>
                     <tr>
                         <th>No</th>
+                        <th>Logo</th>
                         <th>Nama</th>
                         <th>Ringkasan</th>
                         <th>Deskripsi</th>
@@ -80,6 +81,7 @@
                 },
                 columns: [
                     { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    { data: "logo", orderable: false, searchable: false, className: "text-center" },
                     { data: "nama" },
                     { data: "ringkasan" },
                     { data: "deskripsi" },

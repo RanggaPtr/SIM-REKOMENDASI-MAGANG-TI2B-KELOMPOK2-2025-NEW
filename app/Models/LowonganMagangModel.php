@@ -13,12 +13,13 @@ class LowonganMagangModel extends Model
 
     protected $fillable = [
         'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi',
-        'persyaratan', 'tanggal_buka', 'tanggal_tutup'
+        'persyaratan', 'minimal_ipk', 'tanggal_buka', 'tanggal_tutup', 'bidang_keahlian', 'tunjangan'
     ];
 
     protected $casts = [
         'tanggal_buka' => 'date',
         'tanggal_tutup' => 'date',
+        'minimal_ipk' => 'float',
     ];
 
     public function perusahaan()
@@ -36,16 +37,29 @@ class LowonganMagangModel extends Model
         return $this->belongsTo(SkemaModel::class, 'skema_id', 'skema_id');
     }
 
-    public function lowonganKompetensi()
+    // Many-to-Many dengan keahlian
+    public function keahlian()
     {
-        return $this->hasMany(LowonganKompetensiModel::class, 'lowongan_id', 'lowongan_id');
+        return $this->belongsToMany(
+            KeahlianModel::class,
+            'm_lowongan_keahlian',
+            'lowongan_id',
+            'keahlian_id'
+        );
     }
 
-    public function lowonganKeahlian()
+    // Many-to-Many dengan kompetensi
+    public function kompetensi()
     {
-        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
+        return $this->belongsToMany(
+            KompetensiModel::class,
+            'm_lowongan_kompetensi',
+            'lowongan_id',
+            'kompetensi_id'
+        );
     }
 
+    // Relasi lain
     public function pengajuanMagang()
     {
         return $this->hasMany(PengajuanMagangModel::class, 'lowongan_id', 'lowongan_id');

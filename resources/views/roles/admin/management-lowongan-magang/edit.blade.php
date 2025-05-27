@@ -6,12 +6,13 @@
 <div class="container mt-4">
     <h2>Edit Lowongan Magang</h2>
 
-    <form action="{{ route('admin.lowongan.update', $lowongan->lowongan_id) }}" method="POST">
+    <form action="{{ route('admin.lowongan.update', $lowongan->lowongan_id) }}" method="POST" id="editLowonganForm">
         @csrf
         @method('PUT')
 
+        {{-- Perusahaan --}}
         <div class="mb-3">
-            <label for="perusahaan_id" class="form-label">Perusahaan</label>
+            <label for="perusahaan_id" class="form-label">Perusahaan <span class="text-danger">*</span></label>
             <select class="form-control" id="perusahaan_id" name="perusahaan_id" required>
                 <option value="">Pilih Perusahaan</option>
                 @foreach ($perusahaans as $perusahaan)
@@ -25,16 +26,18 @@
             @enderror
         </div>
 
+        {{-- Judul --}}
         <div class="mb-3">
-            <label for="judul" class="form-label">Judul</label>
+            <label for="judul" class="form-label">Judul <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="judul" name="judul" value="{{ old('judul', $lowongan->judul) }}" required>
             @error('judul')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Periode --}}
         <div class="mb-3">
-            <label for="periode_id" class="form-label">Periode Magang</label>
+            <label for="periode_id" class="form-label">Periode Magang <span class="text-danger">*</span></label>
             <select class="form-control" id="periode_id" name="periode_id" required>
                 <option value="">Pilih Periode</option>
                 @foreach ($periodes as $periode)
@@ -48,8 +51,9 @@
             @enderror
         </div>
 
+        {{-- Skema --}}
         <div class="mb-3">
-            <label for="skema_id" class="form-label">Skema Magang</label>
+            <label for="skema_id" class="form-label">Skema Magang <span class="text-danger">*</span></label>
             <select class="form-control" id="skema_id" name="skema_id" required>
                 <option value="">Pilih Skema</option>
                 @foreach ($skemas as $skema)
@@ -63,48 +67,212 @@
             @enderror
         </div>
 
+        {{-- Deskripsi --}}
         <div class="mb-3">
-            <label for="deskripsi" class="form-label">Deskripsi</label>
+            <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" required>{{ old('deskripsi', $lowongan->deskripsi) }}</textarea>
             @error('deskripsi')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Persyaratan --}}
         <div class="mb-3">
-            <label for="persyaratan" class="form-label">Persyaratan</label>
+            <label for="persyaratan" class="form-label">Persyaratan <span class="text-danger">*</span></label>
             <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" required>{{ old('persyaratan', $lowongan->persyaratan) }}</textarea>
             @error('persyaratan')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Bidang Keahlian Utama (Dropdown) --}}
         <div class="mb-3">
-            <label for="bidang_keahlian" class="form-label">Bidang Keahlian</label>
-            <input type="text" class="form-control" id="bidang_keahlian" name="bidang_keahlian" value="{{ old('bidang_keahlian', $lowongan->bidang_keahlian) }}" required>
+            <label for="bidang_keahlian" class="form-label">Bidang Keahlian Utama <span class="text-danger">*</span></label>
+            <select class="form-control" id="bidang_keahlian" name="bidang_keahlian" required>
+                <option value="">Pilih Bidang Keahlian Utama</option>
+                @foreach ($keahlians as $keahlian)
+                    <option value="{{ $keahlian->nama }}" {{ old('bidang_keahlian', $lowongan->bidang_keahlian) == $keahlian->nama ? 'selected' : '' }}>
+                        {{ $keahlian->nama }}
+                    </option>
+                @endforeach
+            </select>
             @error('bidang_keahlian')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+            <small class="text-muted">Pilih satu bidang keahlian sebagai fokus utama lowongan</small>
+        </div>
+
+        {{-- Minimal IPK --}}
+        <div class="mb-3">
+            <label for="minimal_ipk" class="form-label">Minimal IPK <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" min="0" max="4" class="form-control" id="minimal_ipk" name="minimal_ipk" value="{{ old('minimal_ipk', $lowongan->minimal_ipk) }}" required>
+            @error('minimal_ipk')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Tunjangan --}}
         <div class="mb-3">
-            <label for="tanggal_buka" class="form-label">Tanggal Buka</label>
+            <label for="tunjangan" class="form-label">Tunjangan (Rp) <span class="text-danger">*</span></label>
+            <input type="number" step="1000" min="0" class="form-control" id="tunjangan" name="tunjangan" value="{{ old('tunjangan', $lowongan->tunjangan) }}" required>
+            @error('tunjangan')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Bidang Keahlian Tambahan (Multiple Select with Checkboxes) --}}
+        <div class="mb-3">
+            <label class="form-label">Bidang Keahlian Tambahan <span class="text-danger">*</span></label>
+            <div class="mb-2">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="toggleAllKeahlian(true)">Pilih Semua</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAllKeahlian(false)">Batal Pilih</button>
+            </div>
+            <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                @php
+                    $selectedKeahlian = old('keahlian', $lowongan->keahlian->pluck('keahlian_id')->toArray());
+                @endphp
+                @foreach ($keahlians as $keahlian)
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="keahlian[]" 
+                               value="{{ $keahlian->keahlian_id }}" 
+                               id="keahlian_{{ $keahlian->keahlian_id }}"
+                               {{ in_array($keahlian->keahlian_id, $selectedKeahlian) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
+                            {{ $keahlian->nama }}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            @error('keahlian')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+            <small class="text-muted">Pilih minimal satu bidang keahlian tambahan yang relevan</small>
+        </div>
+
+        {{-- Kompetensi (Single Select with Checkboxes) --}}
+        <div class="mb-3">
+            <label class="form-label">Kompetensi <span class="text-danger">*</span></label>
+            <div class="mb-2">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="toggleAllKompetensi(true)">Pilih Semua</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAllKompetensi(false)">Batal Pilih</button>
+            </div>
+            <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                @php
+                    $selectedKompetensi = old('kompetensi', $lowongan->kompetensi->pluck('kompetensi_id')->toArray());
+                @endphp
+                @foreach ($kompetensis as $kompetensi)
+                    <div class="form-check">
+                        <input class="form-check-input kompetensi-checkbox" type="checkbox" name="kompetensi[]" 
+                               value="{{ $kompetensi->kompetensi_id }}" 
+                               id="kompetensi_{{ $kompetensi->kompetensi_id }}"
+                               {{ in_array($kompetensi->kompetensi_id, $selectedKompetensi) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
+                            {{ $kompetensi->nama }}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            @error('kompetensi')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+            <small class="text-muted">Pilih satu kompetensi yang dibutuhkan</small>
+        </div>
+
+        {{-- Tanggal Buka --}}
+        <div class="mb-3">
+            <label for="tanggal_buka" class="form-label">Tanggal Buka <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" value="{{ old('tanggal_buka', $lowongan->tanggal_buka->format('Y-m-d')) }}" required>
             @error('tanggal_buka')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Tanggal Tutup --}}
         <div class="mb-3">
-            <label for="tanggal_tutup" class="form-label">Tanggal Tutup</label>
+            <label for="tanggal_tutup" class="form-label">Tanggal Tutup <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" value="{{ old('tanggal_tutup', $lowongan->tanggal_tutup->format('Y-m-d')) }}" required>
             @error('tanggal_tutup')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
+        {{-- Submit --}}
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="{{ route('admin.lowongan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editLowonganForm');
+    
+    // Validasi tanggal
+    const tanggalBuka = document.getElementById('tanggal_buka');
+    const tanggalTutup = document.getElementById('tanggal_tutup');
+    
+    tanggalBuka.addEventListener('change', function() {
+        tanggalTutup.min = this.value;
+        if (tanggalTutup.value && tanggalTutup.value <= this.value) {
+            tanggalTutup.value = '';
+        }
+    });
+    
+    // Batasi kompetensi menjadi single selection
+    const kompetensiCheckboxes = document.querySelectorAll('.kompetensi-checkbox');
+    kompetensiCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                kompetensiCheckboxes.forEach(cb => {
+                    if (cb !== this) cb.checked = false;
+                });
+            }
+        });
+    });
+    
+    // Validasi form sebelum submit
+    form.addEventListener('submit', function(e) {
+        const keahlianChecked = document.querySelectorAll('input[name="keahlian[]"]:checked').length;
+        const kompetensiChecked = document.querySelectorAll('input[name="kompetensi[]"]:checked').length;
+        
+        if (keahlianChecked === 0) {
+            e.preventDefault();
+            alert('Pilih minimal satu bidang keahlian tambahan!');
+            return false;
+        }
+        
+        if (kompetensiChecked !== 1) {
+            e.preventDefault();
+            alert('Pilih tepat satu kompetensi!');
+            return false;
+        }
+        
+        if (tanggalTutup.value <= tanggalBuka.value) {
+            e.preventDefault();
+            alert('Tanggal tutup harus setelah tanggal buka!');
+            return false;
+        }
+    });
+});
+
+// Fungsi toggle keahlian
+function toggleAllKeahlian(selectAll) {
+    const checkboxes = document.querySelectorAll('input[name="keahlian[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll;
+    });
+}
+
+// Fungsi toggle kompetensi
+function toggleAllKompetensi(selectAll) {
+    const checkboxes = document.querySelectorAll('input[name="kompetensi[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll;
+        if (selectAll) {
+            // Hanya checklist yang pertama jika "Pilih Semua" ditekan
+            if (checkbox !== checkboxes[0]) checkbox.checked = false;
+        }
+    });
+}
+</script>
+
 @endsection

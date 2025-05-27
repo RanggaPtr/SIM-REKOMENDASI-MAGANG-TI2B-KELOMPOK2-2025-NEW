@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('t_log_aktivitas', function (Blueprint $table) {
             $table->bigIncrements('log_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('pengajuan_id');
             $table->text('aktivitas');
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');
+            $table->foreign('pengajuan_id')->references('pengajuan_id')->on('t_pengajuan_magang')->onDelete('cascade');
         });
     }
 

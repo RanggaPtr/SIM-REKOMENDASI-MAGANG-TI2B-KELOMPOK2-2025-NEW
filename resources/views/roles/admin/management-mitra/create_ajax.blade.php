@@ -74,42 +74,42 @@
 
 <script>
     $(document).ready(function () {
-        $('#form-tambah-mitra').on('submit', function (e) {
-            e.preventDefault();
-            var form = this;
-            var formData = new FormData(form);
+            $('#form-tambah-mitra').on('submit', function (e) {
+                e.preventDefault();
+                var form = this;
+                var formData = new FormData(form);
 
-            $.ajax({
-                url: form.action,
-                type: form.method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response.status) {
-                        $('.modal').modal('hide');
-                        Swal.fire({
-                            title: 'Berhasil',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        });
-                        $('#table_perusahaan').DataTable().ajax.reload(null, false);
-                    } else {
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            $('.modal').modal('hide');
+                            Swal.fire({
+                                title: 'Berhasil',
+                                text: 'Data berhasil ditambahkan',
+                                confirmButtonText: 'OK'
+                            });
+                            if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
+                        } else {
+                            $('.error-text').text('');
+                            $.each(response.msgField || response.errors || {}, function (key, val) {
+                                $('#error-' + key).text(val[0]);
+                            });
+                            Swal.fire('Gagal', response.message, 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors || {};
                         $('.error-text').text('');
-                        $.each(response.msgField || response.errors || {}, function (key, val) {
+                        $.each(errors, function (key, val) {
                             $('#error-' + key).text(val[0]);
                         });
-                        Swal.fire('Gagal', response.message, 'error');
                     }
-                },
-                error: function (xhr) {
-                    var errors = xhr.responseJSON.errors || {};
-                    $('.error-text').text('');
-                    $.each(errors, function (key, val) {
-                        $('#error-' + key).text(val[0]);
-                    });
-                }
+                });
             });
         });
-    });
 </script>

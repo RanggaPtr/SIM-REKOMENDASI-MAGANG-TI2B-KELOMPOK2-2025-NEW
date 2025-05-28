@@ -13,12 +13,12 @@
                 <tr>
                     <th>Status</th>
                     <td>
-                        @if($pengajuan->status == 'approved')
+                        @if($pengajuan->status == 'disetujui')
                             <span class="badge bg-success">Disetujui</span>
-                        @elseif($pengajuan->status == 'rejected')
+                        @elseif($pengajuan->status == 'ditolak')
                             <span class="badge bg-danger">Ditolak</span>
                         @else
-                            <span class="badge bg-warning">Menunggu</span>
+                            <span class="badge bg-warning">DIajukan</span>
                         @endif
                     </td>
                 </tr>

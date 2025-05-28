@@ -73,14 +73,14 @@ class PengajuanMagangController extends Controller
             ->addColumn('status', function ($pengajuan) {
                 $badge = '';
                 switch ($pengajuan->status) {
-                    case 'approved':
+                    case 'disetujui':
                         $badge = '<span class="badge bg-success">Disetujui</span>';
                         break;
-                    case 'rejected':
+                    case 'ditolak':
                         $badge = '<span class="badge bg-danger">Ditolak</span>';
                         break;
                     default:
-                        $badge = '<span class="badge bg-warning">Menunggu</span>';
+                        $badge = '<span class="badge bg-warning">Diajukan</span>';
                 }
                 return $badge;
             })

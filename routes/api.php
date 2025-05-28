@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Mahasiswa\DashboardController as MhsDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +14,6 @@ use App\Http\Controllers\Api\Mahasiswa\DashboardController as MhsDashboardContro
 |
 */
 
-Route::middleware('auth:sanctum')->group(function () {
-    
-    Route::prefix('regencies')->group(function () {
-        Route::get('/', [MhsDashboardController::class, 'getRegencies']);
-    });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });

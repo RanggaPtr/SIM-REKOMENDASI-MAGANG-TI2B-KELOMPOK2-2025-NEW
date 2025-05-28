@@ -27,6 +27,7 @@
                         <th>Nama Periode</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -73,7 +74,24 @@
                     { data: "nama", className: "" },
                     { data: "tanggal_mulai", className: "" },
                     { data: "tanggal_selesai", className: "" },
-                   
+                    { 
+                        data: "status", 
+                        className: "text-center",
+                        render: function(data, type, row) {
+                            const today = new Date();
+                            const start = new Date(row.tanggal_mulai);
+                            const end = new Date(row.tanggal_selesai);
+                            
+                            if (today < start) {
+                                return '<span class="badge bg-info">Akan Datang</span>';
+                            } else if (today >= start && today <= end) {
+                                return '<span class="badge bg-success">Berlangsung</span>';
+                            } else {
+                                return '<span class="badge bg-secondary">Selesai</span>';
+                            }
+                        }
+                        ,searchable: false
+                    },
                     { data: "aksi", className: "text-center", orderable: false, searchable: false }
                 ]
             });

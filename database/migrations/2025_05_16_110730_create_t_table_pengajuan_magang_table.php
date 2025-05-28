@@ -15,8 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger('dosen_id');
             $table->unsignedBigInteger('periode_id');
             $table->string('status', 50);
-            $table->decimal('feedback_rating', 2, 1)->nullable(); // Allows values like 4.5, 3.0, etc.
-            $table->string('feedback_deskripsi')->nullable();
             $table->timestamps();
 
             $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('cascade');

@@ -25,14 +25,6 @@
 
                 <div class="modal-body">
                     <div class="form-group mb-3">
-                        <label>Logo Perusahaan</label>
-                        <input type="file" name="logo" class="form-control">
-                        @if($perusahaan->logo)
-                            <img src="{{ asset($perusahaan->logo) }}" alt="Logo Perusahaan" height="60" class="mt-2">
-                        @endif              
-                    </div>
-
-                    <div class="form-group mb-3">
                         <label>Nama Perusahaan</label>
                         <input type="text" name="nama" class="form-control" value="{{ $perusahaan->nama }}">
                         <small id="error-nama" class="error-text form-text text-danger"></small>
@@ -73,6 +65,16 @@
                         </select>
                         <small id="error-wilayah_id" class="error-text form-text text-danger"></small>
                     </div>
+
+                    <div class="form-group mb-3">
+                        <label>Logo (Opsional)</label>
+                        <input type="file" name="logo" class="form-control">
+                        @if($perusahaan->logo)
+                            <img src="{{ asset('uploads/logo_perusahaan/' . $perusahaan->logo) }}" height="50">
+                        @endif
+                        <small id="error-logo" class="error-text form-text text-danger"></small>
+                    </div>
+
                     <div class="form-group mb-3">
                         <label>Bidang Industri</label>
                         <input type="text" name="bidang_industri" class="form-control" maxlength="100"
@@ -106,42 +108,43 @@
 
     <script>
         $(document).ready(function () {
-                $("#form-edit-perusahaan").on('submit', function (e) {
-                    e.preventDefault();
-                    var form = this;
-                    var formData = new FormData(form);
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.status) {
-                                $('.modal').modal('hide');
-                                Swal.fire({
-                                    title: 'Berhasil',
-                                    text: 'Data berhasil diupdate',
-                                    confirmButtonText: 'OK'
-                                });
-                                if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function (prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire('Gagal', response.message, 'error');
-                            }
-                        },
-                        error: function (xhr) {
-                            var errors = xhr.responseJSON.errors;
+            $("#form-edit-perusahaan").on('submit', function (e) {
+                e.preventDefault();
+                let form = this;
+                let formData = new FormData(form);
+
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            $('.modal').modal('hide');
+                            Swal.fire({
+                                title: 'Berhasil',
+                                text: 'Data berhasil diupdate',
+                                confirmButtonText: 'OK'
+                            });
+                            tablePerusahaan.ajax.reload(null, false);
+                        } else {
                             $('.error-text').text('');
-                            $.each(errors, function (prefix, val) {
+                            $.each(response.msgField, function (prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
                             });
+                            Swal.fire('Gagal', response.message, 'error');
                         }
-                    });
+                    },
+                    error: function (xhr) {
+                        let errors = xhr.responseJSON.errors;
+                        $('.error-text').text('');
+                        $.each(errors, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
+                        });
+                    }
                 });
             });
+        });
     </script>
 @endempty

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('wilayah_id');
             $table->string('kontak', 50);
             $table->string('bidang_industri', 100);
-            $table->decimal('rating', 2, 1)->nullable();
+            $table->decimal('rating', 3, 1)->nullable();
             $table->text('deskripsi_rating')->nullable();
             $table->timestamps();
 

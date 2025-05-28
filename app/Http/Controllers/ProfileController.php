@@ -42,69 +42,36 @@ class ProfileController extends Controller
 
         // Handle role specific data
         if ($user->role === 'dosen') {
+            // Validasi data khusus dosen
             $request->validate([
                 'nik' => 'required|string',
                 'prodi_id' => 'required|exists:m_program_studi,prodi_id',
             ]);
 
+            // Check if dosen already exists
             $dosen = DosenModel::where('user_id', $user->user_id)->first();
-
+            
             if ($dosen) {
+                // Update existing dosen data
                 $dosen->update([
                     'nik' => $request->nik,
                     'prodi_id' => $request->prodi_id,
                 ]);
             } else {
+                // Create new dosen data
                 DosenModel::create([
                     'user_id' => $user->user_id,
                     'nik' => $request->nik,
                     'prodi_id' => $request->prodi_id,
-                    'jumlah_bimbingan' => 0,
+                    'jumlah_bimbingan' => 0, // Default value
                 ]);
             }
         } elseif ($user->role === 'mahasiswa') {
-            $request->validate([
-                'nim' => 'required|string',
-                'program_studi_id' => 'required|exists:m_program_studi,prodi_id',
-                'wilayah_id' => 'required|exists:m_wilayah,wilayah_id',
-                'ipk' => 'required|numeric|min:0|max:4',
-            ]);
-
-            $mahasiswa = MahasiswaModel::where('user_id', $user->user_id)->first();
-
-            if ($mahasiswa) {
-                $mahasiswa->update([
-                    'nim' => $request->nim,
-                    'program_studi_id' => $request->program_studi_id,
-                    'wilayah_id' => $request->wilayah_id,
-                    'ipk' => $request->ipk,
-                ]);
-            } else {
-                MahasiswaModel::create([
-                    'user_id' => $user->user_id,
-                    'nim' => $request->nim,
-                    'program_studi_id' => $request->program_studi_id,
-                    'wilayah_id' => $request->wilayah_id,
-                    'ipk' => $request->ipk,
-                ]);
-            }
+            // Handle mahasiswa specific updates if needed
+            // Kode untuk mahasiswa
         } elseif ($user->role === 'perusahaan') {
-            $request->validate([
-                'nama_perusahaan' => 'required|string|max:255',
-            ]);
-
-            $perusahaan = PerusahaanModel::where('user_id', $user->user_id)->first();
-
-            if ($perusahaan) {
-                $perusahaan->update([
-                    'nama_perusahaan' => $request->nama_perusahaan,
-                ]);
-            } else {
-                PerusahaanModel::create([
-                    'user_id' => $user->user_id,
-                    'nama_perusahaan' => $request->nama_perusahaan,
-                ]);
-            }
+            // Handle perusahaan specific updates if needed
+            // Kode untuk perusahaan
         }
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');

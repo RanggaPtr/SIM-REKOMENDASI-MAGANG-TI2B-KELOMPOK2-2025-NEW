@@ -87,35 +87,75 @@
 
     <div class="custom-form-container">
         <h2>Tambah Log Harian</h2>
-        <form action="{{ route('mahasiswa.log-harian.store') }}" method="POST">
+        <form id="form-log-harian" action="{{ route('mahasiswa.log-harian.store') }}" method="POST">
             @csrf
 
             <div class="custom-form-group">
                 <label for="tanggal" class="custom-form-label">Tanggal</label>
                 <input type="date" class="custom-form-control" name="tanggal" id="tanggal" value="{{ old('tanggal') }}" required>
-                @error('tanggal')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
+                <div id="error-tanggal" class="text-danger"></div>
             </div>
 
             <div class="custom-form-group">
                 <label for="kegiatan" class="custom-form-label">Kegiatan</label>
                 <input type="text" class="custom-form-control" name="kegiatan" id="kegiatan" value="{{ old('kegiatan') }}" required>
-                @error('kegiatan')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
+                <div id="error-kegiatan" class="text-danger"></div>
             </div>
 
             <div class="custom-form-group">
                 <label for="keterangan" class="custom-form-label">Keterangan</label>
                 <textarea class="custom-form-control" name="keterangan" id="keterangan">{{ old('keterangan') }}</textarea>
-                @error('keterangan')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
+                <div id="error-keterangan" class="text-danger"></div>
             </div>
 
             <button type="submit" class="custom-btn-primary">Simpan</button>
             <a href="{{ route('mahasiswa.log-harian.index') }}" class="custom-btn-secondary">Batal</a>
         </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            $('#form-log-harian').on('submit', function(e) {
+                e.preventDefault();
+
+                // Bersihkan error message
+                $('.text-danger').text('');
+
+                let form = this;
+                let formData = $(form).serialize();
+
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    success: function(response) {
+                        if(response.status) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Log harian berhasil disimpan',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = "{{ route('mahasiswa.log-harian.index') }}";
+                            });
+                        } else {
+                            Swal.fire('Gagal', response.message || 'Terjadi kesalahan', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        if(xhr.status === 422) { // Validation error
+                            let errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, messages) {
+                                $('#error-' + key).text(messages[0]);
+                            });
+                        } else {
+                            Swal.fire('Error', 'Terjadi kesalahan pada server', 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

@@ -19,12 +19,6 @@
             </div>
             <div class="modal-body">
                 <table class="table table-bordered">
-                    <div>
-                        <label>Logo Perusahaan:</label><br>
-                        @if($perusahaan->logo)
-                            <img src="{{ asset($perusahaan->logo) }}" alt="Logo Perusahaan" height="60">
-                        @endif             
-                    </div>
                     <tr>
                         <th>Nama</th>
                         <td>{{ $perusahaan->nama }}</td>

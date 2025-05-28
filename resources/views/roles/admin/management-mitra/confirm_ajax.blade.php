@@ -72,7 +72,7 @@
         </div>
     </form>
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
             $("#form-delete-perusahaan").on('submit', function (e) {
                 e.preventDefault();
                 var form = this;
@@ -91,7 +91,7 @@
                                 text: 'Data berhasil dihapus',
                                 confirmButtonText: 'OK'
                             });
-                            if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
+                            window.dataPerusahaan.ajax.reload(null, false);
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField ?? {}, function (prefix, val) {

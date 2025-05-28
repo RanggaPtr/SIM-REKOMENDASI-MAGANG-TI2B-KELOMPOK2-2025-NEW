@@ -63,31 +63,25 @@ class PerusahaanController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('logo', function ($item) {
-                if ($item->logo) {
-                    return '<img src="' . e(asset($item->logo)) . '" alt="Logo" height="40">';
-                }
-                return ''; 
-            })
             ->addColumn('wilayah', fn($item) => $item->lokasi->nama ?? '-')
             ->addColumn('aksi', function ($item) {
                 $showUrl = url("/admin/management-mitra/{$item->perusahaan_id}/show_ajax");
                 $editUrl = url("/admin/management-mitra/{$item->perusahaan_id}/edit_ajax");
                 $deleteUrl = url("/admin/management-mitra/{$item->perusahaan_id}/delete_ajax");
 
-            return "
-            <button onclick=\"modalAction('{$showUrl}')\" class=\"btn btn-info btn-sm\">
-                <i class=\"fa fa-eye\"></i> Detail
-            </button>
-            <button onclick=\"modalAction('{$editUrl}')\" class=\"btn btn-warning btn-sm\">
-                <i class=\"fa fa-edit\"></i> Edit
-            </button>
-            <button onclick=\"modalAction('{$deleteUrl}')\" class=\"btn btn-danger btn-sm\">
-                <i class=\"fa fa-trash\"></i> Hapus
-            </button>
+                return "
+                <button onclick=\"modalAction('{$showUrl}')\" class=\"btn btn-info btn-sm\">
+                    <i class=\"fa fa-eye\"></i> Detail
+                </button>
+                <button onclick=\"modalAction('{$editUrl}')\" class=\"btn btn-warning btn-sm\">
+                    <i class=\"fa fa-edit\"></i> Edit
+                </button>
+                <button onclick=\"modalAction('{$deleteUrl}')\" class=\"btn btn-danger btn-sm\">
+                    <i class=\"fa fa-trash\"></i> Hapus
+                </button>
             ";
             })
-            ->rawColumns(['logo', 'aksi'])
+            ->rawColumns(['aksi'])
             ->make(true);
     }
 
@@ -129,8 +123,7 @@ class PerusahaanController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $logoName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images'), $logoName); // simpan ke public/images
-            $logoName = 'images/' . $logoName; // simpan path relatif di DB
+            $file->move(public_path('uploads/logo_perusahaan'), $logoName);
         }
 
         PerusahaanModel::create([
@@ -198,12 +191,9 @@ class PerusahaanController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $logoName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images'), $logoName); // simpan ke public/images
-            $logoName = 'images/' . $logoName; // simpan path relatif di DB
-        
-            // Hapus logo lama jika ada
-            if ($perusahaan->logo && file_exists(public_path($perusahaan->logo))) {
-                unlink(public_path($perusahaan->logo));
+            $file->move(public_path('uploads/logo_perusahaan'), $logoName);
+            if ($perusahaan->logo && file_exists(public_path("uploads/logo_perusahaan/{$perusahaan->logo}"))) {
+                unlink(public_path("uploads/logo_perusahaan/{$perusahaan->logo}"));
             }
             $perusahaan->logo = $logoName;
         }

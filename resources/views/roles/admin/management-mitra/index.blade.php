@@ -26,7 +26,6 @@
                     <tr>
                     <tr>
                         <th>No</th>
-                        <th>Logo</th>
                         <th>Nama</th>
                         <th>Ringkasan</th>
                         <th>Deskripsi</th>
@@ -59,47 +58,40 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function modalAction(url = '') {
-                $('#myModal').load(url, function () {
-                    var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
-                        keyboard: false,
-                        backdrop: 'static'
-                    });
-                    myModal.show();
+            $('#myModal').load(url, function () {
+                var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                    keyboard: false,
+                    backdrop: 'static'
                 });
-            }
-
-            $(document).ready(function () {
-                // Gunakan window agar bisa diakses global
-                window.dataPerusahaan = $('#table_perusahaan').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: "{{ url('/admin/management-mitra/list') }}",
-                        type: "POST",
-                        data: function (d) {
-                            d._token = "{{ csrf_token() }}";
-                            d.wilayah = $('#wilayah-filter').val();
-                        }
-                    },
-                    columns: [
-                        { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
-                        { data: "logo", orderable: false, searchable: false, className: "text-center" },
-                        { data: "nama" },
-                        { data: "ringkasan" },
-                        { data: "deskripsi" },
-                        { data: "bidang_industri" },
-                        { data: "alamat" },
-                        { data: "wilayah" },
-                        { data: "kontak" },
-                        { data: "rating" },
-                        { data: "deskripsi_rating" },
-                        { data: "aksi", orderable: false, searchable: false, className: "text-center" }
-                    ]
-                });
-
-                $('#wilayah-filter').change(function () {
-                    dataPerusahaan.ajax.reload();
-                });
+                myModal.show();
             });
+        }
+
+        $(document).ready(function () {
+            $('#table_perusahaan').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('/admin/management-mitra/list') }}",
+                    type: "POST",
+                    data: function (d) {
+                        d._token = "{{ csrf_token() }}";
+                    }
+                },
+                columns: [
+                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    { data: "nama" },
+                    { data: "ringkasan" },
+                    { data: "deskripsi" },
+                    { data: "bidang_industri" },
+                    { data: "alamat" },
+                    { data: "wilayah" },
+                    { data: "kontak" },
+                    { data: "rating" },
+                    { data: "deskripsi_rating" },
+                    { data: "aksi", orderable: false, searchable: false, className: "text-center" }
+                ]
+            });
+        });
     </script>
 @endpush

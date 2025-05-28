@@ -13,13 +13,12 @@ class LowonganMagangModel extends Model
 
     protected $fillable = [
         'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi',
-        'persyaratan', 'minimal_ipk', 'tanggal_buka', 'tanggal_tutup', 'bidang_keahlian', 'tunjangan'
+        'persyaratan', 'tanggal_buka', 'tanggal_tutup'
     ];
 
     protected $casts = [
         'tanggal_buka' => 'date',
         'tanggal_tutup' => 'date',
-        'minimal_ipk' => 'float',
     ];
 
     public function perusahaan()
@@ -37,29 +36,16 @@ class LowonganMagangModel extends Model
         return $this->belongsTo(SkemaModel::class, 'skema_id', 'skema_id');
     }
 
-    // Many-to-Many dengan keahlian
-    public function keahlian()
+    public function lowonganKompetensi()
     {
-        return $this->belongsToMany(
-            KeahlianModel::class,
-            'm_lowongan_keahlian',
-            'lowongan_id',
-            'keahlian_id'
-        );
+        return $this->hasMany(LowonganKompetensiModel::class, 'lowongan_id', 'lowongan_id');
     }
 
-    // Many-to-Many dengan kompetensi
-    public function kompetensi()
+    public function lowonganKeahlian()
     {
-        return $this->belongsToMany(
-            KompetensiModel::class,
-            'm_lowongan_kompetensi',
-            'lowongan_id',
-            'kompetensi_id'
-        );
+        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
     }
 
-    // Relasi lain
     public function pengajuanMagang()
     {
         return $this->hasMany(PengajuanMagangModel::class, 'lowongan_id', 'lowongan_id');
@@ -73,15 +59,5 @@ class LowonganMagangModel extends Model
     public function silabusKonversiSks()
     {
         return $this->hasOne(SilabusKonversiSksModel::class, 'lowongan_id', 'lowongan_id');
-    }
-
-    public function lowonganKompetensi()
-    {
-        return $this->hasMany(LowonganKompetensiModel::class, 'lowongan_id', 'lowongan_id');
-    }
-    
-    public function lowonganKeahlian()
-    {
-        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
     }
 }

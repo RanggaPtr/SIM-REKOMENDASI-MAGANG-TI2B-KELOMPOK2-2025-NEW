@@ -5,18 +5,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title">{{ $page->title ?? 'Log Harian Aktivitas' }}</h3>
         <div>
-           <!-- Tambah Log -->
-<a href="{{ route('mahasiswa.log-harian.create') }}" class="btn btn-primary btn-sm">
-    <i class="fas fa-plus mr-1"></i> Tambah Log
-</a>
-
-<!-- Edit Log -->
-<a href="{{ route('mahasiswa.log-harian.edit', $log->id) }}" class="btn btn-sm btn-primary">Edit</a>
-
-<!-- Hapus Log -->
-<button class="btn btn-sm btn-danger delete-btn" data-url="{{ route('mahasiswa.log-harian.destroy', $log->id) }}">
-    Hapus
-</button>
+            <!-- Tambah Log -->
+            <a href="{{ route('mahasiswa.log-harian.create') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus mr-1"></i> Tambah Log
+            </a>
         </div>
     </div>
     <div class="card-body">
@@ -41,15 +33,6 @@
                     <!-- Data akan diisi oleh DataTables -->
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal untuk create/edit -->
-<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Konten modal akan diisi via AJAX -->
         </div>
     </div>
 </div>
@@ -94,9 +77,9 @@
                         data: 'aktivitas',
                         name: 'aktivitas',
                         render: function(data, type, row) {
-                            return data.length > 100 ? 
+                            return data && data.length > 100 ? 
                                 data.substr(0, 100) + '...' : 
-                                data;
+                                data || '';
                         }
                     },
                     { 
@@ -152,14 +135,14 @@
                                 table.ajax.reload();
                                 Swal.fire(
                                     'Terhapus!',
-                                    'Log aktivitas telah dihapus.',
+                                    response.message || 'Log aktivitas telah dihapus.',
                                     'success'
                                 );
                             },
                             error: function(xhr) {
                                 Swal.fire(
                                     'Gagal!',
-                                    xhr.responseJSON.message || 'Terjadi kesalahan.',
+                                    xhr.responseJSON?.message || 'Terjadi kesalahan.',
                                     'error'
                                 );
                             }
@@ -168,18 +151,5 @@
                 });
             });
         });
-
-        function modalAction(url) {
-            $.get(url, function(data) {
-                $('#actionModal .modal-content').html(data);
-                $('#actionModal').modal('show');
-            }).fail(function() {
-                Swal.fire(
-                    'Error!',
-                    'Gagal memuat form.',
-                    'error'
-                );
-            });
-        }
     </script>
 @endpush

@@ -13,7 +13,8 @@ class LogAktivitasController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:mahasiswa');
+        // Hapus middleware can:mahasiswa karena sudah ada authorize:mahasiswa di route
+        // $this->middleware('can:mahasiswa');
     }
 
     public function index()
@@ -26,7 +27,8 @@ class LogAktivitasController extends Controller
     public function create()
     {
         // Ambil pengajuan milik user yang login
-        $pengajuan = PengajuanMagangModel::where('user_id', Auth::id())
+        // Ganti 'user_id' dengan nama kolom yang benar di tabel t_pengajuan_magang
+        $pengajuan = PengajuanMagangModel::where('mahasiswa_id', Auth::id()) // atau sesuai nama kolom yang benar
             ->where('status', 'diterima') // hanya yang diterima
             ->first();
 
@@ -41,29 +43,39 @@ class LogAktivitasController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'aktivitas' => 'required|string|max:1000'
-    ]);
+    {
+        $request->validate([
+            'aktivitas' => 'required|string|max:1000'
+        ]);
 
-    $pengajuan = PengajuanMagangModel::where('user_id', Auth::id())
-        ->where('status', 'diterima')
-        ->firstOrFail();
+        $pengajuan = PengajuanMagangModel::where('mahasiswa_id', Auth::id()) // atau sesuai nama kolom yang benar
+            ->where('status', 'diterima')
+            ->first();
 
-    LogAktivitasModel::create([
-        'pengajuan_id' => $pengajuan->id,
-        'aktivitas' => $request->aktivitas,
-    ]);
+        if (!$pengajuan) {
+            return response()->json(['error' => 'Pengajuan magang tidak ditemukan'], 404);
+        }
 
-    return response()->json(['success' => 'Log aktivitas berhasil ditambahkan.']);
-}
-   public function edit(LogAktivitasModel $log) {
-    // Pastikan log milik user yang login
-    if ($log->pengajuan->user_id != Auth::id()) {
-        abort(403, 'Unauthorized');
+        LogAktivitasModel::create([
+            'pengajuan_id' => $pengajuan->pengajuan_id, // Pastikan menggunakan field yang benar
+            'aktivitas' => $request->aktivitas,
+        ]);
+
+        return redirect()->route('mahasiswa.log-harian.index')
+            ->with('success', 'Log aktivitas berhasil ditambahkan.');
     }
-    return view('roles.mahasiswa.log-harian.edit', compact('log'));
-}
+
+    public function edit($id) 
+    {
+        $log = LogAktivitasModel::with('pengajuan')
+            ->whereHas('pengajuan', function($q) {
+                $q->where('mahasiswa_id', Auth::id()); // atau sesuai nama kolom yang benar
+            })
+            ->findOrFail($id);
+
+        return view('roles.mahasiswa.log-harian.edit', compact('log'));
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -73,7 +85,7 @@ class LogAktivitasController extends Controller
         try {
             $log = LogAktivitasModel::with('pengajuan')
                 ->whereHas('pengajuan', function($q) {
-                    $q->where('user_id', Auth::id());
+                    $q->where('mahasiswa_id', Auth::id()); // atau sesuai nama kolom yang benar
                 })
                 ->findOrFail($id);
 
@@ -94,17 +106,21 @@ class LogAktivitasController extends Controller
         try {
             $log = LogAktivitasModel::with('pengajuan')
                 ->whereHas('pengajuan', function($q) {
-                    $q->where('user_id', Auth::id());
+                    $q->where('mahasiswa_id', Auth::id()); // atau sesuai nama kolom yang benar
                 })
                 ->findOrFail($id);
 
             $log->delete();
 
-            return redirect()->route('mahasiswa.log-harian.index')
-                ->with('success', 'Log aktivitas berhasil dihapus.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Log aktivitas berhasil dihapus.'
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Gagal menghapus log: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus log: '.$e->getMessage()
+            ], 500);
         }
     }
 
@@ -113,7 +129,7 @@ class LogAktivitasController extends Controller
         if ($request->ajax()) {
             $data = LogAktivitasModel::with('pengajuan')
                 ->whereHas('pengajuan', function($q) {
-                    $q->where('user_id', Auth::id());
+                    $q->where('mahasiswa_id', Auth::id()); // atau sesuai nama kolom yang benar
                 })
                 ->latest();
 

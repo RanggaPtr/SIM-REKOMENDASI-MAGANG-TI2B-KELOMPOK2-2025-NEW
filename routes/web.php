@@ -47,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Home Redirect Based on Role
     Route::get('/home', function () {
         $user = Auth::user();
+        dd($user->role); // Debug the user's role
         switch ($user->role) {
             case 'admin':
                 return redirect()->route('admin.dashboard');
@@ -247,36 +248,38 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Mahasiswa Routes
+    // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
-Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('mahasiswa.log.harian');
 
-Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMenu' => 'logHarian']))->name('mahasiswa.log.harian');
+        // Log Harian Routes - FIXED
+        Route::prefix('log-harian')->name('log-harian.')->group(function () {
+            Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+            Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
+            Route::get('/create_ajax', [LogAktivitasController::class, 'create'])->name('create');
+            Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
+            Route::get('/{log}/edit_ajax', [LogAktivitasController::class, 'edit'])->name('edit');
+            Route::put('/{log}', [LogAktivitasController::class, 'update'])->name('update');
+            Route::delete('/{log}', [LogAktivitasController::class, 'destroy'])->name('destroy');
+        });
 
-            Route::resource('log-harian', LogAktivitasController::class);
-
-
-        // Placeholder Routes for Mahasiswa
-        // Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
-          Route::prefix('pengajuan-magang')->group(function () {
-            Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan.index');
-            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan.list');
-            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan.create');
-            Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan.store');;
+        // Pengajuan Magang Routes
+        Route::prefix('pengajuan-magang')->name('pengajuan.')->group(function () {
+            Route::get('/', [PengajuanMagangController::class, 'index'])->name('index');
+            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('list');
+            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('create');
+            Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('store');
             Route::get('/{id}/show_ajax', [PengajuanMagangController::class, 'show_ajax']);
             Route::get('/{id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax']);
             Route::put('/{id}/update_ajax', [PengajuanMagangController::class, 'update_ajax']);
             Route::get('/{id}/delete_ajax', [PengajuanMagangController::class, 'confirm_ajax']);
             Route::delete('/{id}/delete_ajax', [PengajuanMagangController::class, 'delete_ajax']);
-           
         });
 
+        // Sertifikat & Feedback Routes
         Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');
         Route::get('/feedback', fn() => view('roles.mahasiswa.feedback', ['activeMenu' => 'sertifikasiFeedback']))->name('feedback');
-
-
     });
-
     // Perusahaan Routes
     Route::prefix('perusahaan')->name('perusahaan.')->middleware('authorize:perusahaan')->group(function () {
         Route::get('/dashboard', fn() => view('roles.perusahaan.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');

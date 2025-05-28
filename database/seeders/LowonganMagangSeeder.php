@@ -21,7 +21,7 @@ class LowonganMagangSeeder extends Seeder
                 "minimal_ipk" => 3.0,
                 "tunjangan" => 1500000,
                 "tanggal_buka" => "2024-11-01",
-                "tanggal_tutup" => "2024-12-31"
+                "tanggal_tutup" => "2027-12-31"
             ],
             [
                 "perusahaan_id" => 2,
@@ -34,7 +34,7 @@ class LowonganMagangSeeder extends Seeder
                 "minimal_ipk" => 3.2,
                 "tunjangan" => 1200000,
                 "tanggal_buka" => "2024-11-10",
-                "tanggal_tutup" => "2024-12-25"
+                "tanggal_tutup" => "2028-12-25"
             ],
             [
                 "perusahaan_id" => 3,
@@ -46,7 +46,7 @@ class LowonganMagangSeeder extends Seeder
                 "bidang_keahlian" => "Content Creation",
                 "minimal_ipk" => 2.8,
                 "tunjangan" => 1000000,
-                "tanggal_buka" => "2025-05-01",
+                "tanggal_buka" => "2024-05-01",
                 "tanggal_tutup" => "2025-06-15"
             ],
             [
@@ -59,7 +59,7 @@ class LowonganMagangSeeder extends Seeder
                 "bidang_keahlian" => "Mobile Development",
                 "minimal_ipk" => 3.0,
                 "tunjangan" => 1300000,
-                "tanggal_buka" => "2025-07-01",
+                "tanggal_buka" => "2024-07-01",
                 "tanggal_tutup" => "2025-08-31"
             ],
             [
@@ -73,7 +73,7 @@ class LowonganMagangSeeder extends Seeder
                 "minimal_ipk" => 3.0,
                 "tunjangan" => 1100000,
                 "tanggal_buka" => "2024-11-15",
-                "tanggal_tutup" => "2024-12-20"
+                "tanggal_tutup" => "2028-12-20"
             ],
             [
                 "perusahaan_id" => 6,
@@ -85,7 +85,7 @@ class LowonganMagangSeeder extends Seeder
                 "bidang_keahlian" => "Backend Development",
                 "minimal_ipk" => 3.0,
                 "tunjangan" => 1400000,
-                "tanggal_buka" => "2025-07-10",
+                "tanggal_buka" => "2024-07-10",
                 "tanggal_tutup" => "2025-09-01"
             ]
         ];

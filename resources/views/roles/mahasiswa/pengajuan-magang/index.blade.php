@@ -4,34 +4,34 @@
     <div class="card card-outline card-primary">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
-            <div>
+            @if($mahasiswa)
                 <button onclick="modalAction('{{ url('/mahasiswa/pengajuan-magang/create_ajax') }}')" class="btn btn-success">
                     <i class="fa fa-plus"></i>
                     Ajukan Magang
                 </button>
-            </div>
+            @else
+                <div class="alert alert-warning">
+                    Lengkapi profil mahasiswa terlebih dahulu sebelum mengajukan magang
+                </div>
+            @endif
         </div>
         <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <label>Filter Status:</label>
-                    <select class="form-control" id="status-filter">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Disetujui</option>
-                        <option value="rejected">Ditolak</option>
-                    </select>
-                </div>
-            </div>
-            <table class="table table-bordered table-striped" id="table_pengajuan">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+            
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_pengajuan">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th>ID</th>
                         <th>Lowongan</th>
+                        <th>Perusahaan</th>
                         <th>Dosen Pembimbing</th>
                         <th>Periode</th>
                         <th>Status</th>
-                        <th>Tanggal Pengajuan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -64,41 +64,46 @@
             });
         }
 
-        $(document).ready(function () {
-            window.tablePengajuan = $('#table_pengajuan').DataTable({
+        $(document).ready(function() {
+            var dataPengajuan = $('#table_pengajuan').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
                     url: "{{ url('mahasiswa/pengajuan-magang/list') }}",
                     type: 'POST',
-                    data: function(d) {
-                        d.status = $('#status-filter').val();
-                        d._token = '{{ csrf_token() }}';
+                    data: {
+                        _token: '{{ csrf_token() }}'
                     }
                 },
                 columns: [
-                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
-                    { data: "lowongan", className: "" },
-                    { data: "dosen", className: "" },
-                    { data: "periode", className: "" },
-                    { data: "status", className: "text-center" },
+                    { data: 'pengajuan_id', className: 'text-center' },
                     { 
-                        data: "created_at", 
-                        className: "",
-                        render: function(data) {
-                            return new Date(data).toLocaleDateString('id-ID', {
-                                day: '2-digit',
-                                month: 'long',
-                                year: 'numeric'
-                            });
+                        data: 'lowongan.judul',
+                        render: function(data, type, row) {
+                            return data ? data : '-';
                         }
                     },
-                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
+                    { 
+                        data: 'lowongan.perusahaan.nama',
+                        render: function(data, type, row) {
+                            return data ? data : '-';
+                        }
+                    },
+                    { 
+                        data: 'dosen.user.nama',
+                        render: function(data, type, row) {
+                            return data ? data : '-';
+                        }
+                    },
+                    { 
+                        data: 'periode.nama',
+                        render: function(data, type, row) {
+                            return data ? data : '-';
+                        }
+                    },
+                    { data: 'status', className: 'text-center' },
+                    { data: 'aksi', className: 'text-center', orderable: false, searchable: false }
                 ]
-            });
-
-            $('#status-filter').change(function() {
-                tablePengajuan.ajax.reload();
             });
         });
     </script>

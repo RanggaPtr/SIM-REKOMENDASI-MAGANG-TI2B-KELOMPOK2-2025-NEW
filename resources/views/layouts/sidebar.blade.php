@@ -85,7 +85,7 @@
         <!-- Mahasiswa Menu -->
         @if (Auth::user()->role === 'mahasiswa')
             <li class="nav-item bg-light-softer">
-                <a href="{{ Route::has('mahasiswa.pengajuan.index') ? route('mahasiswa.pengajuan.index') : '#' }}"
+                <a href="{{ Route::has('mahasiswa.pengajuan-magang.index') ? route('mahasiswa.pengajuan-magang.index') : '#' }}"
                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'pengajuanMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
                    style="padding: 10px 15px;">
                     <i class="fas fa-user me-4"></i><b>Pengajuan Magang</b>

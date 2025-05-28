@@ -257,19 +257,34 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::resource('log-harian', LogAktivitasController::class);
 
+        // Routes untuk pengajuan magang mahasiswa
+    Route::prefix('/pengajuan-magang')->group(function () {
+    Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan-magang.index');
+    Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan-magang.list');
+    // AJAX routes
+    Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan-magang.create_ajax');
+    Route::post('/', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan-magang.store_ajax');
+    Route::get('/{pengajuan_id}/show_ajax', [PengajuanMagangController::class, 'show_ajax'])->name('pengajuan-magang.show_ajax');
+    Route::get('/{pengajuan_id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax'])->name('pengajuan-magang.edit_ajax');
+    Route::put('/{pengajuan_id}', [PengajuanMagangController::class, 'update_ajax'])->name('pengajuan-magang.update_ajax');
+    Route::get('/{pengajuan_id}/confirm_ajax', [PengajuanMagangController::class, 'confirm_ajax'])->name('pengajuan-magang.confirm_ajax');
+    Route::delete('/{pengajuan_id}', [PengajuanMagangController::class, 'destroy_ajax'])->name('pengajuan-magang.destroy_ajax');
+});
 
-        // Placeholder Routes for Mahasiswa
-        // Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
-        Route::prefix('pengajuan-magang')->group(function () {
-            Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan.index');
-            Route::get('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan.list');
-            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan.create');
-            Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan.store');;
-            Route::get('/{id}/show_ajax', [PengajuanMagangController::class, 'show_ajax']);
-            Route::get('/{id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax']);
-            Route::put('/{id}/update_ajax', [PengajuanMagangController::class, 'update_ajax']);
-            Route::get('/{id}/delete_ajax', [PengajuanMagangController::class, 'confirm_ajax']);
-            Route::delete('/{id}/delete_ajax', [PengajuanMagangController::class, 'delete_ajax']);
+   Route::prefix('management-mitra')->group(function () {
+            Route::get('/', [PerusahaanController::class, 'index'])->name('perusahaan.index');
+            Route::post('/list', [PerusahaanController::class, 'list'])->name('perusahaan.list');
+            Route::get('/create_ajax', [PerusahaanController::class, 'create_ajax']);
+            Route::post('/ajax', [PerusahaanController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [PerusahaanController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [PerusahaanController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [PerusahaanController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [PerusahaanController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [PerusahaanController::class, 'delete_ajax']);
+            Route::get('/import', [PerusahaanController::class, 'import']);
+            Route::post('/import_ajax', [PerusahaanController::class, 'import_ajax']);
+            Route::get('/export_excel', [PerusahaanController::class, 'export_excel']);
+            Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf']);
         });
 
         Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');

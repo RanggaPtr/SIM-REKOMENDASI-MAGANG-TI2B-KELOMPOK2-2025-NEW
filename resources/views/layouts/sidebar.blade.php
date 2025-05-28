@@ -1,7 +1,7 @@
 @vite(['resources/css/sidebar.css'])
 
 <aside>
-    <ul class="sidebar-nav nav flex-column gap-1">
+    <ul class="sidebar-nav nav flex-column gap-1 p-3">
         <!-- Logo -->
         <div class="d-flex justify-content-center my-3 bg-light-softer pb-3">
             <img src="{{ asset('images/logo.png') }}" style="height: 50px;" class="bg-light-softer" alt="Logo">

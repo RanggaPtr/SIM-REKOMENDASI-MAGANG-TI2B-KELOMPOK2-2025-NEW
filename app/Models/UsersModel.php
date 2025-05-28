@@ -1,18 +1,23 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
 class UsersModel extends Authenticatable
 {
+    use HasApiTokens, Notifiable; // tambahkan HasApiTokens di sini
+
     protected $table = 'm_users';
     protected $primaryKey = 'user_id'; // Disamakan dengan migrasi
     public $incrementing = true;
     public $timestamps = true;
 
-   protected $fillable = ['nama', 'username', 'nim_nik', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
+    protected $fillable = ['nama', 'username', 'nim_nik', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
 
     protected $hidden = ['password'];
     protected $casts = ['password' => 'hashed'];

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\DosenModel;
@@ -21,6 +22,17 @@ class AuthController extends Controller
     {
         $credentials = $request->only('username', 'password');
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Generate token Sanctum
+            $token = $user->createToken('web-token')->plainTextToken; // ERRORNYA AMAN INSHAALLAH, DIBIARKAN SAJA.....
+
+            // Simpan token di session (agar bisa digunakan nanti, misal di frontend JS)
+            session(['api_token' => $token]);
+
+            // (Opsional) Bisa juga simpan sebagai cookie jika perlu akses dari JavaScript:
+            // return redirect()->route('home')->withCookie(cookie('api_token', $token, 60));
+
             return redirect()->route('home');
         }
         return redirect('login')->with('error', 'Login gagal, periksa username dan password.');
@@ -31,7 +43,7 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-  
+
     public function postregister(Request $request)
     {
         $validated = $request->validate([
@@ -45,7 +57,7 @@ class AuthController extends Controller
         try {
             $user = UsersModel::create([
                 'nama' => $request->nama,
-                'nim_nik' => $request->username, 
+                'nim_nik' => $request->username,
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),

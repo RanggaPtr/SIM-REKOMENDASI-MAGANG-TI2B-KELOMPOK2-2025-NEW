@@ -260,7 +260,7 @@ Route::get('/log-harian', fn() => view('roles.mahasiswa.log-harian', ['activeMen
         // Route::get('/pengajuan-magang', fn() => view('roles.mahasiswa.pengajuan-magang', ['activeMenu' => 'pengajuanMagang']))->name('pengajuan.index');
           Route::prefix('pengajuan-magang')->group(function () {
             Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan.index');
-            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan.list');
+            Route::get('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan.list');
             Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan.create');
             Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan.store');;
             Route::get('/{id}/show_ajax', [PengajuanMagangController::class, 'show_ajax']);

@@ -248,26 +248,27 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Log Harian
         Route::prefix('log-harian')->name('log-harian.')->group(function () {
-    Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-    Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
-    Route::get('/create', [LogAktivitasController::class, 'create'])->name('create'); // Hapus _ajax
-    Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit'); // Ganti {log} ke {id}
-    Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update'); // Ganti {log} ke {id}
-    Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy'); // Ganti {log} ke {id}
-});
+            Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+            Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
+            Route::get('/create', [LogAktivitasController::class, 'create'])->name('create'); // Hapus _ajax
+            Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit'); // Ganti {log} ke {id}
+            Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update'); // Ganti {log} ke {id}
+            Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy'); // Ganti {log} ke {id}
+        });
 
         // Pengajuan Magang
-        Route::prefix('pengajuan-magang')->name('pengajuan.')->group(function () {
-            Route::get('/', [PengajuanMagangController::class, 'index'])->name('index');
-            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('list');
-            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('create');
-            Route::post('/ajax', [PengajuanMagangController::class, 'store_ajax'])->name('store');
-            Route::get('/{id}/show_ajax', [PengajuanMagangController::class, 'show_ajax'])->name('show');
-            Route::get('/{id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax'])->name('edit');
-            Route::put('/{id}/update_ajax', [PengajuanMagangController::class, 'update_ajax'])->name('update');
-            Route::get('/{id}/delete_ajax', [PengajuanMagangController::class, 'confirm_ajax'])->name('confirm');
-            Route::delete('/{id}/delete_ajax', [PengajuanMagangController::class, 'delete_ajax'])->name('destroy');
+        Route::prefix('/pengajuan-magang')->group(function () {
+            Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan-magang.index');
+            Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan-magang.list');
+            // AJAX routes
+            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan-magang.create_ajax');
+            Route::post('/', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan-magang.store_ajax');
+            Route::get('/{pengajuan_id}/show_ajax', [PengajuanMagangController::class, 'show_ajax'])->name('pengajuan-magang.show_ajax');
+            Route::get('/{pengajuan_id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax'])->name('pengajuan-magang.edit_ajax');
+            Route::put('/{pengajuan_id}', [PengajuanMagangController::class, 'update_ajax'])->name('pengajuan-magang.update_ajax');
+            Route::get('/{pengajuan_id}/confirm_ajax', [PengajuanMagangController::class, 'confirm_ajax'])->name('pengajuan-magang.confirm_ajax');
+            Route::delete('/{pengajuan_id}', [PengajuanMagangController::class, 'destroy_ajax'])->name('pengajuan-magang.destroy_ajax');
         });
 
         // Sertifikat & Feedback

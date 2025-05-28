@@ -97,7 +97,7 @@
     <table class="border-all font-11">
         <thead>
             <tr>
-                <th class="text-center">No</th>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Ringkasan</th>
                 <th>Deskripsi</th>
@@ -110,17 +110,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($perusahaan as $p)
+            @foreach($perusahaans as $perusahaan)
                 <tr>
-                    <td class="text-center">{{ $loop->iteration }}</td>
-                    <td>{{ $p->nama }}</td>
-                    <td>{{ $p->ringkasan }}</td>
-                    <td>{{ $p->deskripsi }}</td>
-                    <td>{{ $p->bidang_industri }}</td>
-                    <td>{{ $p->alamat }}</td>
-                    <td>{{ $p->wilayah->nama ?? '-' }}</td>
-                    <td class="text-center">{{ $p->rating }}</td>
-                    <td>{{ $p->deskripsi_rating }}</td>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $perusahaan->nama }}</td>
+                    <td>{{ $perusahaan->ringkasan }}</td>
+                    <td>{{ $perusahaan->deskripsi }}</td>
+                    <td>{{ $perusahaan->bidang_industri }}</td>
+                    <td>{{ $perusahaan->alamat }}</td>
+                    <td>{{ $perusahaan->lokasi->nama ?? '-' }}</td>
+                    <td>{{ $perusahaan->kontak }}</td>
+                    <td>{{ $perusahaan->rating }}</td>
+                    <td>{{ $perusahaan->deskripsi_rating }}</td>
                 </tr>
             @endforeach
         </tbody>

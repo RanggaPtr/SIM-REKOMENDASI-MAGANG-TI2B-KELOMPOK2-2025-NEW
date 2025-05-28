@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\LogAktivitasModel;
+use App\Models\PengajuanMagangModel;
 use App\Models\UsersModel;
 use Illuminate\Database\Seeder;
 
@@ -10,18 +11,16 @@ class LogAktivitasSeeder extends Seeder
 {
     public function run()
     {
-        $user = UsersModel::where('email', 'mahasiswa1@simmagang.com')->first();
+        $pengajuan = PengajuanMagangModel::where('status', 'diajukan')->first();
 
-        if (!$user) {
-            $this->command->error('Pengguna dengan email admin@simmagang.com tidak ditemukan. Pastikan UsersSeeder membuat data ini.');
+        if (!$pengajuan) {
+            $this->command->error('Pengajuan dengan status "diajukan" tidak ditemukan.');
             return;
         }
 
         LogAktivitasModel::create([
-            'user_id' => $user->user_id, // Gunakan primary key yang benar
+            'pengajuan_id' => $pengajuan->pengajuan_id,
             'aktivitas' => 'Mengubah status pengajuan magang'
         ]);
-
-        $this->command->info('Data log aktivitas berhasil diimpor.');
     }
 }

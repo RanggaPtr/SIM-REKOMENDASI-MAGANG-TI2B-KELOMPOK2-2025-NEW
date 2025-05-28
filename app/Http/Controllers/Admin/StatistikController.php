@@ -13,24 +13,29 @@ class StatistikController extends Controller
     {
         $jumlah_mahasiswa_magang = PengajuanMagangModel::where('status', 'diterima')->count();
 
-    $tren_industri = DB::table('t_pengajuan_magang')
-        ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
-        ->select('m_lowongan_magang.bidang_keahlian', DB::raw('count(*) as total'))
-        ->where('t_pengajuan_magang.status', 'diterima')
-        ->groupBy('m_lowongan_magang.bidang_keahlian')
-        ->get();
+        // Tren per bidang industri 
+        $tren_industri = DB::table('t_pengajuan_magang')
+            ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
+            ->join('m_perusahaan', 'm_lowongan_magang.perusahaan_id', '=', 'm_perusahaan.perusahaan_id')
+            ->select('m_perusahaan.bidang_industri', DB::raw('COUNT(*) as total'))
+            ->where('t_pengajuan_magang.status', 'diterima')
+            ->groupBy('m_perusahaan.bidang_industri')
+            ->orderBy('total', 'desc') // opsional: urutkan dari yang terbanyak
+            ->get();
 
-    $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
+        $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
 
-    $jumlah_peserta = $jumlah_mahasiswa_magang;
-    $rasio = $jumlah_dosen > 0 ? round($jumlah_peserta / $jumlah_dosen, 2) : 0;
+        // Rasio peserta per dosen
+        $jumlah_peserta = $jumlah_mahasiswa_magang;
+        $rasio = $jumlah_dosen > 0
+            ? round($jumlah_peserta / $jumlah_dosen, 2)
+            : 0;
 
-    return view('roles.admin.statistik-data-tren.index', [
-        'activeMenu' => 'analitik',
-        'jumlah_mahasiswa_magang' => $jumlah_mahasiswa_magang,
-        'tren_industri' => $tren_industri,
-        'jumlah_dosen' => $jumlah_dosen,
-        'rasio' => $rasio
-        ]);
+        return view('roles.admin.statistik-data-tren.index', compact(
+            'jumlah_mahasiswa_magang',
+            'tren_industri',
+            'jumlah_dosen',
+            'rasio'
+        ));
     }
 }

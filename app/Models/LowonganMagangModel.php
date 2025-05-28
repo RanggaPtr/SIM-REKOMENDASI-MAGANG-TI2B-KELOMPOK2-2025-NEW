@@ -74,4 +74,14 @@ class LowonganMagangModel extends Model
     {
         return $this->hasOne(SilabusKonversiSksModel::class, 'lowongan_id', 'lowongan_id');
     }
+
+    public function lowonganKompetensi()
+    {
+        return $this->hasMany(LowonganKompetensiModel::class, 'lowongan_id', 'lowongan_id');
+    }
+    
+    public function lowonganKeahlian()
+    {
+        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
+    }
 }

@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         $activeMenu = 'dashboard';
-        $lowongans = LowonganMagangModel::with(['perusahaan', 'lowonganKompetensi.kompetensi', 'lowonganKeahlian.keahlian'])->latest()->get();
+        $lowongans = LowonganMagangModel::with(['perusahaan', 'kompetensi', 'keahlian', 'lowonganKompetensi', 'lowonganKeahlian'])->latest()->get();
         $kompetensis = KompetensiModel::all();
         $keahlians = KeahlianModel::all();
 

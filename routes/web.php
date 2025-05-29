@@ -69,14 +69,15 @@ Route::group(['middleware' => 'auth'], function () {
         // Dashboard
         Route::get('/dashboard', fn() => view('roles.admin.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
 
-        // Manajemen Lowongan Magang
-        Route::prefix('management-lowongan-magang')->name('lowongan.')->group(function () {
-            Route::get('/', [LowonganMagangController::class, 'index'])->name('index');
-            Route::get('/create', [LowonganMagangController::class, 'create'])->name('create');
-            Route::post('/', [LowonganMagangController::class, 'store'])->name('store');
-            Route::get('/{id}/edit', [LowonganMagangController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [LowonganMagangController::class, 'update'])->name('update');
-            Route::delete('/{id}', [LowonganMagangController::class, 'destroy'])->name('destroy');
+         // Tambahkan route show untuk lowongan magang di group admin management-lowongan-magang
+        Route::prefix('management-lowongan-magang')->group(function () {
+            Route::get('/', [LowonganMagangController::class, 'index'])->name('lowongan.index');
+            Route::get('/create', [LowonganMagangController::class, 'create'])->name('lowongan.create');
+            Route::post('/', [LowonganMagangController::class, 'store'])->name('lowongan.store');
+            Route::get('/{id}', [LowonganMagangController::class, 'show'])->name('lowongan.show'); // <-- Tambahkan ini
+            Route::get('/{id}/edit', [LowonganMagangController::class, 'edit'])->name('lowongan.edit');
+            Route::put('/{id}', [LowonganMagangController::class, 'update'])->name('lowongan.update');
+            Route::delete('/{id}', [LowonganMagangController::class, 'destroy'])->name('lowongan.destroy');
         });
 
         // Manajemen Pengajuan Magang (Placeholder)

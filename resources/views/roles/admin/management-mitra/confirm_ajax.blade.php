@@ -91,7 +91,7 @@
                                 text: 'Data berhasil dihapus',
                                 confirmButtonText: 'OK'
                             });
-                            window.dataPerusahaan.ajax.reload(null, false);
+                            if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField ?? {}, function (prefix, val) {

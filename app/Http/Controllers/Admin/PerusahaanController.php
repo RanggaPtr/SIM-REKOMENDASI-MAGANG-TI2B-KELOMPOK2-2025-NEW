@@ -63,6 +63,12 @@ class PerusahaanController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('logo', function ($item) {
+                if ($item->logo) {
+                    return '<img src="' . e(asset($item->logo)) . '" alt="Logo" height="40">';
+                }
+                return '';
+            })
             ->addColumn('wilayah', fn($item) => $item->lokasi->nama ?? '-')
             ->addColumn('aksi', function ($item) {
                 $showUrl = url("/admin/management-mitra/{$item->perusahaan_id}/show_ajax");
@@ -70,18 +76,18 @@ class PerusahaanController extends Controller
                 $deleteUrl = url("/admin/management-mitra/{$item->perusahaan_id}/delete_ajax");
 
                 return "
-                <button onclick=\"modalAction('{$showUrl}')\" class=\"btn btn-info btn-sm\">
-                    <i class=\"fa fa-eye\"></i> Detail
-                </button>
-                <button onclick=\"modalAction('{$editUrl}')\" class=\"btn btn-warning btn-sm\">
-                    <i class=\"fa fa-edit\"></i> Edit
-                </button>
-                <button onclick=\"modalAction('{$deleteUrl}')\" class=\"btn btn-danger btn-sm\">
-                    <i class=\"fa fa-trash\"></i> Hapus
-                </button>
+            <button onclick=\"modalAction('{$showUrl}')\" class=\"btn btn-info btn-sm\">
+                <i class=\"fa fa-eye\"></i> Detail
+            </button>
+            <button onclick=\"modalAction('{$editUrl}')\" class=\"btn btn-warning btn-sm\">
+                <i class=\"fa fa-edit\"></i> Edit
+            </button>
+            <button onclick=\"modalAction('{$deleteUrl}')\" class=\"btn btn-danger btn-sm\">
+                <i class=\"fa fa-trash\"></i> Hapus
+            </button>
             ";
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['logo', 'aksi'])
             ->make(true);
     }
 
@@ -123,7 +129,8 @@ class PerusahaanController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $logoName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/logo_perusahaan'), $logoName);
+            $file->move(public_path('images'), $logoName); // simpan ke public/images
+            $logoName = 'images/' . $logoName; // simpan path relatif di DB
         }
 
         PerusahaanModel::create([
@@ -191,9 +198,12 @@ class PerusahaanController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $logoName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/logo_perusahaan'), $logoName);
-            if ($perusahaan->logo && file_exists(public_path("uploads/logo_perusahaan/{$perusahaan->logo}"))) {
-                unlink(public_path("uploads/logo_perusahaan/{$perusahaan->logo}"));
+            $file->move(public_path('images'), $logoName); // simpan ke public/images
+            $logoName = 'images/' . $logoName; // simpan path relatif di DB
+
+            // Hapus logo lama jika ada
+            if ($perusahaan->logo && file_exists(public_path($perusahaan->logo))) {
+                unlink(public_path($perusahaan->logo));
             }
             $perusahaan->logo = $logoName;
         }
@@ -297,16 +307,27 @@ class PerusahaanController extends Controller
             $data = $sheet->toArray(null, false, true, true);
 
             $insert = [];
+            $errors = [];
+            $row_number = 1;
 
             if (count($data) > 1) {
                 foreach ($data as $row => $value) {
                     if ($row > 1) {
+                        $row_number++;
+                        // Cari wilayah_id berdasarkan nama wilayah
+                        $wilayah = WilayahModel::where('nama', 'like', '%' . trim($value['E']) . '%')->first();
+
+                        if (!$wilayah) {
+                            $errors[] = "Baris {$row_number}: Wilayah '{$value['E']}' tidak ditemukan";
+                            continue;
+                        }
+
                         $insert[] = [
                             'nama' => $value['A'],
                             'ringkasan' => $value['B'],
                             'deskripsi' => $value['C'],
                             'alamat' => $value['D'],
-                            'wilayah_id' => $value['E'],
+                            'wilayah_id' => $wilayah->wilayah_id,
                             'kontak' => $value['F'],
                             'bidang_industri' => $value['G'],
                             'rating' => $value['H'],
@@ -316,20 +337,27 @@ class PerusahaanController extends Controller
                     }
                 }
 
-                if (count($insert) > 0) {
-                    PerusahaanModel::insertOrIgnore($insert);
+                if (!empty($errors)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Terdapat kesalahan pada data',
+                        'errors' => $errors
+                    ]);
                 }
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data perusahaan berhasil diimpor'
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada data yang diimpor'
-                ]);
+                if (count($insert) > 0) {
+                    PerusahaanModel::insertOrIgnore($insert);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Data perusahaan berhasil diimpor'
+                    ]);
+                }
             }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada data yang diimpor'
+            ]);
         }
 
         return redirect('/');
@@ -349,7 +377,7 @@ class PerusahaanController extends Controller
             'rating',
             'deskripsi_rating'
         )
-            ->orderBy('perusahaan_id', 'asc')  
+            ->orderBy('perusahaan_id', 'asc')
             ->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

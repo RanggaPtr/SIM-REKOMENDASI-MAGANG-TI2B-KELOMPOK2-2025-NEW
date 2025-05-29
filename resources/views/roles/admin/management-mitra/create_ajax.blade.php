@@ -90,10 +90,10 @@
                         $('.modal').modal('hide');
                         Swal.fire({
                             title: 'Berhasil',
-                            text: response.message,
+                            text: 'Data berhasil ditambahkan',
                             confirmButtonText: 'OK'
                         });
-                        $('#table_perusahaan').DataTable().ajax.reload(null, false);
+                        if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
                     } else {
                         $('.error-text').text('');
                         $.each(response.msgField || response.errors || {}, function (key, val) {

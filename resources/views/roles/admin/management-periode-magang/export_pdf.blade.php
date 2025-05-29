@@ -102,30 +102,17 @@ img.image{
             <th>Nama Periode</th>
             <th>Tanggal Mulai</th>
             <th>Tanggal Selesai</th>
-            <th class="text-center">Status</th>
+            
         </tr>
     </thead>
     <tbody>
         @foreach($periodes as $p)
-        @php
-            $today = new DateTime();
-            $start = new DateTime($p->tanggal_mulai);
-            $end = new DateTime($p->tanggal_selesai);
-            
-            if ($today < $start) {
-                $status = '<span class="badge bg-info">Akan Datang</span>';
-            } elseif ($today >= $start && $today <= $end) {
-                $status = '<span class="badge bg-success">Berlangsung</span>';
-            } else {
-                $status = '<span class="badge bg-secondary">Selesai</span>';
-            }
-        @endphp
         <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
             <td>{{ $p->nama }}</td>
             <td>{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }}</td>
             <td>{{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}</td>
-            <td class="text-center">{!! $status !!}</td>
+           
         </tr>
         @endforeach
     </tbody>

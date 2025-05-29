@@ -22,4 +22,9 @@ class KompetensiModel extends Model
     {
         return $this->hasMany(LowonganKompetensiModel::class, 'kompetensi_id', 'kompetensi_id');
     }
+
+      public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudiModel::class, 'program_studi_id', 'prodi_id');
+    }
 }

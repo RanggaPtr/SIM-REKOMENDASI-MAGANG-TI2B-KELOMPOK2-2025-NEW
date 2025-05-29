@@ -10,9 +10,9 @@ class ProgramStudiSeeder extends Seeder
     public function run()
     {
         $programStudi = [
-            ['nama' => 'Teknik Informatika', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'Sistem Informasi', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'Manajemen Informatika', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'D-IV Teknik Informatika', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'D-IV Sistem Informasi Bisnis', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'D-II Perangkat Piranti Lunak Situs ', 'created_at' => now(), 'updated_at' => now()],
         ];
 
         foreach ($programStudi as $prodi) {

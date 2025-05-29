@@ -12,7 +12,7 @@ class DosenSeeder extends Seeder
     public function run()
     {
         $user = UsersModel::where('email', 'dosen1@simmagang.com')->first();
-        $programStudi = ProgramStudiModel::where('nama', 'Teknik Informatika')->first();
+        $programStudi = ProgramStudiModel::where('nama', 'D-IV Teknik Informatika')->first();
 
         if (!$user) {
             $this->command->error('Pengguna dengan email dosen1@simmagang.com tidak ditemukan.');
@@ -20,7 +20,7 @@ class DosenSeeder extends Seeder
         }
 
         if (!$programStudi) {
-            $this->command->error('Program studi Teknik Informatika tidak ditemukan.');
+            $this->command->error('Program studi D-IV Teknik Informatika tidak ditemukan.');
             return;
         }
 

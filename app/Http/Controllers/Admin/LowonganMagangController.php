@@ -21,7 +21,7 @@ class LowonganMagangController extends Controller
 
     public function show($id)
     {
-        $lowongan = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'keahlian', 'kompetensi'])
+        $lowongan = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian', 'lowonganKompetensi'])
             ->findOrFail($id);
         return view('roles.admin.management-lowongan-magang.show', compact('lowongan'));
     }
@@ -57,8 +57,17 @@ class LowonganMagangController extends Controller
         ]);
 
         $lowongan = LowonganMagangModel::create($request->only([
-            'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi', 'persyaratan',
-            'minimal_ipk', 'tanggal_buka', 'tanggal_tutup', 'bidang_keahlian', 'tunjangan'
+            'perusahaan_id',
+            'periode_id',
+            'skema_id',
+            'judul',
+            'deskripsi',
+            'persyaratan',
+            'minimal_ipk',
+            'tanggal_buka',
+            'tanggal_tutup',
+            'bidang_keahlian',
+            'tunjangan'
         ]));
 
         $lowongan->keahlian()->sync($request->keahlian);
@@ -69,7 +78,7 @@ class LowonganMagangController extends Controller
 
     public function edit($id)
     {
-        $lowongan = LowonganMagangModel::with(['keahlian', 'kompetensi'])->findOrFail($id);
+        $lowongan = LowonganMagangModel::with(['lowonganKeahlian', 'lowonganKompetensi'])->findOrFail($id);
         $periodes = PeriodeMagangModel::all();
         $skemas = SkemaModel::all();
         $perusahaans = PerusahaanModel::all();
@@ -78,7 +87,6 @@ class LowonganMagangController extends Controller
 
         return view('roles.admin.management-lowongan-magang.edit', compact('lowongan', 'periodes', 'skemas', 'perusahaans', 'keahlians', 'kompetensis'));
     }
-
     public function update(Request $request, $id)
     {
         $lowongan = LowonganMagangModel::findOrFail($id);
@@ -101,8 +109,17 @@ class LowonganMagangController extends Controller
         ]);
 
         $lowongan->update($request->only([
-            'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi', 'persyaratan',
-            'minimal_ipk', 'tanggal_buka', 'tanggal_tutup', 'bidang_keahlian', 'tunjangan'
+            'perusahaan_id',
+            'periode_id',
+            'skema_id',
+            'judul',
+            'deskripsi',
+            'persyaratan',
+            'minimal_ipk',
+            'tanggal_buka',
+            'tanggal_tutup',
+            'bidang_keahlian',
+            'tunjangan'
         ]));
 
         $lowongan->keahlian()->sync($request->keahlian);

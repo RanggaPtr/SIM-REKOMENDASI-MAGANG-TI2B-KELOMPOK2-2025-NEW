@@ -84,31 +84,6 @@
             @enderror
         </div>
 
-        {{-- Bidang Keahlian Utama (Dropdown) --}}
-        <div class="mb-3">
-            <label for="bidang_keahlian" class="form-label">Bidang Keahlian Utama <span class="text-danger">*</span></label>
-            <select class="form-control" id="bidang_keahlian" name="bidang_keahlian" required>
-                <option value="">Pilih Bidang Keahlian Utama</option>
-                @foreach ($keahlians as $keahlian)
-                    <option value="{{ $keahlian->nama }}" {{ old('bidang_keahlian') == $keahlian->nama ? 'selected' : '' }}>
-                        {{ $keahlian->nama }}
-                    </option>
-                @endforeach
-            </select>
-            @error('bidang_keahlian')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-            <small class="text-muted">Pilih satu bidang keahlian sebagai fokus utama lowongan</small>
-        </div>
-
-        {{-- Minimal IPK --}}
-        <div class="mb-3">
-            <label for="minimal_ipk" class="form-label">Minimal IPK <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" min="0" max="4" class="form-control" id="minimal_ipk" name="minimal_ipk" value="{{ old('minimal_ipk') }}" required>
-            @error('minimal_ipk')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
 
         {{-- Tunjangan --}}
         <div class="mb-3">
@@ -119,9 +94,9 @@
             @enderror
         </div>
 
-        {{-- Bidang Keahlian Tambahan (Multiple Select with Checkboxes) --}}
+        {{-- Keahlian (Multiple Select with Checkboxes) --}}
         <div class="mb-3">
-            <label class="form-label">Bidang Keahlian Tambahan <span class="text-danger">*</span></label>
+            <label class="form-label">Keahlian <span class="text-danger">*</span></label>
             <div class="mb-2">
                 <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="toggleAllKeahlian(true)">Pilih Semua</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAllKeahlian(false)">Batal Pilih</button>
@@ -132,7 +107,7 @@
                         <input class="form-check-input" type="checkbox" name="keahlian[]" 
                                value="{{ $keahlian->keahlian_id }}" 
                                id="keahlian_{{ $keahlian->keahlian_id }}"
-                               {{ collect(old('keahlian'))->contains($keahlian->keahlian_id) ? 'checked' : '' }}>
+                               {{ in_array($keahlian->keahlian_id, old('keahlian', [])) ? 'checked' : '' }}>
                         <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
                             {{ $keahlian->nama }}
                         </label>
@@ -142,7 +117,7 @@
             @error('keahlian')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
-            <small class="text-muted">Pilih minimal satu bidang keahlian tambahan yang relevan</small>
+            <small class="text-muted">Pilih satu atau lebih keahlian yang relevan</small>
         </div>
 
         {{-- Kompetensi (Single Select with Checkboxes) --}}
@@ -158,7 +133,7 @@
                         <input class="form-check-input kompetensi-checkbox" type="checkbox" name="kompetensi[]" 
                                value="{{ $kompetensi->kompetensi_id }}" 
                                id="kompetensi_{{ $kompetensi->kompetensi_id }}"
-                               {{ collect(old('kompetensi'))->contains($kompetensi->kompetensi_id) ? 'checked' : '' }}>
+                               {{ in_array($kompetensi->kompetensi_id, old('kompetensi', [])) ? 'checked' : '' }}>
                         <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
                             {{ $kompetensi->nama }}
                         </label>
@@ -229,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (keahlianChecked === 0) {
             e.preventDefault();
-            alert('Pilih minimal satu bidang keahlian tambahan!');
+            alert('Pilih minimal satu keahlian!');
             return false;
         }
         

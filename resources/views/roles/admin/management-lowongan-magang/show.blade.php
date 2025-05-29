@@ -13,8 +13,10 @@
             <div class="mb-2"><strong>Perusahaan:</strong> {{ $lowongan->perusahaan->nama }}</div>
             <div class="mb-2"><strong>Periode:</strong> {{ $lowongan->periode->nama }}</div>
             <div class="mb-2"><strong>Skema:</strong> {{ $lowongan->skema->nama }}</div>
-            <div class="mb-2"><strong>Minimal IPK:</strong> {{ $lowongan->minimal_ipk }}</div>
-            <div class="mb-2"><strong>Bidang Keahlian Utama:</strong> {{ $lowongan->bidang_keahlian }}</div>
+            
+            {{-- HAPUS baris ini karena field bidang_keahlian sudah tidak ada --}}
+            {{-- <div class="mb-2"><strong>Bidang Keahlian Utama:</strong> {{ $lowongan->bidang_keahlian }}</div> --}}
+            
             <div class="mb-2"><strong>Tunjangan:</strong> Rp {{ number_format($lowongan->tunjangan, 0, ',', '.') }}</div>
             
             <div class="mb-3">
@@ -27,25 +29,26 @@
                 <p class="text-break">{!! nl2br(e($lowongan->persyaratan)) !!}</p>
             </div>
             
+            {{-- UBAH nama dari "Bidang Keahlian Tambahan" menjadi "Bidang Keahlian" --}}
             <div class="mb-3">
-                <strong>Bidang Keahlian Tambahan:</strong>
-                @if($lowongan->keahlian->count() > 0)
+                <strong>Bidang Keahlian:</strong>
+                @if($lowongan->lowonganKeahlian->count() > 0)
                     <ul class="mb-0">
-                        @foreach($lowongan->keahlian as $k)
-                            <li>{{ $k->nama }}</li>
+                        @foreach($lowongan->lowonganKeahlian as $k)
+                            <li>{{ $k->keahlian->nama }}</li>
                         @endforeach
                     </ul>
                 @else
-                    <span class="text-muted">Tidak ada bidang keahlian tambahan</span>
+                    <span class="text-muted">Tidak ada bidang keahlian</span>
                 @endif
             </div>
             
             <div class="mb-3">
                 <strong>Kompetensi:</strong>
-                @if($lowongan->kompetensi->count() > 0)
+                @if($lowongan->lowonganKompetensi->count() > 0)
                     <ul class="mb-0">
-                        @foreach($lowongan->kompetensi as $k)
-                            <li>{{ $k->nama }}</li>
+                        @foreach($lowongan->lowonganKompetensi as $k)
+                            <li>{{ $k->kompetensi->nama }}</li>
                         @endforeach
                     </ul>
                 @else

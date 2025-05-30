@@ -12,8 +12,15 @@ class LowonganMagangModel extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'perusahaan_id', 'periode_id', 'skema_id', 'judul', 'deskripsi',
-        'persyaratan', 'tanggal_buka', 'tanggal_tutup','tunjangan'
+        'perusahaan_id',
+        'periode_id',
+        'skema_id',
+        'judul',
+        'deskripsi',
+        'persyaratan',
+        'tanggal_buka',
+        'tanggal_tutup',
+        'tunjangan'
     ];
 
     protected $casts = [
@@ -36,14 +43,28 @@ class LowonganMagangModel extends Model
         return $this->belongsTo(SkemaModel::class, 'skema_id', 'skema_id');
     }
 
+    // Relasi ke tabel pivot keahlian
+    public function lowonganKeahlian()
+    {
+        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
+    }
+
+    // Relasi ke tabel pivot kompetensi
     public function lowonganKompetensi()
     {
         return $this->hasMany(LowonganKompetensiModel::class, 'lowongan_id', 'lowongan_id');
     }
 
-    public function lowonganKeahlian()
+    // Relasi many-to-many langsung ke keahlian (optional, untuk kemudahan)
+    public function keahlians()
     {
-        return $this->hasMany(LowonganKeahlianModel::class, 'lowongan_id', 'lowongan_id');
+        return $this->belongsToMany(KeahlianModel::class, 'm_lowongan_keahlian', 'lowongan_id', 'keahlian_id');
+    }
+
+    // Relasi many-to-many langsung ke kompetensi (optional, untuk kemudahan)
+    public function kompetensis()
+    {
+        return $this->belongsToMany(KompetensiModel::class, 'm_lowongan_kompetensi', 'lowongan_id', 'kompetensi_id');
     }
 
     public function pengajuanMagang()

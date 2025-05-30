@@ -69,7 +69,7 @@
         {{-- Deskripsi --}}
         <div class="mb-3">
             <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
-            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" required placeholder="Masukkan deskripsi lowongan...">{{ old('deskripsi') }}</textarea>
+            <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" required>{{ old('deskripsi') }}</textarea>
             @error('deskripsi')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
@@ -78,29 +78,24 @@
         {{-- Persyaratan --}}
         <div class="mb-3">
             <label for="persyaratan" class="form-label">Persyaratan <span class="text-danger">*</span></label>
-            <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" required placeholder="Masukkan persyaratan lowongan...">{{ old('persyaratan') }}</textarea>
+            <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" required>{{ old('persyaratan') }}</textarea>
             @error('persyaratan')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
-
         {{-- Tunjangan --}}
         <div class="mb-3">
             <label for="tunjangan" class="form-label">Tunjangan (Rp) <span class="text-danger">*</span></label>
-            <input type="number" step="1000" min="0" class="form-control" id="tunjangan" name="tunjangan" value="{{ old('tunjangan') }}" required>
+            <input type="number" class="form-control" id="tunjangan" name="tunjangan" value="{{ old('tunjangan') }}" required>
             @error('tunjangan')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>
 
-        {{-- Keahlian (Multiple Select with Checkboxes) --}}
+        {{-- Keahlian (Multiple Select) --}}
         <div class="mb-3">
             <label class="form-label">Keahlian <span class="text-danger">*</span></label>
-            <div class="mb-2">
-                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="toggleAllKeahlian(true)">Pilih Semua</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAllKeahlian(false)">Batal Pilih</button>
-            </div>
             <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
                 @foreach ($keahlians as $keahlian)
                     <div class="form-check">
@@ -117,20 +112,15 @@
             @error('keahlian')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
-            <small class="text-muted">Pilih satu atau lebih keahlian yang relevan</small>
         </div>
 
-        {{-- Kompetensi (Single Select with Checkboxes) --}}
+        {{-- Kompetensi (Single Select) --}}
         <div class="mb-3">
             <label class="form-label">Kompetensi <span class="text-danger">*</span></label>
-            <div class="mb-2">
-                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="toggleAllKompetensi(true)">Pilih Semua</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAllKompetensi(false)">Batal Pilih</button>
-            </div>
             <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
                 @foreach ($kompetensis as $kompetensi)
                     <div class="form-check">
-                        <input class="form-check-input kompetensi-checkbox" type="checkbox" name="kompetensi[]" 
+                        <input class="form-check-input kompetensi-radio" type="radio" name="kompetensi[]" 
                                value="{{ $kompetensi->kompetensi_id }}" 
                                id="kompetensi_{{ $kompetensi->kompetensi_id }}"
                                {{ in_array($kompetensi->kompetensi_id, old('kompetensi', [])) ? 'checked' : '' }}>
@@ -143,7 +133,6 @@
             @error('kompetensi')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
-            <small class="text-muted">Pilih satu kompetensi yang dibutuhkan</small>
         </div>
 
         {{-- Tanggal Buka --}}
@@ -173,30 +162,14 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('createLowonganForm');
-    
-    // Validasi tanggal
     const tanggalBuka = document.getElementById('tanggal_buka');
     const tanggalTutup = document.getElementById('tanggal_tutup');
     
+    // Set minimum tanggal tutup berdasarkan tanggal buka
     tanggalBuka.addEventListener('change', function() {
         tanggalTutup.min = this.value;
-        if (tanggalTutup.value && tanggalTutup.value <= this.value) {
-            tanggalTutup.value = '';
-        }
     });
-    
-    // Batasi kompetensi menjadi single selection
-    const kompetensiCheckboxes = document.querySelectorAll('.kompetensi-checkbox');
-    kompetensiCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                kompetensiCheckboxes.forEach(cb => {
-                    if (cb !== this) cb.checked = false;
-                });
-            }
-        });
-    });
-    
+
     // Validasi form sebelum submit
     form.addEventListener('submit', function(e) {
         const keahlianChecked = document.querySelectorAll('input[name="keahlian[]"]:checked').length;
@@ -214,33 +187,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        if (tanggalTutup.value <= tanggalBuka.value) {
+        if (tanggalTutup.value && tanggalBuka.value && tanggalTutup.value <= tanggalBuka.value) {
             e.preventDefault();
             alert('Tanggal tutup harus setelah tanggal buka!');
             return false;
         }
     });
 });
-
-// Fungsi toggle keahlian
-function toggleAllKeahlian(selectAll) {
-    const checkboxes = document.querySelectorAll('input[name="keahlian[]"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = selectAll;
-    });
-}
-
-// Fungsi toggle kompetensi
-function toggleAllKompetensi(selectAll) {
-    const checkboxes = document.querySelectorAll('input[name="kompetensi[]"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = selectAll;
-        if (selectAll) {
-            // Hanya checklist yang pertama jika "Pilih Semua" ditekan
-            if (checkbox !== checkboxes[0]) checkbox.checked = false;
-        }
-    });
-}
 </script>
-
 @endsection

@@ -74,6 +74,24 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Rating --}}
+                    <div class="mb-3 bg-transparent">
+                        <span class="bg-transparent fw-bold bb-transparent">Rating</span>
+                        <div class="bg-transparent">
+                            {{-- Loop untuk 5 bintang --}}
+                            @for ($i = 1; $i <= 5; $i++)
+                                <div class="form-check bg-transparent mb-1 bg-transparent">
+                                    <input class="form-check-input" type="checkbox" id="rating{{ $i }}" value="{{ $i }}">
+                                    <label class="form-check-label bg-transparent" for="rating{{ $i }}">
+                                        @for ($star = 1; $star <= $i; $star++)
+                                            <i class="fa-solid fa-star text-warning bg-transparent"></i>
+                                        @endfor
+                                        ({{ $i }})
+                                    </label>
+                                </div>
+                            @endfor
+                        </div>
+                    </div>
                     {{-- Regencies (Kabupaten/Kota) Dropdown --}}
                     <div class="mb-3 bg-transparent">
                         <button
@@ -109,7 +127,6 @@
                         <input class="form-check-input" type="checkbox" id="tunjangan2">
                         <label class="form-check-label bg-transparent" for="tunjangan2">Rp. 1.000k <</label>
                     </div>
-
                     {{-- Periode --}}
                     <span class="bg-transparent fw-bold">Periode</span>
                     @foreach ($periodes as $periode)
@@ -168,7 +185,7 @@
             });
         });
     });
-
+    
     // Trigger fetch awal saat load
     document.getElementById('searchRegency').dispatchEvent(new Event('keyup'));
 </script>

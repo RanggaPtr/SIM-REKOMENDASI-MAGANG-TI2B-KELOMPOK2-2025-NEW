@@ -16,7 +16,7 @@
             $cardBg = 'card-' . (($idx % 6) + 1);
         @endphp
         <div class="col-md-4">
-            <div class="card shadow-sm border-0 bg-transparent rounded-4" style="height: 45vh;">
+            <div class="card shadow-sm border-0 bg-transparent rounded-4" style="height: 48vh;">
                 <div class="card-body bg-white rounded-3 p-3 d-flex flex-column justify-content-between h-100">
                     <div class="bg-{{ $cardBg }} px-3 pt-3 pb2 mb-2 rounded-2 d-flex flex-column h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3 bg-transparent">
@@ -25,7 +25,11 @@
                                 style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer;"></i>
                         </div>
                         <div class="text-dark bg-transparent">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
-                        <h5 class="card-title bg-transparent fw-bold fs-4 mb-auto">{{ $lowongan->judul }}</h5>
+                        <h5 class="card-title bg-transparent fw-bold fs-4" style="margin-bottom:0rem">{{ $lowongan->judul }}</h5>
+                        <h9 class="mb-auto bg-transparent" style="font-size: 0.8rem">
+                            <i class="fa-solid fa-star text-warning bg-transparent"></i>
+                            {{ number_format(($lowongan->perusahaan->calculated_rating ?? 0) / 20, 1) }}
+                        </h9>
                         <div class="bg-transparent skills-container mb-3">
                             @foreach ($lowongan->lowonganKompetensi as $lk)
                                 @if ($lk->kompetensi)

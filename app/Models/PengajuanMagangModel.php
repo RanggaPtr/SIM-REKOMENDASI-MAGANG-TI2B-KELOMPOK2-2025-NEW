@@ -11,7 +11,7 @@ class PengajuanMagangModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['mahasiswa_id', 'lowongan_id', 'dosen_id', 'periode_id', 'status'];
+    protected $fillable = ['mahasiswa_id', 'lowongan_id', 'dosen_id', 'periode_id', 'status', 'feedback_rating', 'feedback_deskripsi'];
 
     protected $casts = [
         'status' => 'string',

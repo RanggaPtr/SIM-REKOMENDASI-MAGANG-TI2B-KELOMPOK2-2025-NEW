@@ -1,12 +1,11 @@
 @push('styles')
     <style>
-        .skills-multiline-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            max-height: 3.2em;
-            /* adjust if needed for your font-size */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.6rem;
+            line-height: 1.5rem;
+            /* Explicit line-height for JS calculation */
         }
     </style>
 @endpush
@@ -20,8 +19,8 @@
         <div class="col-md-4">
             <div class="card shadow-sm border-0 bg-transparent rounded-4" style="height: 48vh;">
                 <div class="card-body bg-white rounded-3 p-3 d-flex flex-column justify-content-between h-100">
-                    <div class="bg-{{ $cardBg }} px-3 pt-3 pb2 mb-2 rounded-2 h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-2 bg-transparent">
+                    <div class="bg-{{ $cardBg }} px-3 pt-3 pb2 mb-2 rounded-2 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3 bg-transparent">
                             <span class="badge bg-white text-dark">{{ $lowongan->tanggal_buka->format('d M, Y') }}</span>
                             <i class="fa-regular fa-bookmark bg-transparent"
                                 style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer;"></i>
@@ -69,3 +68,41 @@
         </div>
     @endforeach
 </div>
+
+@push('scripts')
+    <script>
+        window.addEventListener("load", function() {
+            const containers = document.querySelectorAll(".skills-container");
+
+            containers.forEach(container => {
+                const maxLines = 2;
+                const lineHeight = parseFloat(getComputedStyle(container).lineHeight);
+                const maxHeight = lineHeight * maxLines;
+
+                let badges = Array.from(container.children);
+                let baseline = null;
+
+                for (let i = 0; i < badges.length; i++) {
+                    let badge = badges[i];
+
+                    // Ambil posisi vertikal relatif terhadap container
+                    let top = badge.offsetTop;
+
+                    // Simpan top pertama sebagai baseline (baris pertama)
+                    if (baseline === null) {
+                        baseline = top;
+                    }
+
+                    // Jika badge sudah melewati 2 baris, sembunyikan sisanya
+                    if (top - baseline >= maxHeight) {
+                        // Hide this and the rest
+                        for (let j = i; j < badges.length; j++) {
+                            badges[j].style.display = "none";
+                        }
+                        break;
+                    }
+                }
+            });
+        });
+    </script>
+@endpush

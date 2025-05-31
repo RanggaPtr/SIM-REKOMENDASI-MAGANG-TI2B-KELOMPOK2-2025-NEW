@@ -14,6 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('lowongan_id');
             $table->unsignedBigInteger('dosen_id');
             $table->unsignedBigInteger('periode_id');
+            $table->decimal('feedback_rating', 2, 1)->nullable(); // Allows values like 4.5, 3.0, etc.Add commentMore actions
+            $table->string('feedback_deskripsi')->nullable();
             $table->string('status', 50);
             $table->timestamps();
 

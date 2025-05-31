@@ -16,6 +16,8 @@ public function up()
             $table->string('judul', 255);
             $table->text('deskripsi');
             $table->text('persyaratan');
+            $table->string('bidang_keahlian', 255);  // tambahkan iniAdd commentMore actions
+            $table->decimal('minimal_ipk', 3, 2)->nullable();  // tambahkan ini
             $table->integer('tunjangan');
             $table->date('tanggal_buka');
             $table->date('tanggal_tutup');

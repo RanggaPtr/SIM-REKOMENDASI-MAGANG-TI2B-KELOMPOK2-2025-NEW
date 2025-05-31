@@ -23,7 +23,7 @@
                         <label>Logo Perusahaan:</label><br>
                         @if($perusahaan->logo)
                             <img src="{{ asset($perusahaan->logo) }}" alt="Logo Perusahaan" height="60">
-                        @endif             
+                        @endif
                     </div>
                     <tr>
                         <th>Nama</th>

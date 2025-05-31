@@ -14,13 +14,17 @@ return new class extends Migration
             $table->string('nim', 20)->unique();
             $table->unsignedBigInteger('program_studi_id');
             $table->unsignedBigInteger('wilayah_id');
-            $table->unsignedBigInteger('skema_id')->nullable();
+            $table->unsignedBigInteger('periode_id');
+            $table->unsignedBigInteger('skema_id');
             $table->decimal('ipk', 3, 2);
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');
             $table->foreign('program_studi_id')->references('prodi_id')->on('m_program_studi')->onDelete('cascade');
             $table->foreign('wilayah_id')->references('wilayah_id')->on('m_wilayah')->onDelete('cascade');
+            $table->foreign('periode_id')->references('periode_id')->on('m_periode_magang')->onDelete('cascade');
+            $table->foreign('skema_id')->references('skema_id')->on('m_skema')->onDelete('cascade');
+
         });
     }
 

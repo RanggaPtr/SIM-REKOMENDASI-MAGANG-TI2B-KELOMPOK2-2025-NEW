@@ -12,6 +12,6 @@ class DashboardController extends Controller
     {
         $activeMenu = 'dashboard';
         $lowongans = LowonganMagangModel::with('perusahaan')->latest()->get();
-        return view('roles.mahasiswa.dashboard', compact('activeMenu', 'lowongans'));
+        return view('roles.dosen.dashboard', compact('activeMenu', 'lowongans'));
     }
 }

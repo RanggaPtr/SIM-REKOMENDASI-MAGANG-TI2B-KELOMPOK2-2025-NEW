@@ -2,42 +2,45 @@
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Detail Pengajuan Magang</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <table class="table table-bordered">
                 <tr>
-                    <th class="col-3">ID Pengajuan</th>
+                    <th>ID Pengajuan</th>
                     <td>{{ $pengajuan->pengajuan_id }}</td>
                 </tr>
                 <tr>
-                    <th>Lowongan Magang</th>
-                    <td>{{ $pengajuan->lowongan->judul }} ({{ $pengajuan->lowongan->perusahaan->nama_perusahaan }})</td>
+                    <th>Status</th>
+                    <td>
+                        @if($pengajuan->status == 'disetujui')
+                            <span class="badge bg-success">Disetujui</span>
+                        @elseif($pengajuan->status == 'ditolak')
+                            <span class="badge bg-danger">Ditolak</span>
+                        @else
+                            <span class="badge bg-warning">DIajukan</span>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <th>Mahasiswa</th>
+                    <td>{{ $pengajuan->mahasiswa->user->nama }} ({{ $pengajuan->mahasiswa->nim }})</td>
+                </tr>
+                <tr>
+                    <th>Lowongan</th>
+                    <td>{{ $pengajuan->lowongan->judul }} - {{ $pengajuan->lowongan->perusahaan->nama }}</td>
                 </tr>
                 <tr>
                     <th>Dosen Pembimbing</th>
                     <td>{{ $pengajuan->dosen->user->nama }}</td>
                 </tr>
                 <tr>
-                    <th>Periode Magang</th>
-                    <td>{{ $pengajuan->periode->nama }} ({{ \Carbon\Carbon::parse($pengajuan->periode->tanggal_mulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($pengajuan->periode->tanggal_selesai)->format('d/m/Y') }})</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>
-                        @php
-                            $badgeClass = [
-                                'pending' => 'bg-warning',
-                                'approved' => 'bg-success',
-                                'rejected' => 'bg-danger'
-                            ][$pengajuan->status] ?? 'bg-secondary';
-                        @endphp
-                        <span class="badge {{ $badgeClass }}">{{ ucfirst($pengajuan->status) }}</span>
-                    </td>
+                    <th>Periode</th>
+                    <td>{{ $pengajuan->periode->nama }} ({{ $pengajuan->periode->tanggal_mulai }} s/d {{ $pengajuan->periode->tanggal_selesai }})</td>
                 </tr>
                 <tr>
                     <th>Tanggal Pengajuan</th>
-                    <td>{{ \Carbon\Carbon::parse($pengajuan->created_at)->format('d/m/Y H:i') }}</td>
+                    <td>{{ $pengajuan->created_at }}</td>
                 </tr>
             </table>
         </div>

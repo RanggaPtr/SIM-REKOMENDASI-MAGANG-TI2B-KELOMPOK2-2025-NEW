@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+public function up()
     {
         Schema::create('m_lowongan_magang', function (Blueprint $table) {
             $table->bigIncrements('lowongan_id');
@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('judul', 255);
             $table->text('deskripsi');
             $table->text('persyaratan');
-            $table->string('bidang_keahlian', 255);  // tambahkan ini
-            $table->decimal('minimal_ipk', 3, 2)->nullable();  // tambahkan ini
             $table->integer('tunjangan');
             $table->date('tanggal_buka');
             $table->date('tanggal_tutup');

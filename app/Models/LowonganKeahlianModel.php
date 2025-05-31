@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class LowonganKeahlianModel extends Model
 {
     protected $table = 'm_lowongan_keahlian';
-    protected $primaryKey = 'lowongan_keahlian_id';
+    protected $primaryKey = 'lowongan_keahlian_id'; // pastikan kolom ini ada di DB
     public $incrementing = true;
-    public $timestamps = true;
+    public $timestamps = true; // pastikan kolom created_at & updated_at ada di tabel
 
     protected $fillable = ['lowongan_id', 'keahlian_id'];
 

@@ -29,7 +29,7 @@
                         <input type="file" name="logo" class="form-control">
                         @if($perusahaan->logo)
                             <img src="{{ asset($perusahaan->logo) }}" alt="Logo Perusahaan" height="60" class="mt-2">
-                        @endif              
+                        @endif
                     </div>
 
                     <div class="form-group mb-3">
@@ -106,42 +106,42 @@
 
     <script>
         $(document).ready(function () {
-                $("#form-edit-perusahaan").on('submit', function (e) {
-                    e.preventDefault();
-                    var form = this;
-                    var formData = new FormData(form);
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.status) {
-                                $('.modal').modal('hide');
-                                Swal.fire({
-                                    title: 'Berhasil',
-                                    text: 'Data berhasil diupdate',
-                                    confirmButtonText: 'OK'
-                                });
-                                if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function (prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire('Gagal', response.message, 'error');
-                            }
-                        },
-                        error: function (xhr) {
-                            var errors = xhr.responseJSON.errors;
+            $("#form-edit-perusahaan").on('submit', function (e) {
+                e.preventDefault();
+                var form = this;
+                var formData = new FormData(form);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status) {
+                            $('.modal').modal('hide');
+                            Swal.fire({
+                                title: 'Berhasil',
+                                text: 'Data berhasil diupdate',
+                                confirmButtonText: 'OK'
+                            });
+                            if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
+                        } else {
                             $('.error-text').text('');
-                            $.each(errors, function (prefix, val) {
+                            $.each(response.msgField, function (prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
                             });
+                            Swal.fire('Gagal', response.message, 'error');
                         }
-                    });
+                    },
+                    error: function (xhr) {
+                        var errors = xhr.responseJSON.errors;
+                        $('.error-text').text('');
+                        $.each(errors, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
+                        });
+                    }
                 });
             });
+        });
     </script>
 @endempty

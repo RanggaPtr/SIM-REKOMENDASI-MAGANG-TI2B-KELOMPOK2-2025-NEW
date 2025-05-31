@@ -67,7 +67,7 @@ class PerusahaanController extends Controller
                 if ($item->logo) {
                     return '<img src="' . e(asset($item->logo)) . '" alt="Logo" height="40">';
                 }
-                return ''; 
+                return '';
             })
             ->addColumn('wilayah', fn($item) => $item->lokasi->nama ?? '-')
             ->addColumn('aksi', function ($item) {
@@ -75,7 +75,7 @@ class PerusahaanController extends Controller
                 $editUrl = url("/admin/management-mitra/{$item->perusahaan_id}/edit_ajax");
                 $deleteUrl = url("/admin/management-mitra/{$item->perusahaan_id}/delete_ajax");
 
-            return "
+                return "
             <button onclick=\"modalAction('{$showUrl}')\" class=\"btn btn-info btn-sm\">
                 <i class=\"fa fa-eye\"></i> Detail
             </button>
@@ -200,7 +200,7 @@ class PerusahaanController extends Controller
             $logoName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images'), $logoName); // simpan ke public/images
             $logoName = 'images/' . $logoName; // simpan path relatif di DB
-        
+
             // Hapus logo lama jika ada
             if ($perusahaan->logo && file_exists(public_path($perusahaan->logo))) {
                 unlink(public_path($perusahaan->logo));
@@ -307,16 +307,27 @@ class PerusahaanController extends Controller
             $data = $sheet->toArray(null, false, true, true);
 
             $insert = [];
+            $errors = [];
+            $row_number = 1;
 
             if (count($data) > 1) {
                 foreach ($data as $row => $value) {
                     if ($row > 1) {
+                        $row_number++;
+                        // Cari wilayah_id berdasarkan nama wilayah
+                        $wilayah = WilayahModel::where('nama', 'like', '%' . trim($value['E']) . '%')->first();
+
+                        if (!$wilayah) {
+                            $errors[] = "Baris {$row_number}: Wilayah '{$value['E']}' tidak ditemukan";
+                            continue;
+                        }
+
                         $insert[] = [
                             'nama' => $value['A'],
                             'ringkasan' => $value['B'],
                             'deskripsi' => $value['C'],
                             'alamat' => $value['D'],
-                            'wilayah_id' => $value['E'],
+                            'wilayah_id' => $wilayah->wilayah_id,
                             'kontak' => $value['F'],
                             'bidang_industri' => $value['G'],
                             'rating' => $value['H'],
@@ -326,20 +337,27 @@ class PerusahaanController extends Controller
                     }
                 }
 
-                if (count($insert) > 0) {
-                    PerusahaanModel::insertOrIgnore($insert);
+                if (!empty($errors)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Terdapat kesalahan pada data',
+                        'errors' => $errors
+                    ]);
                 }
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data perusahaan berhasil diimpor'
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada data yang diimpor'
-                ]);
+                if (count($insert) > 0) {
+                    PerusahaanModel::insertOrIgnore($insert);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Data perusahaan berhasil diimpor'
+                    ]);
+                }
             }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada data yang diimpor'
+            ]);
         }
 
         return redirect('/');
@@ -359,7 +377,7 @@ class PerusahaanController extends Controller
             'rating',
             'deskripsi_rating'
         )
-            ->orderBy('perusahaan_id', 'asc')  
+            ->orderBy('perusahaan_id', 'asc')
             ->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

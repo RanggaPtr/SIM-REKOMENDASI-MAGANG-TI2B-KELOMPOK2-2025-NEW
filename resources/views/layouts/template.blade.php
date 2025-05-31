@@ -7,86 +7,31 @@
     <link rel="icon" type="image/png" href="{{ url('/images/kopermagang.png') }}">
     <title>@yield('title', 'Magang.In')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    @if (session('api_token'))
-        <meta name="api-token" content="{{ session('api_token') }}">
-    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('css')
 </head>
 
 <body>
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            /* Prevent body scroll */
-        }
-
-        .main-layout {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
-
-        .sidebar-fixed {
-            width: 20%;
-            min-width: 220px;
-            max-width: 320px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 1030;
-            border-right: 1px solid #eee;
-            background: #FFF8F1;
-            overflow-y: auto;
-        }
-
-        .main-content-area {
-            margin-left: 20%;
-            width: 80%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-fixed {
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-            background: #FFF6DF;
-        }
-
-        .scrollable-main {
-            flex: 1 1 auto;
-            overflow-y: auto;
-            min-height: 0;
-        }
-    </style>
-    <div class="main-layout">
+    <div class="d-flex min-vh-100">
         <!-- Sidebar -->
-        <aside class="sidebar-fixed">
-            @include('layouts.sidebar', ['activeMenu' => $activeMenu ?? ''])
+        <aside class="bg-light-softer ps-3 pe-3 border-end" style="width: 290px;">
+            @include('layouts.sidebar', ['activeMenu' => $activeMenu ?? '']) <!-- Tambahkan variabel default -->
         </aside>
 
         <!-- Main Section: Header + Content -->
-        <div class="main-content-area">
+        <div class="d-flex flex-column flex-grow-1">
             <!-- Header -->
-            <header class="header-fixed px-4 pb-3" style="margin-top: 2.5%">
+            <header class="px-4 pt-3 pb-3">
                 @include('layouts.header')
             </header>
 
             <!-- Content -->
-            <main class="scrollable-main pt-2 px-4 pb-4">
+            <main class="flex-grow-1 pt-2 px-4">
                 @yield('content')
             </main>
         </div>
     </div>
-    @stack('scripts')
-</body>
 
+ @stack('scripts')
+</body>
 </html>

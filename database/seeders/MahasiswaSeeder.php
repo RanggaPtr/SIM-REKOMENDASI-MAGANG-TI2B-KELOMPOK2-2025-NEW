@@ -11,10 +11,10 @@ use Illuminate\Database\Seeder;
 
 class MahasiswaSeeder extends Seeder
 {
- public function run()
+    public function run()
     {
         $user = UsersModel::where('email', 'mahasiswa1@simmagang.com')->first();
-        $programStudi = ProgramStudiModel::where('nama', 'Teknik Informatika')->first();
+        $programStudi = ProgramStudiModel::where('nama', 'D-IV Teknik Informatika')->first();
         $wilayah = WilayahModel::where('nama', 'KOTA MALANG')->first();
         $skema = SkemaModel::where('nama', 'Magang Reguler')->first();
 
@@ -24,7 +24,7 @@ class MahasiswaSeeder extends Seeder
         }
 
         if (!$programStudi) {
-            $this->command->error('Program studi Teknik Informatika tidak ditemukan. Pastikan ProgramStudiSeeder membuat data ini.');
+            $this->command->error('Program studi D-IV Teknik Informatika tidak ditemukan. Pastikan ProgramStudiSeeder membuat data ini.');
             return;
         }
 
@@ -44,6 +44,7 @@ class MahasiswaSeeder extends Seeder
             'program_studi_id' => $programStudi->prodi_id,
             'wilayah_id' => $wilayah->wilayah_id,
             'skema_id' => $skema->skema_id,
+            'periode_id' => 1,
             'ipk' => 3.75
         ]);
 

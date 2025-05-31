@@ -1,11 +1,11 @@
-<form action="{{ url('/mahasiswa/pengajuan-magang/' . $pengajuan->pengajuan_id . '/update_ajax') }}" method="POST" id="form-edit">
+<form action="{{ url('/mahasiswa/pengajuan-magang/' . $pengajuan->pengajuan_id) }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Pengajuan Magang</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="form-group mb-3">
@@ -14,12 +14,13 @@
                         <option value="">- Pilih Lowongan -</option>
                         @foreach($lowongan as $item)
                             <option value="{{ $item->lowongan_id }}" {{ $pengajuan->lowongan_id == $item->lowongan_id ? 'selected' : '' }}>
-                                {{ $item->judul }} ({{ $item->perusahaan->nama_perusahaan }})
+                                {{ $item->judul }} - {{ $item->perusahaan->nama }}
                             </option>
                         @endforeach
                     </select>
                     <small id="error-lowongan_id" class="error-text form-text text-danger"></small>
                 </div>
+                
                 <div class="form-group mb-3">
                     <label>Dosen Pembimbing</label>
                     <select name="dosen_id" id="dosen_id" class="form-control" required>
@@ -32,13 +33,14 @@
                     </select>
                     <small id="error-dosen_id" class="error-text form-text text-danger"></small>
                 </div>
+                
                 <div class="form-group mb-3">
                     <label>Periode Magang</label>
                     <select name="periode_id" id="periode_id" class="form-control" required>
                         <option value="">- Pilih Periode -</option>
                         @foreach($periode as $item)
                             <option value="{{ $item->periode_id }}" {{ $pengajuan->periode_id == $item->periode_id ? 'selected' : '' }}>
-                                {{ $item->nama }} ({{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d/m/Y') }})
+                                {{ $item->nama }} ({{ $item->tanggal_mulai }} s/d {{ $item->tanggal_selesai }})
                             </option>
                         @endforeach
                     </select>
@@ -52,19 +54,17 @@
         </div>
     </div>
 </form>
+
 <script>
-    $(document).ready(function () {
-        $("#form-edit").on('submit', function (e) {
+    $(document).ready(function() {
+        $("#form-edit").on('submit', function(e) {
             e.preventDefault();
             var form = this;
-            var formData = new FormData(form);
             $.ajax({
                 url: form.action,
-                type: form.method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
+                type: 'POST', // Karena Laravel tidak bisa langsung menggunakan PUT
+                data: $(form).serialize() + '&_method=PUT',
+                success: function(response) {
                     if (response.status) {
                         $('.modal').modal('hide');
                         Swal.fire({
@@ -72,19 +72,19 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         });
-                        tablePengajuan.ajax.reload(null, false);
+                        $('#table_pengajuan').DataTable().ajax.reload(null, false);
                     } else {
                         $('.error-text').text('');
-                        $.each(response.msgField, function (prefix, val) {
+                        $.each(response.errors, function(prefix, val) {
                             $('#error-' + prefix).text(val[0]);
                         });
                         Swal.fire('Gagal', response.message, 'error');
                     }
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     var errors = xhr.responseJSON.errors;
                     $('.error-text').text('');
-                    $.each(errors, function (prefix, val) {
+                    $.each(errors, function(prefix, val) {
                         $('#error-' + prefix).text(val[0]);
                     });
                 }

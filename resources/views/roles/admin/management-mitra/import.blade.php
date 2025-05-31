@@ -16,7 +16,8 @@
                         <li>Pastikan format file adalah .xlsx</li>
                         <li>Maksimal ukuran file: 1MB</li>
                     </ol>
-                    <a href="{{ asset('template/template_import_perusahaan.xlsx') }}" class="btn btn-sm btn-outline-primary">
+                    <a href="{{ asset('template/template_import_perusahaan.xlsx') }}"
+                        class="btn btn-sm btn-outline-primary">
                         Download Template</a>
                 </div>
 
@@ -105,8 +106,8 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $('#form-import-mitra').on('submit', function (e) {
+   $(document).ready(function () {
+        $("#form-import-mitra").on('submit', function (e) {
             e.preventDefault();
             var form = this;
             var formData = new FormData(form);
@@ -130,14 +131,12 @@
                             icon: 'success',
                             confirmButtonText: 'OK'
                         });
-                        if (typeof tableMitra !== 'undefined') {
-                            tableMitra.ajax.reload(null, false);
-                        }
+                        if (window.dataPerusahaan) window.dataPerusahaan.ajax.reload(null, false);
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {
-                            $.each(response.msgField, function (key, val) {
-                                $('#error-' + key).text(val[0]);
+                            $.each(response.msgField, function (prefix, val) {
+                                $('#error-' + prefix).text(val[0]);
                             });
                         }
                         Swal.fire({
@@ -153,8 +152,8 @@
                     var errors = xhr.responseJSON?.errors;
                     $('.error-text').text('');
                     if (errors) {
-                        $.each(errors, function (key, val) {
-                            $('#error-' + key).text(val[0]);
+                        $.each(errors, function (prefix, val) {
+                            $('#error-' + prefix).text(val[0]);
                         });
                     }
                     Swal.fire({

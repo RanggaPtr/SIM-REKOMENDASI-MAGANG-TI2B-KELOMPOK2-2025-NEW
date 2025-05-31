@@ -72,7 +72,7 @@
         </div>
     </form>
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
             $("#form-delete-perusahaan").on('submit', function (e) {
                 e.preventDefault();
                 var form = this;

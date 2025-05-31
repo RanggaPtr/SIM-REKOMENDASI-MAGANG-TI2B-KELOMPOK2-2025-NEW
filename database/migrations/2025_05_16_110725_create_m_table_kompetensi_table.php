@@ -12,7 +12,11 @@ return new class extends Migration
             $table->bigIncrements('kompetensi_id');
             $table->string('nama', 255);
             $table->text('deskripsi')->nullable();
+            $table->unsignedBigInteger('program_studi_id');
             $table->timestamps();
+
+            $table->foreign('program_studi_id')->references('prodi_id')->on('m_program_studi')->onDelete('cascade');
+
         });
     }
 

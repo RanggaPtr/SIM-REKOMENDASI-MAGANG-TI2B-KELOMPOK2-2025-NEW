@@ -21,7 +21,7 @@
 
 <!-- Modal Edit Profile -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 shadow-lg">
             <div class="modal-header bg-primary text-white rounded-top-4">
                 <h5 class="modal-title fw-bold" id="editProfileModalLabel">Edit Profil</h5>
@@ -29,231 +29,274 @@
             </div>
             <div class="modal-body p-4">
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
-                @if (Auth::check())
-                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
+                @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
 
-                        <!-- Foto Profil -->
-                        <div class="mb-3 text-center">
-                            <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
-                                 alt="Profile"
-                                 class="rounded-circle mb-3"
-                                 style="width: 100px; height: 100px; object-fit: cover;">
-                            <div>
-                                <label for="foto_profile" class="form-label">Ganti Foto Profil</label>
-                                <input type="file" class="form-control" id="foto_profile" name="foto_profile">
-                                @error('foto_profile')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                @auth
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
 
-                        <!-- Nama -->
-                        <div class="mb-3">
-                            <label for="nama" class="form-label fw-bold">Nama</label>
-                            <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama', Auth::user()->nama) }}" required>
-                            @error('nama')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <!-- Foto Profil -->
+                    <div class="mb-3 text-center">
+                        <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
+                            alt="Profile"
+                            class="rounded-circle mb-3"
+                            style="width: 100px; height: 100px; object-fit: cover;">
+                        <label for="foto_profile" class="form-label">Ganti Foto Profil</label>
+                        <input type="file" class="form-control" id="foto_profile" name="foto_profile" accept="image/*">
+                        @error('foto_profile')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-bold">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email', Auth::user()->email) }}" required>
-                            @error('email')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <!-- Nama -->
+                    <div class="mb-3">
+                        <label for="nama" class="form-label fw-bold">Nama</label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                            id="nama" name="nama" value="{{ old('nama', Auth::user()->nama) }}" required>
+                        @error('nama')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Field Khusus Berdasarkan Role -->
-                        @if (Auth::user()->role === 'dosen')
-                            @php
-                                $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
-                            @endphp
-                            @if ($dosen)
-                                <div class="mb-3">
-                                    <label for="nik" class="form-label fw-bold">NIK</label>
-                                    <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik', $dosen->nik) }}" required>
-                                    @error('nik')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="prodi_id" name="prodi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('prodi_id', $dosen->prodi_id) == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('prodi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    Data dosen belum lengkap. Silakan lengkapi data di bawah ini.
-                                </div>
-                                <div class="mb-3">
-                                    <label for="nik" class="form-label fw-bold">NIK</label>
-                                    <input type="text" class="form-control" id="nik" name="nik" value="{{ old('nik') }}" required>
-                                    @error('nik')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="prodi_id" name="prodi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('prodi_id') == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('prodi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @endif
-                        @elseif (Auth::user()->role === 'mahasiswa')
-                            @php
-                                $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
-                            @endphp
-                            @if ($mahasiswa)
-                                <div class="mb-3">
-                                    <label for="nim" class="form-label fw-bold">NIM</label>
-                                    <input type="text" class="form-control" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" required>
-                                    @error('nim')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="program_studi_id" name="program_studi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('program_studi_id', $mahasiswa->program_studi_id) == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('program_studi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                                    <select class="form-control" id="wilayah_id" name="wilayah_id" required>
-                                        @foreach (\App\Models\WilayahModel::all() as $wilayah)
-                                            <option value="{{ $wilayah->wilayah_id }}" {{ old('wilayah_id', $mahasiswa->wilayah_id) == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                                {{ $wilayah->nama_wilayah }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('wilayah_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ipk" class="form-label fw-bold">IPK</label>
-                                    <input type="number" step="0.01" class="form-control" id="ipk" name="ipk" value="{{ old('ipk', $mahasiswa->ipk) }}" required>
-                                    @error('ipk')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @else
-                                <div class="alert alert-warning">
-                                    Data mahasiswa belum lengkap. Silakan lengkapi data di bawah ini.
-                                </div>
-                                <div class="mb-3">
-                                    <label for="nim" class="form-label fw-bold">NIM</label>
-                                    <input type="text" class="form-control" id="nim" name="nim" value="{{ old('nim') }}" required>
-                                    @error('nim')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                                    <select class="form-control" id="program_studi_id" name="program_studi_id" required>
-                                        @foreach (\App\Models\ProgramStudiModel::all() as $prodi)
-                                            <option value="{{ $prodi->prodi_id }}" {{ old('program_studi_id') == $prodi->prodi_id ? 'selected' : '' }}>
-                                                {{ $prodi->nama_prodi }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('program_studi_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                                    <select class="form-control" id="wilayah_id" name="wilayah_id" required>
-                                        @foreach (\App\Models\WilayahModel::all() as $wilayah)
-                                            <option value="{{ $wilayah->wilayah_id }}" {{ old('wilayah_id') == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                                {{ $wilayah->nama_wilayah }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('wilayah_id')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="ipk" class="form-label fw-bold">IPK</label>
-                                    <input type="number" step="0.01" class="form-control" id="ipk" name="ipk" value="{{ old('ipk') }}" required>
-                                    @error('ipk')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            @endif
-                        @elseif (Auth::user()->role === 'perusahaan')
-                            @php
-                                $perusahaan = \App\Models\PerusahaanModel::where('user_id', Auth::user()->user_id)->first();
-                            @endphp
-                            <div class="mb-3">
-                                <label for="nama_perusahaan" class="form-label fw-bold">Nama Perusahaan</label>
-                                <input type="text" class="form-control" id="nama_perusahaan" name="nama_perusahaan" value="{{ old('nama_perusahaan', $perusahaan->nama_perusahaan ?? '') }}" required>
-                                @error('nama_perusahaan')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        @endif
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">Username</label>
+                        <input type="text" class="form-control @error('username') is-invalid @enderror"
+                            id="username" name="username" value="{{ old('username', Auth::user()->username) }}" required>
+                        @error('username')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-bold">Password Baru (opsional)</label>
-                            <input type="password" class="form-control" id="password" name="password">
-                            @error('password')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    <!-- No Telepon -->
+                    <div class="mb-3">
+                        <label for="no_telepon" class="form-label fw-bold">No Telepon</label>
+                        <input type="text" class="form-control @error('no_telepon') is-invalid @enderror"
+                            id="no_telepon" name="no_telepon" value="{{ old('no_telepon', Auth::user()->no_telepon) }}">
+                        @error('no_telepon')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Konfirmasi Password -->
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-                        </div>
+                    <!-- Alamat -->
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label fw-bold">Alamat</label>
+                        <textarea class="form-control @error('alamat') is-invalid @enderror"
+                            id="alamat" name="alamat" rows="3">{{ old('alamat', Auth::user()->alamat) }}</textarea>
+                        @error('alamat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                        <!-- Tombol -->
-                        <div class="d-flex justify-content-center gap-3">
-                            <button type="submit" class="btn btn-primary text-light fw-bold px-5">Simpan</button>
-                            <button type="button" class="btn btn-outline-secondary px-5" data-bs-dismiss="modal">Batal</button>
-                        </div>
-                    </form>
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">Email</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                            id="email" name="email" value="{{ old('email', Auth::user()->email) }}" required>
+                        @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Role Spesifik Fields -->
+                    @if (Auth::user()->role === 'dosen')
+                    @php
+                    $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
+                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                    @endphp
+
+                    <div class="mb-3">
+                        <label for="nik" class="form-label fw-bold">NIK</label>
+                        <input type="text" class="form-control @error('nik') is-invalid @enderror"
+                            id="nik" name="nik" value="{{ old('nik', $dosen->nik ?? '') }}" required>
+                        @error('nik')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
+                        <select class="form-select @error('prodi_id') is-invalid @enderror"
+                            id="prodi_id" name="prodi_id" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                            @foreach ($programStudiList as $prodi)
+                            <option value="{{ $prodi->prodi_id }}"
+                                {{ old('prodi_id', $dosen->prodi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                {{ $prodi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('prodi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    @elseif (Auth::user()->role === 'mahasiswa')
+                    @php
+                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
+                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                    $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
+                    $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
+                    @endphp
+
+                    <div class="mb-3">
+                        <label for="nim" class="form-label fw-bold">NIM</label>
+                        <input type="text" class="form-control @error('nim') is-invalid @enderror"
+                            id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim ?? '') }}" required>
+                        @error('nim')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
+                        <select class="form-select @error('program_studi_id') is-invalid @enderror"
+                            id="program_studi_id" name="program_studi_id" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                            @foreach ($programStudiList as $prodi)
+                            <option value="{{ $prodi->prodi_id }}"
+                                {{ old('program_studi_id', $mahasiswa->program_studi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                {{ $prodi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('program_studi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
+                        <select class="form-select @error('wilayah_id') is-invalid @enderror"
+                            id="wilayah_id" name="wilayah_id" required>
+                            <option value="">-- Pilih Wilayah --</option>
+                            @foreach ($wilayahList as $wilayah)
+                            <option value="{{ $wilayah->wilayah_id }}"
+                                {{ old('wilayah_id', $mahasiswa->wilayah_id ?? '') == $wilayah->wilayah_id ? 'selected' : '' }}>
+                                {{ $wilayah->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('wilayah_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="skema_id" class="form-label fw-bold">Skema</label>
+                        <select class="form-select @error('skema_id') is-invalid @enderror"
+                            id="skema_id" name="skema_id" required>
+                            <option value="">-- Pilih Skema --</option>
+                            @foreach ($skemaList as $skema)
+                            <option value="{{ $skema->skema_id }}"
+                                {{ old('skema_id', $mahasiswa->skema_id ?? '') == $skema->skema_id ? 'selected' : '' }}>
+                                {{ $skema->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('skema_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ipk" class="form-label fw-bold">IPK</label>
+                        <input type="number" step="0.01" min="0" max="4"
+                            class="form-control @error('ipk') is-invalid @enderror"
+                            id="ipk" name="ipk" value="{{ old('ipk', $mahasiswa->ipk ?? '') }}" required>
+                        @error('ipk')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    @elseif (Auth::user()->role === 'perusahaan')
+                    @php
+                    $perusahaan = \App\Models\PerusahaanModel::where('user_id', Auth::user()->user_id)->first();
+                    @endphp
+
+                    <div class="mb-3">
+                        <label for="nama_perusahaan" class="form-label fw-bold">Nama Perusahaan</label>
+                        <input type="text" class="form-control @error('nama_perusahaan') is-invalid @enderror"
+                            id="nama_perusahaan" name="nama_perusahaan"
+                            value="{{ old('nama_perusahaan', $perusahaan->nama_perusahaan ?? '') }}" required>
+                        @error('nama_perusahaan')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    @endif
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">Password Baru (opsional)</label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror"
+                            id="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+                        @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Konfirmasi Password -->
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password</label>
+                        <input type="password" class="form-control"
+                            id="password_confirmation" name="password_confirmation"
+                            placeholder="Ulangi password baru">
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary text-light fw-bold px-5">
+                            <i class="fas fa-save me-2"></i>Simpan
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary px-5" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Batal
+                        </button>
+                    </div>
+                </form>
                 @else
-                    <div class="alert alert-danger">
-                        Anda harus login untuk mengedit profil.
-                    </div>
-                @endif
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Anda harus login untuk mengedit profil.
+                </div>
+                @endauth
             </div>
         </div>
     </div>
 </div>
+
+<!-- Script untuk preview foto -->
+<script>
+    document.getElementById('foto_profile').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.modal-body img').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Auto close modal setelah sukses update
+    @if(session('success'))
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }, 2000);
+    });
+    @endif
+</script>

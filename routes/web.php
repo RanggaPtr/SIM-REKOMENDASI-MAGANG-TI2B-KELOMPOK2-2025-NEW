@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Dosen\MonitoringMagangController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\LogAktivitasController;
@@ -69,7 +70,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Dashboard
         Route::get('/dashboard', fn() => view('roles.admin.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
 
-         // Tambahkan route show untuk lowongan magang di group admin management-lowongan-magang
+        // Tambahkan route show untuk lowongan magang di group admin management-lowongan-magang
         Route::prefix('management-lowongan-magang')->group(function () {
             Route::get('/', [LowonganMagangController::class, 'index'])->name('lowongan.index');
             Route::get('/create', [LowonganMagangController::class, 'create'])->name('lowongan.create');
@@ -161,11 +162,29 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Dosen Routes
+    // Dosen Routes
     Route::prefix('dosen')->name('dosen.')->middleware('authorize:dosen')->group(function () {
+        // Dashboard dosen
         Route::get('/dashboard', fn() => view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
-        Route::get('/monitoring-mahasiswa', fn() => view('roles.dosen.monitoring-mahasiswa', ['activeMenu' => 'monitoringMahasiswa']))->name('monitoring.mahasiswa');
-    
+
+        // route index monitoring mahasiswa
+        Route::get('/monitoring-mahasiswa', [MonitoringMagangController::class, 'index'])->name('monitoring.mahasiswa');
+
+        // route show detail mahasiswa dan log aktivitas
+        Route::get('/monitoring-mahasiswa/{pengajuanId}', [MonitoringMagangController::class, 'show'])->name('monitoring.show');
+
+        // route untuk simpan feedback dosen
+        Route::post('/monitoring-mahasiswa/feedback/{logId}', [MonitoringMagangController::class, 'storeFeedback'])->name('monitoring.feedback.store');
+        
+        // Form upload sertifikat dosen
+        Route::get('/upload-sertifikat', [App\Http\Controllers\Dosen\UploadSertifikatController::class, 'create'])
+            ->name('upload.sertifikat');
+
+        // Simpan sertifikat dosen
+        Route::post('/upload-sertifikat', [App\Http\Controllers\Dosen\UploadSertifikatController::class, 'store'])
+            ->name('upload.sertifikat.store');
     });
+
 
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {

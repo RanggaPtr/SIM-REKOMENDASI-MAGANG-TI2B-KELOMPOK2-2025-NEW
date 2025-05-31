@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\KompetensiModel;
 use App\Models\PengajuanMagangModel;
 use App\Models\UsersModel;
 use Illuminate\Support\Facades\DB;
@@ -11,31 +12,41 @@ class StatistikController extends Controller
 {
     public function index()
     {
-        $jumlah_mahasiswa_magang = PengajuanMagangModel::where('status', 'diterima')->count();
+        $kompetensi = KompetensiModel::all();
 
-        // Tren per bidang industri 
-        $tren_industri = DB::table('t_pengajuan_magang')
-            ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
-            ->join('m_perusahaan', 'm_lowongan_magang.perusahaan_id', '=', 'm_perusahaan.perusahaan_id')
-            ->select('m_perusahaan.bidang_industri', DB::raw('COUNT(*) as total'))
-            ->where('t_pengajuan_magang.status', 'diterima')
-            ->groupBy('m_perusahaan.bidang_industri')
-            ->orderBy('total', 'desc') // opsional: urutkan dari yang terbanyak
-            ->get();
+        $data_kompetensi = [];
+        foreach ($kompetensi as $k) {
+            $jumlah = DB::table('t_pengajuan_magang')
+                ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
+                ->join('m_lowongan_kompetensi', 'm_lowongan_magang.lowongan_id', '=', 'm_lowongan_kompetensi.lowongan_id')
+                ->where('m_lowongan_kompetensi.kompetensi_id', $k->kompetensi_id)
+                ->where('t_pengajuan_magang.status', 'diterima')
+                ->count();
 
-        $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
+            $data_kompetensi[] = [
+                'nama' => $k->nama,
+                'total' => $jumlah
+            ];
+        }
 
-        // Rasio peserta per dosen
-        $jumlah_peserta = $jumlah_mahasiswa_magang;
-        $rasio = $jumlah_dosen > 0
-            ? round($jumlah_peserta / $jumlah_dosen, 2)
-            : 0;
+        $total_pengajuan = PengajuanMagangModel::count();
+        $total_diterima = PengajuanMagangModel::where('status', 'diterima')->count();
+        $total_ditolak = PengajuanMagangModel::where('status', 'ditolak')->count();
+        $total_pending = $total_pengajuan - $total_diterima - $total_ditolak;
+
+        $persen_diterima = $total_pengajuan > 0 ? round(($total_diterima / $total_pengajuan) * 100, 2) : 0;
+        $persen_ditolak = $total_pengajuan > 0 ? round(($total_ditolak / $total_pengajuan) * 100, 2) : 0;
+        $persen_pending = $total_pengajuan > 0 ? round(($total_pending / $total_pengajuan) * 100, 2) : 0;
 
         return view('roles.admin.statistik-data-tren.index', compact(
-            'jumlah_mahasiswa_magang',
-            'tren_industri',
-            'jumlah_dosen',
-            'rasio'
+            'data_kompetensi',
+            'total_pengajuan',
+            'total_diterima',
+            'total_ditolak',
+            'total_pending',
+            'persen_diterima',
+            'persen_ditolak',
+            'persen_pending'
         ));
     }
 }

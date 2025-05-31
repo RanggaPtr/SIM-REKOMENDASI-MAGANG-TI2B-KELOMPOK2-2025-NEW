@@ -82,7 +82,7 @@
                 </a>
             </li>
             <li class="nav-item bg-light-softer">
-                <a href="{{ route('dosen.evaluasi-magang') }}"
+                <a href="{{ route('dosen.evaluasi-magang.index') }}"
                     class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'evaluasiMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                     <i class="fas fa-clipboard-check me-4"></i><b>Evaluasi Magang</b>
                 </a>

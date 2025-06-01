@@ -1,16 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
-use Illuminate\Http\Request;
+use App\Models\PengajuanMagangModel;
+use App\Models\UsersModel;
 
 class DashboardController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
-        $title = 'Dashboard';
+        $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
+        $jumlah_mahasiswa = UsersModel::where('role', 'mahasiswa')->count();
+        $jumlah_magang = PengajuanMagangModel::where('status', 'diterima')->distinct('mahasiswa_id')->count('mahasiswa_id');
 
-        $activeMenu = 'dashboard';
-        return view('roles.admin.dashboard', compact('activeMenu'));
+        return view('roles.admin.dashboard', [
+            'activeMenu' => 'dashboard',
+            'jumlah_dosen' => $jumlah_dosen,
+            'jumlah_mahasiswa' => $jumlah_mahasiswa,
+            'jumlah_magang' => $jumlah_magang,
+        ]);
     }
 }

@@ -13,7 +13,7 @@ use App\Http\Controllers\Dosen\MonitoringMagangController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\LogAktivitasController;
-use App\Http\Controllers\Mahasiswa\PengajuanMagangController as MahasiswaPengajuanMagangController; // Tambahkan alias
+use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;

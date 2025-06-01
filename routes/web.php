@@ -176,7 +176,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         // route untuk simpan feedback dosen
         Route::post('/monitoring-mahasiswa/feedback/{logId}', [MonitoringMagangController::class, 'storeFeedback'])->name('monitoring.feedback.store');
-        
+
         // Form upload sertifikat dosen
         Route::get('/upload-sertifikat', [App\Http\Controllers\Dosen\UploadSertifikatController::class, 'create'])
             ->name('upload.sertifikat');
@@ -190,6 +190,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/getLowongan', [MahasiswaDashboardController::class, 'getLowongan'])->name('mahasiswa.getLowongan');
 
         // Log Harian
         Route::prefix('log-harian')->name('log-harian.')->group(function () {

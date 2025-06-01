@@ -11,7 +11,7 @@ class PengajuanMagangModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['mahasiswa_id', 'lowongan_id', 'dosen_id', 'periode_id', 'status', 'feedback_rating', 'feedback_deskripsi'];
+    protected $fillable = ['mahasiswa_id', 'lowongan_id', 'status', 'feedback_rating', 'feedback_deskripsi'];
 
     protected $casts = [
         'status' => 'string',
@@ -27,15 +27,6 @@ class PengajuanMagangModel extends Model
         return $this->belongsTo(LowonganMagangModel::class, 'lowongan_id', 'lowongan_id');
     }
 
-    public function dosen()
-    {
-        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
-    }
-
-    public function periode()
-    {
-        return $this->belongsTo(PeriodeMagangModel::class, 'periode_id', 'periode_id');
-    }
 
     public function sertifikatMagang()
     {

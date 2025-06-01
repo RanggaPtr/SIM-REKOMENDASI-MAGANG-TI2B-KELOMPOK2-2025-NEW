@@ -160,7 +160,7 @@ class PeriodeMagangController extends Controller
         $periode = PeriodeMagangModel::find($periode_id);
         if ($periode) {
             // Check if periode has related records
-            if ($periode->lowonganMagang()->count() > 0 || $periode->pengajuanMagang()->count() > 0) {
+            if ($periode->lowonganMagang()->count() > 0 ) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Tidak dapat menghapus periode karena memiliki data terkait'

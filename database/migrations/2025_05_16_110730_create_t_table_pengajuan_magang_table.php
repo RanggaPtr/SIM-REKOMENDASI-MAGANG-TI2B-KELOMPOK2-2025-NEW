@@ -12,8 +12,6 @@ return new class extends Migration
             $table->bigIncrements('pengajuan_id');
             $table->unsignedBigInteger('mahasiswa_id');
             $table->unsignedBigInteger('lowongan_id');
-            $table->unsignedBigInteger('dosen_id');
-            $table->unsignedBigInteger('periode_id');
             $table->decimal('feedback_rating', 2, 1)->nullable(); // Allows values like 4.5, 3.0, etc.Add commentMore actions
             $table->string('feedback_deskripsi')->nullable();
             $table->string('status', 50);
@@ -21,8 +19,6 @@ return new class extends Migration
 
             $table->foreign('mahasiswa_id')->references('mahasiswa_id')->on('m_mahasiswa')->onDelete('cascade');
             $table->foreign('lowongan_id')->references('lowongan_id')->on('m_lowongan_magang')->onDelete('cascade');
-            $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen')->onDelete('cascade');
-            $table->foreign('periode_id')->references('periode_id')->on('m_periode_magang')->onDelete('cascade');
         });
     }
 

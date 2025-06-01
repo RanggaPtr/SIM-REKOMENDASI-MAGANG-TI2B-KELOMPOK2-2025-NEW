@@ -206,12 +206,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::prefix('/pengajuan-magang')->group(function () {
             Route::get('/', [PengajuanMagangController::class, 'index'])->name('pengajuan-magang.index');
             Route::post('/list', [PengajuanMagangController::class, 'list'])->name('pengajuan-magang.list');
+            Route::post('/pengajuan-magang', [PengajuanMagangController::class, 'store'])->name('pengajuan-magang.store');
             // AJAX routes
-            Route::get('/create_ajax', [PengajuanMagangController::class, 'create_ajax'])->name('pengajuan-magang.create_ajax');
-            Route::post('/', [PengajuanMagangController::class, 'store_ajax'])->name('pengajuan-magang.store_ajax');
+            // Route::post('/', [PengajuanMagangController::class, 'store'])->name('pengajuan-magang.store');
             Route::get('/{pengajuan_id}/show_ajax', [PengajuanMagangController::class, 'show_ajax'])->name('pengajuan-magang.show_ajax');
-            Route::get('/{pengajuan_id}/edit_ajax', [PengajuanMagangController::class, 'edit_ajax'])->name('pengajuan-magang.edit_ajax');
-            Route::put('/{pengajuan_id}', [PengajuanMagangController::class, 'update_ajax'])->name('pengajuan-magang.update_ajax');
             Route::get('/{pengajuan_id}/confirm_ajax', [PengajuanMagangController::class, 'confirm_ajax'])->name('pengajuan-magang.confirm_ajax');
             Route::delete('/{pengajuan_id}', [PengajuanMagangController::class, 'destroy_ajax'])->name('pengajuan-magang.destroy_ajax');
         });

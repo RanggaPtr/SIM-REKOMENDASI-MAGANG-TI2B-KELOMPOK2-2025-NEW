@@ -2,18 +2,23 @@
 
 @section('content')
     <div class="card card-outline card-primary">
+         @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+                background: '#f0fff0',
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+            });
+        </script>
+    @endif
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
-            @if($mahasiswa)
-                <button onclick="modalAction('{{ url('/mahasiswa/pengajuan-magang/create_ajax') }}')" class="btn btn-success">
-                    <i class="fa fa-plus"></i>
-                    Ajukan Magang
-                </button>
-            @else
-                <div class="alert alert-warning">
-                    Lengkapi profil mahasiswa terlebih dahulu sebelum mengajukan magang
-                </div>
-            @endif
+
         </div>
         <div class="card-body">
             @if (session('success'))
@@ -22,16 +27,15 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            
+
             <table class="table table-bordered table-striped table-hover table-sm" id="table_pengajuan">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Lowongan</th>
                         <th>Perusahaan</th>
-                        <th>Dosen Pembimbing</th>
-                        <th>Periode</th>
                         <th>Status</th>
+                        <th>Tanggal Pengajuan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -55,7 +59,7 @@
 
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function () {
+            $('#myModal').load(url, function() {
                 var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
                     keyboard: false,
                     backdrop: 'static'
@@ -75,34 +79,41 @@
                         _token: '{{ csrf_token() }}'
                     }
                 },
-                columns: [
-                    { data: 'pengajuan_id', className: 'text-center' },
-                    { 
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'lowongan.judul',
                         render: function(data, type, row) {
                             return data ? data : '-';
                         }
                     },
-                    { 
+                    {
                         data: 'lowongan.perusahaan.nama',
                         render: function(data, type, row) {
                             return data ? data : '-';
                         }
                     },
-                    { 
-                        data: 'dosen.user.nama',
+
+                    {
+                        data: 'status',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'created_at',
                         render: function(data, type, row) {
                             return data ? data : '-';
                         }
                     },
-                    { 
-                        data: 'periode.nama',
-                        render: function(data, type, row) {
-                            return data ? data : '-';
-                        }
-                    },
-                    { data: 'status', className: 'text-center' },
-                    { data: 'aksi', className: 'text-center', orderable: false, searchable: false }
+                    {
+                        data: 'aksi',
+                        className: 'text-center',
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
         });

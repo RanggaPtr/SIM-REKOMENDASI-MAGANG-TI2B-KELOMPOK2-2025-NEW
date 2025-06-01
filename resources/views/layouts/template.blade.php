@@ -9,14 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @if (session('api_token'))
-        <meta name="api-token" content="{{ session('api_token') }}">Add commentMore actions
+        <meta name="api-token" content="{{ session('api_token') }}">
     @endif
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('css')
 </head>
 
 <body>
     <style>
-        Add commentMore actions html,
+        html,
         body {
             height: 100%;
             margin: 0;

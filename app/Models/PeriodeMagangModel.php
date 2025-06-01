@@ -23,8 +23,4 @@ class PeriodeMagangModel extends Model
         return $this->hasMany(LowonganMagangModel::class, 'periode_id', 'periode_id');
     }
 
-    public function pengajuanMagang()
-    {
-        return $this->hasMany(PengajuanMagangModel::class, 'periode_id', 'periode_id');
-    }
 }

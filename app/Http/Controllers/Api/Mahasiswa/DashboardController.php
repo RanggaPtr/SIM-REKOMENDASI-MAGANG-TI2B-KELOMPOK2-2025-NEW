@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Api\Mahasiswa;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\WilayahModel;
+use App\Models\LowonganMagangModel;
+use App\Models\MahasiswaKeahlianModel;
+use App\Models\MahasiswaKompetensiModel;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -29,4 +33,5 @@ class DashboardController extends Controller
 
         return response()->json($regencies);
     }
+
 }

@@ -26,7 +26,8 @@
                                 style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer;"></i>
                         </div>
                         <div class="text-dark bg-transparent">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
-                        <h5 class="card-title bg-transparent fw-bold fs-4" style="margin-bottom:0rem">{{ $lowongan->judul }}</h5>
+                        <h5 class="card-title bg-transparent fw-bold fs-4" style="margin-bottom:0rem">
+                            {{ $lowongan->judul }}</h5>
                         <h9 class="mb-auto bg-transparent" style="font-size: 0.8rem">
                             <i class="fa-solid fa-star text-warning bg-transparent"></i>
                             {{ number_format(($lowongan->perusahaan->calculated_rating ?? 0) / 20, 1) }}
@@ -60,7 +61,25 @@
                                         : '-' }}
                                 </div>
                             </div>
-                            <a href="#ONGOING" class="btn btn-dark">Detail</a>
+
+                            <div class="d-flex">
+                                {{-- Tombol Ajukan langsung ke store --}}
+                                @if (Auth::user()->role === 'mahasiswa')
+                                    <form action="{{ route('mahasiswa.pengajuan-magang.store') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="lowongan_id" value="{{ $lowongan->lowongan_id }}">
+                                        <button type="submit" class="btn btn-primary me-2">Ajukan</button>
+                                    </form>
+                                @else
+                                    <div class="alert alert-warning me-2">
+                                        Lengkapi profil mahasiswa terlebih dahulu sebelum mengajukan magang
+                                    </div>
+                                @endif
+
+                                {{-- Tombol Detail --}}
+                                <a href="#ongoing" class="btn btn-dark">Detail</a>
+                            </div>
+
                         </div>
                     </div>
                 </div>

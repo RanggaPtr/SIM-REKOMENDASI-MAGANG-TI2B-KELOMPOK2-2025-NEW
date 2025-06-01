@@ -7,16 +7,19 @@
     <link rel="icon" type="image/png" href="{{ url('/images/kopermagang.png') }}">
     <title>@yield('title', 'Magang.In')</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+     <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @if (session('api_token'))
-        <meta name="api-token" content="{{ session('api_token') }}">Add commentMore actions
+        <meta name="api-token" content="{{ session('api_token') }}">
     @endif
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('css')
 </head>
 
 <body>
     <style>
-        Add commentMore actions html,
+        html,
         body {
             height: 100%;
             margin: 0;
@@ -86,6 +89,7 @@
             </main>
         </div>
     </div>
+<!-- di bagian <head> atau sebelum </body> -->
 
     @stack('scripts')
 </body>

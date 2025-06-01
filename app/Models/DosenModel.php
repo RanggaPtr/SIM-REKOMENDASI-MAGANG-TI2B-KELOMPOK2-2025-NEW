@@ -28,8 +28,5 @@ class DosenModel extends Model
         return $this->hasMany(SertifikatDosenModel::class, 'dosen_id', 'dosen_id');
     }
 
-    public function pengajuanMagang()
-    {
-        return $this->hasMany(PengajuanMagangModel::class, 'dosen_id', 'dosen_id');
-    }
+   
 }

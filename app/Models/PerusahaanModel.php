@@ -34,25 +34,37 @@ class PerusahaanModel extends Model
         return $this->hasMany(LowonganMagangModel::class, 'perusahaan_id', 'perusahaan_id');
     }
 
-    public function getCalculatedRatingAttribute() {
-        // Weight configuration
-        $adminWeight = 0.7;
-        $feedbackWeight = 0.3;
-
+    public function getCalculatedRatingAttribute()
+    {
         // Admin rating (default 0 if null)
         $adminRating = $this->rating ?? 0;
 
-        // Get average feedback_rating from PengajuanMagangModel for this perusahaan
-        $feedbackAvg = PengajuanMagangModel::whereHas('lowongan', function($q) {
+        // Get average feedback_rating dari relasi
+        $feedbackAvg = PengajuanMagangModel::whereHas('lowongan', function ($q) {
             $q->where('perusahaan_id', $this->perusahaan_id);
         })->avg('feedback_rating');
 
-        $feedbackAvg = $feedbackAvg ?? 0;
+        // Hitung bobot dinamis
+        $hasAdmin = $this->rating !== null;
+        $hasFeedback = $feedbackAvg !== null;
 
-        // Weighted average
-        $combined = ($adminRating * $adminWeight) + ($feedbackAvg * $feedbackWeight);
+        if ($hasAdmin && $hasFeedback) {
+            $adminWeight = 0.7;
+            $feedbackWeight = 0.3;
+        } elseif ($hasAdmin) {
+            $adminWeight = 1.0;
+            $feedbackWeight = 0.0;
+        } elseif ($hasFeedback) {
+            $adminWeight = 0.0;
+            $feedbackWeight = 1.0;
+        } else {
+            return 0; // Tidak ada data rating sama sekali
+        }
 
-        // Return as percentage of max rating (5)
+        // Hitung rata-rata tertimbang
+        $combined = ($adminRating * $adminWeight) + (($feedbackAvg ?? 0) * $feedbackWeight);
+
+        // Ubah ke persentase
         return round(($combined / 5) * 100, 2);
     }
 }

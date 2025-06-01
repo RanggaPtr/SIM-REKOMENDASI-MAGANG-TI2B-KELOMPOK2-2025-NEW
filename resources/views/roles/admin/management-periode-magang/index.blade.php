@@ -5,7 +5,8 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-periode-magang/import') }}')" class="btn btn-success btn-sm">
+                <button onclick="modalAction('{{ url('/admin/management-periode-magang/import') }}')"
+                    class="btn btn-success btn-sm">
                     <i class="fa fa-file-import"></i> Import Periode
                 </button>
                 <a href="{{ url('/admin/management-periode-magang/export_excel') }}" class="btn btn-warning btn-sm">
@@ -14,7 +15,8 @@
                 <a href="{{ url('/admin/management-periode-magang/export_pdf') }}" class="btn btn-warning btn-sm">
                     <i class="fa fa-file-pdf"></i> Export PDF
                 </a>
-                <button onclick="modalAction('{{ url('/admin/management-periode-magang/create_ajax') }}')" class="btn btn-success">
+                <button onclick="modalAction('{{ url('/admin/management-periode-magang/create_ajax') }}')"
+                    class="btn btn-success">
                     <i class="fa fa-plus"></i> Tambah Periode
                 </button>
             </div>
@@ -50,7 +52,7 @@
 
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function () {
+            $('#myModal').load(url, function() {
                 var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
                     keyboard: false,
                     backdrop: 'static'
@@ -59,22 +61,42 @@
             });
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             window.tablePeriode = $('#table_periode').DataTable({
                 serverSide: true,
                 processing: true,
                 ajax: {
                     url: "{{ url('admin/management-periode-magang/list') }}",
                     type: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
                 },
-                columns: [
-                    { data: "periode_id", className: "text-center" },
-                    { data: "nama", className: "" },
-                    { data: "tanggal_mulai", className: "" },
-                    { data: "tanggal_selesai", className: "" },
-                   
-                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "nama",
+                        className: ""
+                    },
+                    {
+                        data: "tanggal_mulai",
+                        className: ""
+                    },
+                    {
+                        data: "tanggal_selesai",
+                        className: ""
+                    },
+
+                    {
+                        data: "aksi",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
         });

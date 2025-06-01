@@ -21,7 +21,7 @@ class ProfileController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Debug: Log request data
             Log::info('Profile update attempt', [
                 'user_id' => $user->user_id,
@@ -59,14 +59,14 @@ class ProfileController extends Controller
                 if ($user->foto_profile && Storage::exists('public/' . $user->foto_profile)) {
                     Storage::delete('public/' . $user->foto_profile);
                 }
-                
+
                 $path = $request->file('foto_profile')->store('public/profiles');
                 $updateData['foto_profile'] = str_replace('public/', '', $path);
             }
 
             // Update user data
             $userUpdated = $user->update($updateData);
-            
+
             if (!$userUpdated) {
                 Log::error('Failed to update user data', ['user_id' => $user->user_id]);
                 return redirect()->back()->with('error', 'Gagal memperbarui data user.');
@@ -78,7 +78,7 @@ class ProfileController extends Controller
                     $dosenValidated = $request->validate([
                         'nik' => 'required|string|max:50',
                         'prodi_id' => 'required|exists:m_program_studi,prodi_id',
-                        'jumlah_bimbingan' => 'required|integer|min:0', // Validasi untuk jumlah_bimbingan
+                        'jumlah_bimbingan' => 'nullable|integer|min:0', // Ubah menjadi nullable
                     ]);
 
                     $dosenUpdated = DosenModel::updateOrCreate(
@@ -86,12 +86,12 @@ class ProfileController extends Controller
                         [
                             'nik' => $dosenValidated['nik'],
                             'prodi_id' => $dosenValidated['prodi_id'],
-                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'], // Sertakan jumlah_bimbingan
+                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'] ?? 0, // Default 0 jika null
                         ]
                     );
-                    
+
                     Log::info('Dosen profile updated', [
-                        'user_id' => $user->user_id, 
+                        'user_id' => $user->user_id,
                         'data' => $dosenValidated,
                         'updated' => $dosenUpdated->wasRecentlyCreated ? 'created' : 'updated'
                     ]);
@@ -118,9 +118,9 @@ class ProfileController extends Controller
                             'ipk' => $mahasiswaValidated['ipk'],
                         ]
                     );
-                    
+
                     Log::info('Mahasiswa profile updated', [
-                        'user_id' => $user->user_id, 
+                        'user_id' => $user->user_id,
                         'data' => $mahasiswaValidated,
                         'updated' => $mahasiswaUpdated->wasRecentlyCreated ? 'created' : 'updated'
                     ]);
@@ -137,9 +137,9 @@ class ProfileController extends Controller
                             'nama_perusahaan' => $perusahaanValidated['nama_perusahaan'],
                         ]
                     );
-                    
+
                     Log::info('Perusahaan profile updated', [
-                        'user_id' => $user->user_id, 
+                        'user_id' => $user->user_id,
                         'data' => $perusahaanValidated,
                         'updated' => $perusahaanUpdated->wasRecentlyCreated ? 'created' : 'updated'
                     ]);
@@ -148,11 +148,10 @@ class ProfileController extends Controller
 
             // Refresh user instance untuk mendapatkan data terbaru
             $user->refresh();
-            
+
             Log::info('Profile update successful', ['user_id' => $user->user_id]);
 
             return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
-            
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation error in profile update', [
                 'user_id' => Auth::id(),
@@ -161,7 +160,7 @@ class ProfileController extends Controller
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             Log::error('Profile update error', [
-                'user_id' => Auth::id(), 
+                'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -196,7 +195,7 @@ class ProfileController extends Controller
     public function debugProfile()
     {
         $user = Auth::user();
-        
+
         $debug = [
             'user_data' => $user->toArray(),
             'role_data' => null

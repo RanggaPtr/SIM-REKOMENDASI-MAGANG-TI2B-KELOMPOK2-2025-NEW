@@ -78,6 +78,7 @@ class ProfileController extends Controller
                     $dosenValidated = $request->validate([
                         'nik' => 'required|string|max:50',
                         'prodi_id' => 'required|exists:m_program_studi,prodi_id',
+                        'jumlah_bimbingan' => 'required|integer|min:0', // Validasi untuk jumlah_bimbingan
                     ]);
 
                     $dosenUpdated = DosenModel::updateOrCreate(
@@ -85,6 +86,7 @@ class ProfileController extends Controller
                         [
                             'nik' => $dosenValidated['nik'],
                             'prodi_id' => $dosenValidated['prodi_id'],
+                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'], // Sertakan jumlah_bimbingan
                         ]
                     );
                     
@@ -101,6 +103,7 @@ class ProfileController extends Controller
                         'program_studi_id' => 'required|exists:m_program_studi,prodi_id',
                         'wilayah_id' => 'required|exists:m_wilayah,wilayah_id',
                         'skema_id' => 'required|exists:m_skema,skema_id',
+                        'periode_id' => 'required|exists:m_periode_magang,periode_id',
                         'ipk' => 'required|numeric|between:0,4',
                     ]);
 
@@ -111,6 +114,7 @@ class ProfileController extends Controller
                             'program_studi_id' => $mahasiswaValidated['program_studi_id'],
                             'wilayah_id' => $mahasiswaValidated['wilayah_id'],
                             'skema_id' => $mahasiswaValidated['skema_id'],
+                            'periode_id' => $mahasiswaValidated['periode_id'],
                             'ipk' => $mahasiswaValidated['ipk'],
                         ]
                     );

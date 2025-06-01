@@ -36,7 +36,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'username' => 'required|string|unique:m_users,username|unique:m_users,nim_nik',
+            'username' => 'required|string|unique:m_users,username|unique:m_users',
             'email' => 'required|email|unique:m_users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:dosen,mahasiswa',
@@ -45,7 +45,6 @@ class AuthController extends Controller
         try {
             $user = UsersModel::create([
                 'nama' => $request->nama,
-                'nim_nik' => $request->username, 
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),

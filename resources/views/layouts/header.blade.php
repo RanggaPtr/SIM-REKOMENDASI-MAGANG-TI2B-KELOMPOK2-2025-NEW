@@ -24,7 +24,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 shadow-lg">
             <div class="modal-header bg-primary text-white rounded-top-4">
-                <h5 class="modal-title fw-bold" id="editProfileModalLabel">Edit Profil</h5>
+                <h5 class="modal-title fw-bold" id="editProfileModalLabel" style="color: black;background-color:none;">Edit Profil</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -53,7 +53,7 @@
                             alt="Profile"
                             class="rounded-circle mb-3"
                             style="width: 100px; height: 100px; object-fit: cover;">
-                        <label for="foto_profile" class="form-label">Ganti Foto Profil</label>
+                        <!-- <label for="foto_profile" class="form-label">Ganti Foto Profil</label> -->
                         <input type="file" class="form-control" id="foto_profile" name="foto_profile" accept="image/*">
                         @error('foto_profile')
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -149,6 +149,7 @@
                     $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
                     $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
                     $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
+                    $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
                     @endphp
 
                     <div class="mb-3">
@@ -207,6 +208,24 @@
                             @endforeach
                         </select>
                         @error('skema_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Periode -->
+                    <div class="mb-3">
+                        <label for="periode_id" class="form-label fw-bold">Periode</label>
+                        <select class="form-select @error('periode_id') is-invalid @enderror"
+                            id="periode_id" name="periode_id" required>
+                            <option value="">-- Pilih Periode --</option>
+                            @foreach ($periodeList as $periode)
+                            <option value="{{ $periode->periode_id }}"
+                                {{ old('periode_id', $mahasiswa->periode_id ?? '') == $periode->periode_id ? 'selected' : '' }}>
+                                {{ $periode->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('periode_id')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

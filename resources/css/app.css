@@ -18,3 +18,18 @@ body * {
   padding: 0;
   background-color: #FFF6DF;
 }
+
+.modal {
+    z-index: 1055 !important;
+}
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+.modal-dialog {
+    z-index: 1056 !important;
+    position: relative;
+}
+.modal-content {
+    z-index: 1057 !important;
+    position: relative;
+}

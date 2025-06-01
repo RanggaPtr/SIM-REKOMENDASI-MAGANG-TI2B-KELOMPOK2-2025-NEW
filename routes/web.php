@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LowonganMagangController;
 use App\Http\Controllers\Admin\PeriodeMagangController;
 use App\Http\Controllers\Admin\PerusahaanController;
@@ -68,7 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware('authorize:admin')->group(function () {
         // Dashboard
-        Route::get('/dashboard', fn() => view('roles.admin.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Tambahkan route show untuk lowongan magang di group admin management-lowongan-magang
         Route::prefix('management-lowongan-magang')->group(function () {

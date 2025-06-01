@@ -8,11 +8,13 @@ use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dosen\MonitoringMagangController;
+use App\Http\Controllers\Dosen\SertifikatDosenController as DosenSertifikatDosenController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use App\Http\Controllers\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SertifikatDosenController;
 use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -175,14 +177,14 @@ Route::group(['middleware' => 'auth'], function () {
 
         // route untuk simpan feedback dosen
         Route::post('/monitoring-mahasiswa/feedback/{logId}', [MonitoringMagangController::class, 'storeFeedback'])->name('monitoring.feedback.store');
-        
-        // Form upload sertifikat dosen
-        Route::get('/upload-sertifikat', [App\Http\Controllers\Dosen\UploadSertifikatController::class, 'create'])
-            ->name('upload.sertifikat');
 
-        // Simpan sertifikat dosen
-        Route::post('/upload-sertifikat', [App\Http\Controllers\Dosen\UploadSertifikatController::class, 'store'])
-            ->name('upload.sertifikat.store');
+        // CRUD Sertifikat Dosen
+        Route::get('/sertifikat', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'index'])->name('sertifikat.index');
+        Route::get('/sertifikat/create', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'create'])->name('sertifikat.create');
+        Route::post('/sertifikat', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'store'])->name('sertifikat.store');
+        Route::get('/sertifikat/{id}/edit', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'edit'])->name('sertifikat.edit');
+        Route::put('/sertifikat/{id}', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'update'])->name('sertifikat.update');
+        Route::delete('/sertifikat/{id}', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'destroy'])->name('sertifikat.destroy');
     });
 
 

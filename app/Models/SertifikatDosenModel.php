@@ -12,9 +12,16 @@ class SertifikatDosenModel extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'dosen_id', 'nama_sertifikat', 'penerbit', 'tanggal_terbit', 'file_sertifikat'
+        'dosen_id',
+        'nama_sertifikat',
+        'penerbit',
+        'tanggal_terbit',
+        'file_sertifikat'
     ];
-
+    
+    protected $casts = [
+        'tanggal_terbit' => 'datetime',
+    ];
     public function dosen()
     {
         return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');

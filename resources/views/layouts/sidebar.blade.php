@@ -81,7 +81,7 @@
                 </a>
             </li>
             <li class="nav-item bg-light-softer">
-                <a href="{{ route('dosen.upload.sertifikat') }}"
+                <a href="{{ route('dosen.sertifikat.index') }}"
                     class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'monitoringMahasiswa' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                     <i class="fas fa-eye me-4"></i><b>Upload Sertifikat</b>
                 </a>

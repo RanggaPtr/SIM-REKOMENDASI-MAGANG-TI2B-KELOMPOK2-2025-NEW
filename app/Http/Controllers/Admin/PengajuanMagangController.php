@@ -11,28 +11,30 @@ use App\Models\PeriodeMagangModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class PengajuanMagangController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan halaman index pengajuan magang
      */
     public function index()
     {
         $breadcrumb = (object) [
             'title' => 'Daftar Pengajuan Magang',
-            'list' => ['Home', 'Pengajuan Magang']
+            'list' => ['Home', 'Management Pengajuan Magang']
         ];
 
         $page = (object) [
-            'title' => 'Daftar pengajuan magang yang terdaftar dalam sistem'
+            'title' => 'Daftar Pengajuan Magang yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'manajemenMagang';
+        $activeMenu = 'pengajuan-magang';
 
         return view('roles.admin.management-pengajuan-magang.index', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
+            'breadcrumb' => $breadcrumb, 
+            'page' => $page, 
             'activeMenu' => $activeMenu
         ]);
     }
@@ -42,242 +44,186 @@ class PengajuanMagangController extends Controller
      */
     public function list(Request $request)
     {
-        $pengajuanMagang = PengajuanMagangModel::select(
-                'pengajuan_id',
-                'mahasiswa_id', 
-                'lowongan_id',
-                'dosen_id',
-                'periode_id',
-                'status',
-                'feedback_rating',
-                'created_at'
-            )
-            ->with(['mahasiswa.user', 'lowongan.perusahaan', 'dosen.user', 'periode']);
+        try {
+            // Debug: Cek apakah ada data di tabel
+            $totalCount = PengajuanMagangModel::count();
+            Log::info('Total pengajuan magang di database: ' . $totalCount);
 
-        return DataTables::of($pengajuanMagang)
-            ->addIndexColumn()
-            ->addColumn('mahasiswa_nama', function ($pengajuan) {
-                return $pengajuan->mahasiswa->user->nama ?? '-';
-            })
-            ->addColumn('perusahaan_nama', function ($pengajuan) {
-                return $pengajuan->lowongan->perusahaan->nama_perusahaan ?? '-';
-            })
-            ->addColumn('lowongan_posisi', function ($pengajuan) {
-                return $pengajuan->lowongan->posisi ?? '-';
-            })
-            ->addColumn('dosen_nama', function ($pengajuan) {
-                return $pengajuan->dosen->user->nama ?? '-';
-            })
-            ->addColumn('periode_nama', function ($pengajuan) {
-                return $pengajuan->periode->nama ?? '-';
-            })
-            ->addColumn('status_badge', function ($pengajuan) {
-                $badgeClass = match($pengajuan->status) {
-                    'pending' => 'badge-warning',
-                    'approved' => 'badge-success', 
-                    'rejected' => 'badge-danger',
-                    'completed' => 'badge-info',
-                    default => 'badge-secondary'
-                };
-                return '<span class="badge ' . $badgeClass . '">' . ucfirst($pengajuan->status) . '</span>';
-            })
-            ->addColumn('aksi', function ($pengajuan) {
-                $btn = '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
-                return $btn;
-            })
-            ->rawColumns(['status_badge', 'aksi'])
-            ->make(true);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create_ajax()
-    {
-        $mahasiswa = MahasiswaModel::with('user')->get();
-        $lowongan = LowonganMagangModel::with('perusahaan')->get();
-        $dosen = DosenModel::with('user')->get();
-        $periode = PeriodeMagangModel::all();
-
-        return view('roles.admin.management-pengajuan-magang.create_ajax', [
-            'mahasiswa' => $mahasiswa,
-            'lowongan' => $lowongan,
-            'dosen' => $dosen,
-            'periode' => $periode
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'mahasiswa_id' => 'required|integer|exists:m_mahasiswa,mahasiswa_id',
-                'lowongan_id' => 'required|integer|exists:m_lowongan_magang,lowongan_id',
-                'dosen_id' => 'required|integer|exists:m_dosen,dosen_id',
-                'periode_id' => 'required|integer|exists:m_periode_magang,periode_id',
-                'status' => 'required|in:pending,approved,rejected,completed'
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
+            $pengajuanMagang = PengajuanMagangModel::select(
+                    'pengajuan_id',
+                    'mahasiswa_id', 
+                    'lowongan_id',
+                    'dosen_id',
+                    'periode_id',
+                    'status',
+                    'feedback_rating',
+                    'created_at'
+                )
+                ->with([
+                    'mahasiswa' => function($query) {
+                        $query->with('user');
+                    },
+                    'lowongan' => function($query) {
+                        $query->with('perusahaan');
+                    },
+                    'dosen' => function($query) {
+                        $query->with('user');
+                    },
+                    'periode'
                 ]);
+
+            // Filter berdasarkan status jika ada
+            if ($request->has('status') && !empty($request->status)) {
+                $pengajuanMagang->where('status', $request->status);
+                Log::info('Filtering by status: ' . $request->status);
             }
 
-            PengajuanMagangModel::create($request->all());
+            // Debug query
+            Log::info('SQL Query: ' . $pengajuanMagang->toSql());
+            Log::info('Query bindings: ', $pengajuanMagang->getBindings());
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Data pengajuan magang berhasil disimpan'
-            ]);
-        }
+            $results = $pengajuanMagang->get();
+            Log::info('Results count: ' . $results->count());
 
-        return redirect('/');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show_ajax(string $id)
-    {
-        $pengajuan = PengajuanMagangModel::with([
-            'mahasiswa.user',
-            'lowongan.perusahaan',
-            'dosen.user',
-            'periode'
-        ])->find($id);
-
-        if ($pengajuan) {
-            return view('roles.admin.management-pengajuan-magang.show_ajax', ['pengajuan' => $pengajuan]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan'
-            ]);
-        }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit_ajax(string $id)
-    {
-        $pengajuan = PengajuanMagangModel::find($id);
-        $mahasiswa = MahasiswaModel::with('user')->get();
-        $lowongan = LowonganMagangModel::with('perusahaan')->get();
-        $dosen = DosenModel::with('user')->get();
-        $periode = PeriodeMagangModel::all();
-
-        if ($pengajuan) {
-            return view('roles.admin.management-pengajuan-magang.edit_ajax', [
-                'pengajuan' => $pengajuan,
-                'mahasiswa' => $mahasiswa,
-                'lowongan' => $lowongan,
-                'dosen' => $dosen,
-                'periode' => $periode
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan'
-            ]);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update_ajax(Request $request, $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'mahasiswa_id' => 'required|integer|exists:m_mahasiswa,mahasiswa_id',
-                'lowongan_id' => 'required|integer|exists:m_lowongan_magang,lowongan_id',
-                'dosen_id' => 'required|integer|exists:m_dosen,dosen_id',
-                'periode_id' => 'required|integer|exists:m_periode_magang,periode_id',
-                'status' => 'required|in:pending,approved,rejected,completed'
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors()
-                ]);
+            // Debug hasil query
+            if ($results->isEmpty()) {
+                Log::warning('No pengajuan magang found');
+                
+                // Cek apakah relasi berfungsi
+                $sampleData = PengajuanMagangModel::with(['mahasiswa.user', 'lowongan.perusahaan', 'dosen.user', 'periode'])->first();
+                if ($sampleData) {
+                    Log::info('Sample data found:', [
+                        'pengajuan_id' => $sampleData->pengajuan_id,
+                        'mahasiswa' => $sampleData->mahasiswa ? $sampleData->mahasiswa->user->nama ?? 'No name' : 'No mahasiswa',
+                        'lowongan' => $sampleData->lowongan ? $sampleData->lowongan->posisi ?? 'No posisi' : 'No lowongan',
+                        'dosen' => $sampleData->dosen ? $sampleData->dosen->user->nama ?? 'No name' : 'No dosen',
+                        'periode' => $sampleData->periode ? $sampleData->periode->nama ?? 'No name' : 'No periode'
+                    ]);
+                }
             }
 
-            $check = PengajuanMagangModel::find($id);
+            return DataTables::of($pengajuanMagang)
+                ->addIndexColumn()
+                ->addColumn('mahasiswa_nama', function ($pengajuan) {
+                    try {
+                        return $pengajuan->mahasiswa && $pengajuan->mahasiswa->user 
+                            ? $pengajuan->mahasiswa->user->nama 
+                            : 'Data tidak tersedia';
+                    } catch (Exception $e) {
+                        Log::error('Error getting mahasiswa nama: ' . $e->getMessage());
+                        return 'Error loading data';
+                    }
+                })
+                ->addColumn('perusahaan_nama', function ($pengajuan) {
+                    try {
+                        return $pengajuan->lowongan && $pengajuan->lowongan->perusahaan 
+                            ? $pengajuan->lowongan->perusahaan->nama_perusahaan 
+                            : 'Data tidak tersedia';
+                    } catch (Exception $e) {
+                        Log::error('Error getting perusahaan nama: ' . $e->getMessage());
+                        return 'Error loading data';
+                    }
+                })
+                ->addColumn('lowongan_posisi', function ($pengajuan) {
+                    try {
+                        return $pengajuan->lowongan 
+                            ? $pengajuan->lowongan->posisi 
+                            : 'Data tidak tersedia';
+                    } catch (Exception $e) {
+                        Log::error('Error getting lowongan posisi: ' . $e->getMessage());
+                        return 'Error loading data';
+                    }
+                })
+                ->addColumn('dosen_nama', function ($pengajuan) {
+                    try {
+                        return $pengajuan->dosen && $pengajuan->dosen->user 
+                            ? $pengajuan->dosen->user->nama 
+                            : 'Data tidak tersedia';
+                    } catch (Exception $e) {
+                        Log::error('Error getting dosen nama: ' . $e->getMessage());
+                        return 'Error loading data';
+                    }
+                })
+                ->addColumn('periode_nama', function ($pengajuan) {
+                    try {
+                        return $pengajuan->periode 
+                            ? $pengajuan->periode->nama 
+                            : 'Data tidak tersedia';
+                    } catch (Exception $e) {
+                        Log::error('Error getting periode nama: ' . $e->getMessage());
+                        return 'Error loading data';
+                    }
+                })
+                ->addColumn('status_badge', function ($pengajuan) {
+                    $statusLabels = [
+                        'pending' => ['class' => 'badge-warning', 'text' => 'Diajukan'],
+                        'approved' => ['class' => 'badge-success', 'text' => 'Diterima'],
+                        'rejected' => ['class' => 'badge-danger', 'text' => 'Ditolak'],
+                        'completed' => ['class' => 'badge-info', 'text' => 'Selesai']
+                    ];
+                    
+                    $status = $statusLabels[$pengajuan->status] ?? ['class' => 'badge-secondary', 'text' => ucfirst($pengajuan->status)];
+                    return '<span class="badge ' . $status['class'] . '">' . $status['text'] . '</span>';
+                })
+                ->editColumn('feedback_rating', function ($pengajuan) {
+                    if ($pengajuan->feedback_rating) {
+                        $stars = str_repeat('⭐', $pengajuan->feedback_rating);
+                        return $stars . ' (' . $pengajuan->feedback_rating . ')';
+                    }
+                    return '-';
+                })
+                ->editColumn('created_at', function ($pengajuan) {
+                    return \Carbon\Carbon::parse($pengajuan->created_at)->format('d/m/Y H:i');
+                })
+                ->addColumn('aksi', function ($pengajuan) {
+                    $btn = '<div class="btn-group" role="group">';
+                    $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm" title="Detail"><i class="fas fa-eye"></i></button>';
+                    $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></button>';
+                    $btn .= '<button onclick="modalAction(\'' . url('/admin/management-pengajuan-magang/' . $pengajuan->pengajuan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm" title="Hapus"><i class="fas fa-trash"></i></button>';
+                    $btn .= '</div>';
+                    return $btn;
+                })
+                ->rawColumns(['status_badge', 'aksi'])
+                ->make(true);
+                
+        } catch (Exception $e) {
+            Log::error('Error in PengajuanMagangController@list: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'draw' => intval($request->draw),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 200); // Gunakan status 200 agar DataTables tidak error
+        }
+    }
 
-            if ($check) {
-                $check->update($request->all());
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diupdate'
-                ]);
+    // Tambahkan method untuk debugging
+    public function debug()
+    {
+        try {
+            // Cek total data
+            $total = PengajuanMagangModel::count();
+            echo "Total pengajuan: " . $total . "<br>";
+
+            // Cek sample data
+            $sample = PengajuanMagangModel::with(['mahasiswa.user', 'lowongan.perusahaan', 'dosen.user', 'periode'])->first();
+            if ($sample) {
+                echo "Sample data found:<br>";
+                echo "ID: " . $sample->pengajuan_id . "<br>";
+                echo "Status: " . $sample->status . "<br>";
+                echo "Mahasiswa: " . ($sample->mahasiswa ? ($sample->mahasiswa->user ? $sample->mahasiswa->user->nama : 'No user') : 'No mahasiswa') . "<br>";
+                echo "Lowongan: " . ($sample->lowongan ? $sample->lowongan->posisi : 'No lowongan') . "<br>";
+                echo "Dosen: " . ($sample->dosen ? ($sample->dosen->user ? $sample->dosen->user->nama : 'No user') : 'No dosen') . "<br>";
+                echo "Periode: " . ($sample->periode ? $sample->periode->nama : 'No periode') . "<br>";
             } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
+                echo "No sample data found<br>";
             }
+
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
         }
-
-        return redirect('/');
-    }
-
-    /**
-     * Show the form for confirming deletion.
-     */
-    public function confirm_ajax(string $id)
-    {
-        $pengajuan = PengajuanMagangModel::with([
-            'mahasiswa.user',
-            'lowongan.perusahaan'
-        ])->find($id);
-
-        if ($pengajuan) {
-            return view('roles.admin.management-pengajuan-magang.confirm_ajax', ['pengajuan' => $pengajuan]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan'
-            ]);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function delete_ajax(Request $request, $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $pengajuan = PengajuanMagangModel::find($id);
-
-            if ($pengajuan) {
-                $pengajuan->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil dihapus'
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
-            }
-        }
-
-        return redirect('/');
     }
 }

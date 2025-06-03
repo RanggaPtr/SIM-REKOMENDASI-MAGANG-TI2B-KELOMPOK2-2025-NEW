@@ -11,28 +11,52 @@ class PengajuanMagangModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['mahasiswa_id', 'lowongan_id', 'status', 'feedback_rating', 'feedback_deskripsi'];
+    protected $fillable = [
+        'mahasiswa_id', 
+        'lowongan_id', 
+        'dosen_id',
+        'periode_id',
+        'status', 
+        'feedback_rating', 
+        'feedback_deskripsi'
+    ];
 
     protected $casts = [
         'status' => 'string',
+        'feedback_rating' => 'integer',
     ];
 
+    // Relasi dengan Mahasiswa
     public function mahasiswa()
     {
         return $this->belongsTo(MahasiswaModel::class, 'mahasiswa_id', 'mahasiswa_id');
     }
 
+    // Relasi dengan Lowongan Magang
     public function lowongan()
     {
         return $this->belongsTo(LowonganMagangModel::class, 'lowongan_id', 'lowongan_id');
     }
 
+    // Relasi dengan Dosen (TAMBAHAN YANG KURANG)
+    public function dosen()
+    {
+        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+    }
 
+    // Relasi dengan Periode Magang (TAMBAHAN YANG KURANG)
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeMagangModel::class, 'periode_id', 'periode_id');
+    }
+
+    // Relasi dengan Sertifikat Magang
     public function sertifikatMagang()
     {
         return $this->hasMany(SertifikatMagangModel::class, 'pengajuan_id', 'pengajuan_id');
     }
 
+    // Relasi dengan Evaluasi Magang
     public function evaluasiMagang()
     {
         return $this->hasMany(EvaluasiMagangModel::class, 'pengajuan_id', 'pengajuan_id');

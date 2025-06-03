@@ -164,10 +164,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf'])->name('export_pdf');
         });
 
-        // Statistik Tren
-        Route::prefix('statistik-data-tren')->name('statistik-data-tren.')->group(function () {
-            Route::get('/', [StatistikController::class, 'index'])->name('index');
-        });
     });
 
     // Dosen Routes

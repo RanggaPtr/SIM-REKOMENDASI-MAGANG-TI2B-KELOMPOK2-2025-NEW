@@ -105,18 +105,36 @@ class ProfileController extends Controller
                         'skema_id' => 'required|exists:m_skema,skema_id',
                         'periode_id' => 'required|exists:m_periode_magang,periode_id',
                         'ipk' => 'required|numeric|between:0,4',
+                        'file_cv' => 'nullable|file|mimes:pdf|max:2048', // Validasi file CV (maks 2MB)
                     ]);
+
+                    // Ambil data mahasiswa berdasarkan user_id
+                    $mahasiswa = MahasiswaModel::where('user_id', $user->user_id)->first();
+
+                    // Prepare data untuk update MahasiswaModel
+                    $mahasiswaData = [
+                        'nim' => $mahasiswaValidated['nim'],
+                        'program_studi_id' => $mahasiswaValidated['program_studi_id'],
+                        'wilayah_id' => $mahasiswaValidated['wilayah_id'],
+                        'skema_id' => $mahasiswaValidated['skema_id'],
+                        'periode_id' => $mahasiswaValidated['periode_id'],
+                        'ipk' => $mahasiswaValidated['ipk'],
+                    ];
+
+                    // Upload file CV jika ada
+                    if ($request->hasFile('file_cv')) {
+                        // Hapus CV lama jika ada
+                        if ($mahasiswa && $mahasiswa->file_cv && Storage::exists('public/' . $mahasiswa->file_cv)) {
+                            Storage::delete('public/' . $mahasiswa->file_cv);
+                        }
+
+                        $path = $request->file('file_cv')->store('public/cv');
+                        $mahasiswaData['file_cv'] = str_replace('public/', '', $path);
+                    }
 
                     $mahasiswaUpdated = MahasiswaModel::updateOrCreate(
                         ['user_id' => $user->user_id],
-                        [
-                            'nim' => $mahasiswaValidated['nim'],
-                            'program_studi_id' => $mahasiswaValidated['program_studi_id'],
-                            'wilayah_id' => $mahasiswaValidated['wilayah_id'],
-                            'skema_id' => $mahasiswaValidated['skema_id'],
-                            'periode_id' => $mahasiswaValidated['periode_id'],
-                            'ipk' => $mahasiswaValidated['ipk'],
-                        ]
+                        $mahasiswaData
                     );
 
                     Log::info('Mahasiswa profile updated', [

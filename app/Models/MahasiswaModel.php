@@ -12,7 +12,7 @@ class MahasiswaModel extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'user_id', 'nim', 'program_studi_id', 'wilayah_id', 'skema_id', 'ipk', 'periode_id'
+        'user_id', 'nim', 'program_studi_id', 'wilayah_id', 'skema_id', 'ipk', 'periode_id','file_cv'
     ];
 
     public function user()

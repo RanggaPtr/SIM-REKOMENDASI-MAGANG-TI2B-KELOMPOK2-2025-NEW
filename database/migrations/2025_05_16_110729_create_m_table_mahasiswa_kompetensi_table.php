@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-     public function up()
+    public function up()
     {
         Schema::create('m_mahasiswa_kompetensi', function (Blueprint $table) {
             $table->bigIncrements('mahasiswa_kompetensi_id');

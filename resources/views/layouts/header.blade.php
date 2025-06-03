@@ -177,7 +177,19 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    <div class="mb-3">
+                        <label for="file_cv" class="form-label fw-bold">Upload CV</label>
+                        <input type="file" class="form-control @error('file_cv') is-invalid @enderror"
+                            id="file_cv" name="file_cv" accept=".pdf">
+                        @error('file_cv')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        @if ($mahasiswa->file_cv)
+                        <small class="form-text text-muted">
+                            CV saat ini: <a href="{{ url('/storage/' . $mahasiswa->file_cv) }}" target="_blank">Lihat CV</a>
+                        </small>
+                        @endif
+                    </div>
                     <div class="mb-3">
                         <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
                         <select class="form-select @error('wilayah_id') is-invalid @enderror"
@@ -293,7 +305,7 @@
         </div>
     </div>
 </div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Script untuk preview foto -->
 <script>

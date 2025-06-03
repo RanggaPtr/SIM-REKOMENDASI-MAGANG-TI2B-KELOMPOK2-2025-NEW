@@ -115,6 +115,7 @@
                     @php
                     $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
                     $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
                     @endphp
 
                     <div class="mb-3">
@@ -139,6 +140,23 @@
                             @endforeach
                         </select>
                         @error('prodi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kompetensi_id" class="form-label fw-bold">Kompetensi</label>
+                        <select class="form-select @error('kompetensi_id') is-invalid @enderror"
+                            id="kompetensi_id" name="kompetensi_id">
+                            <option value="">-- Pilih Kompetensi (Opsional) --</option>
+                            @foreach ($kompetensiList as $kompetensi)
+                            <option value="{{ $kompetensi->kompetensi_id }}"
+                                {{ old('kompetensi_id', $dosen->kompetensi_id ?? '') == $kompetensi->kompetensi_id ? 'selected' : '' }}>
+                                {{ $kompetensi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('kompetensi_id')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

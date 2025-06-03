@@ -78,7 +78,8 @@ class ProfileController extends Controller
                     $dosenValidated = $request->validate([
                         'nik' => 'required|string|max:50',
                         'prodi_id' => 'required|exists:m_program_studi,prodi_id',
-                        'jumlah_bimbingan' => 'nullable|integer|min:0', // Ubah menjadi nullable
+                        'jumlah_bimbingan' => 'nullable|integer|min:0',
+                        'kompetensi_id' => 'nullable|exists:m_kompetensi,kompetensi_id', // Validasi kompetensi_id
                     ]);
 
                     $dosenUpdated = DosenModel::updateOrCreate(
@@ -86,7 +87,8 @@ class ProfileController extends Controller
                         [
                             'nik' => $dosenValidated['nik'],
                             'prodi_id' => $dosenValidated['prodi_id'],
-                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'] ?? 0, // Default 0 jika null
+                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'] ?? 0,
+                            'kompetensi_id' => $dosenValidated['kompetensi_id'] ?? null, // Simpan kompetensi_id
                         ]
                     );
 

@@ -11,7 +11,7 @@ class DosenModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['user_id', 'nik', 'prodi_id', 'jumlah_bimbingan'];
+    protected $fillable = ['user_id', 'nik', 'prodi_id', 'jumlah_bimbingan', 'kompetensi_id'];
 
     public function user()
     {
@@ -28,5 +28,8 @@ class DosenModel extends Model
         return $this->hasMany(SertifikatDosenModel::class, 'dosen_id', 'dosen_id');
     }
 
-   
+   public function kompetensi()
+    {
+        return $this->belongsTo(KompetensiModel::class, 'kompetensi_id', 'kompetensi_id');
+    }
 }

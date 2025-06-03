@@ -168,6 +168,15 @@
                     $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
                     $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
                     $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
+
+                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
+                    $keahlianList = \App\Models\KeahlianModel::orderBy('nama')->get();
+
+                    // Ambil data mahasiswa dan relasinya, ubah 'keahlian' menjadi 'mahasiswaKeahlian'
+                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->with('mahasiswaKeahlian')->first();
+
+                    // Ubah 'keahlian' menjadi 'mahasiswaKeahlian' saat mengambil keahlian_ids
+                    $selectedKeahlianIds = old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? []);
                     @endphp
 
                     <div class="mb-3">
@@ -193,6 +202,52 @@
                         </select>
                         @error('program_studi_id')
                         <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <!-- Kompetensi (single select checkbox) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kompetensi</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($kompetensiList as $kompetensi)
+                            <div class="form-check">
+                                <input class="form-check-input @error('kompetensi_id') is-invalid @enderror"
+                                    type="checkbox"
+                                    name="kompetensi_id"
+                                    value="{{ $kompetensi->kompetensi_id }}"
+                                    id="kompetensi_{{ $kompetensi->kompetensi_id }}"
+                                    {{ old('kompetensi_id', $mahasiswa->mahasiswaKompetensi->pluck('kompetensi_id')->first() ?? '') == $kompetensi->kompetensi_id ? 'checked' : '' }}
+                                    onchange="ensureSingleKompetensi(this)">
+                                <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
+                                    {{ $kompetensi->nama }}
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
+                        @error('kompetensi_id')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- Keahlian (multi select checkbox) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Keahlian</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($keahlianList as $keahlian)
+                            <div class="form-check">
+                                <input class="form-check-input @error('keahlian_ids') is-invalid @enderror"
+                                    type="checkbox"
+                                    name="keahlian_ids[]"
+                                    value="{{ $keahlian->keahlian_id }}"
+                                    id="keahlian_{{ $keahlian->keahlian_id }}"
+                                    {{ in_array($keahlian->keahlian_id, old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? [])) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
+                                    {{ $keahlian->nama }}
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
+                        @error('keahlian_ids')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-3">
@@ -349,4 +404,14 @@
         }, 2000);
     });
     @endif
+
+    // Pastikan hanya satu kompetensi yang bisa dipilih
+    function ensureSingleKompetensi(checkbox) {
+        const checkboxes = document.querySelectorAll('input[name="kompetensi_id"]');
+        checkboxes.forEach((cb) => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+    }
 </script>

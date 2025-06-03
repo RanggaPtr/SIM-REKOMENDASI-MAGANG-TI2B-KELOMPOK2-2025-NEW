@@ -16,9 +16,9 @@ class DashboardController extends Controller
         $jumlah_mahasiswa = UsersModel::where('role', 'mahasiswa')->count();
         $jumlah_magang = PengajuanMagangModel::where('status', 'diterima')->distinct('mahasiswa_id')->count('mahasiswa_id');
 
-        // Statistik Data Tren
+        // Grafik Penyebaran Penerimaan Magang
         $kompetensi = KompetensiModel::all();
-        $data_kompetensi = [];
+        $data_kompetensi_diterima = [];
         foreach ($kompetensi as $k) {
             $jumlah = DB::table('t_pengajuan_magang')
                 ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
@@ -26,7 +26,21 @@ class DashboardController extends Controller
                 ->where('m_lowongan_kompetensi.kompetensi_id', $k->kompetensi_id)
                 ->where('t_pengajuan_magang.status', 'diterima')
                 ->count();
-            $data_kompetensi[] = [
+            $data_kompetensi_diterima[] = [
+                'nama' => $k->nama,
+                'total' => $jumlah
+            ];
+        }
+
+        // Grafik Peminatan Bidang Industri Berdasarkan Kompetensi
+        $data_kompetensi_pengajuan = [];
+        foreach ($kompetensi as $k) {
+            $jumlah = DB::table('t_pengajuan_magang')
+                ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
+                ->join('m_lowongan_kompetensi', 'm_lowongan_magang.lowongan_id', '=', 'm_lowongan_kompetensi.lowongan_id')
+                ->where('m_lowongan_kompetensi.kompetensi_id', $k->kompetensi_id)
+                ->count();
+            $data_kompetensi_pengajuan[] = [
                 'nama' => $k->nama,
                 'total' => $jumlah
             ];
@@ -45,7 +59,8 @@ class DashboardController extends Controller
             'jumlah_dosen',
             'jumlah_mahasiswa',
             'jumlah_magang',
-            'data_kompetensi',
+            'data_kompetensi_diterima',  
+            'data_kompetensi_pengajuan',   
             'total_pengajuan',
             'total_diterima',
             'total_ditolak',

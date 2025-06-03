@@ -89,12 +89,10 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Manajemen Pengajuan Magang (Placeholder)
-       // Manajemen Pengajuan Magang - Gunakan alias AdminPengajuanMagangController
-       Route::prefix('management-pengajuan-magang')->name('pengajuan.')->group(function () {
+        // Manajemen Pengajuan Magang - Gunakan alias AdminPengajuanMagangController
+        Route::prefix('management-pengajuan-magang')->name('pengajuan.')->group(function () {
             Route::get('/', [AdminPengajuanMagangController::class, 'index'])->name('index');
             Route::post('/list', [AdminPengajuanMagangController::class, 'list'])->name('list');
-            Route::get('/create_ajax', [AdminPengajuanMagangController::class, 'create_ajax'])->name('create_ajax');
-            Route::post('/ajax', [AdminPengajuanMagangController::class, 'store_ajax'])->name('store_ajax');
             Route::get('/{id}/show_ajax', [AdminPengajuanMagangController::class, 'show_ajax'])->name('show_ajax');
             Route::get('/{id}/edit_ajax', [AdminPengajuanMagangController::class, 'edit_ajax'])->name('edit_ajax');
             Route::put('/{id}/update_ajax', [AdminPengajuanMagangController::class, 'update_ajax'])->name('update_ajax');

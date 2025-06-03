@@ -77,54 +77,69 @@ class PengajuanMagangController extends Controller
                     case 'ditolak':
                         $badge = '<span class="badge bg-danger">Ditolak</span>';
                         break;
+                    case 'selesai':
+                        $badge = '<span class="badge bg-secondary">Selesai</span>';
+                        break;
                     default:
                         $badge = '<span class="badge bg-warning">Diajukan</span>';
                 }
                 return $badge;
             })
+
             ->rawColumns(['aksi', 'status'])
             ->make(true);
     }
 
-
-   public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'lowongan_id' => 'required|exists:m_lowongan_magang,lowongan_id',
-    ]);
-
-    if ($validator->fails()) {
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput();
-    }
-
-    try {
-        $mahasiswa = MahasiswaModel::where('user_id', Auth::id())->first();
-
-        $existing = PengajuanMagangModel::where([
-            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
-            'lowongan_id' => $request->lowongan_id
-        ])->exists();
-
-        if ($existing) {
-            return redirect()->route('mahasiswa.dashboard')
-                ->with('error', 'Anda sudah mengajukan magang ini sebelumnya.');
-        }
-
-        $pengajuan = PengajuanMagangModel::create([
-            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
-            'lowongan_id' => $request->lowongan_id,
-            'status' => 'diajukan'
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'lowongan_id' => 'required|exists:m_lowongan_magang,lowongan_id',
         ]);
 
-        return redirect()->route('mahasiswa.pengajuan-magang.index')
-            ->with('success', 'Pengajuan magang berhasil diajukan.');
-    } catch (\Exception $e) {
-        return redirect()->route('mahasiswa.dashboard')
-            ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $mahasiswa = MahasiswaModel::where('user_id', Auth::id())->first();
+
+            // Cek apakah ada pengajuan untuk lowongan yang sama
+            $existing = PengajuanMagangModel::where([
+                'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                'lowongan_id' => $request->lowongan_id
+            ])->exists();
+
+            if ($existing) {
+                return redirect()->route('mahasiswa.dashboard')
+                    ->with('error', 'Anda sudah mengajukan magang ini sebelumnya.');
+            }
+
+            // Cek apakah sudah ada magang yang disetujui atau selesai
+            $sudahMagang = PengajuanMagangModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+                ->whereIn('status', ['disetujui', 'selesai'])
+                ->exists();
+
+            if ($sudahMagang) {
+                return redirect()->route('mahasiswa.dashboard')
+                    ->with('error', 'Anda tidak dapat mengajukan magang karena sudah memiliki magang yang disetujui atau selesai.');
+            }
+
+            // Jika lolos semua validasi, simpan pengajuan
+            $pengajuan = PengajuanMagangModel::create([
+                'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                'lowongan_id' => $request->lowongan_id,
+                'status' => 'diajukan'
+            ]);
+
+            return redirect()->route('mahasiswa.pengajuan-magang.index')
+                ->with('success', 'Pengajuan magang berhasil diajukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
-}
 
 
     public function show_ajax($pengajuan_id)

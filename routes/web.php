@@ -13,6 +13,7 @@ use App\Http\Controllers\Dosen\MonitoringMagangController;
 use App\Http\Controllers\Dosen\SertifikatDosenController as DosenSertifikatDosenController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\Mahasiswa\FeedbackController;
 use App\Http\Controllers\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
@@ -224,7 +225,18 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Sertifikat & Feedback
         Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');
+
         Route::get('/feedback', fn() => view('roles.mahasiswa.feedback', ['activeMenu' => 'sertifikasiFeedback']))->name('feedback');
+        // routes/web.php
+
+        // Dalam group route mahasiswa
+    
+            // ... route lainnya
+
+            // Feedback
+            Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
+            Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
     });
 
     // Perusahaan Routes

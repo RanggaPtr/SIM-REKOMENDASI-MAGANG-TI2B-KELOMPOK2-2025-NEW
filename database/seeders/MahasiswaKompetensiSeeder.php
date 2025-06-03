@@ -9,19 +9,33 @@ use Illuminate\Database\Seeder;
 
 class MahasiswaKompetensiSeeder extends Seeder
 {
-   public function run()
+    public function run()
     {
-        $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
+        // Ambil semua mahasiswa
+        $mahasiswas = MahasiswaModel::all();
 
-        MahasiswaKompetensiModel::create([
-            'mahasiswa_id' => $mahasiswa->mahasiswa_id, // Gunakan primary key yang benar
-            'kompetensi_id' => 1
-        ]);
+        // Daftar kompetensi untuk dummy (bisa disesuaikan)
+        $kompetensiSets = [
+            ['Web Development', 'Back End Development'],
+            ['Data Science', 'Business Intelligence'],
+            ['Front End Development', 'UI/UX Design'],
+            ['Machine Learning', 'Cyber Security'],
+            ['Mobile App Development', 'DevOps'],
+        ];
 
-        MahasiswaKompetensiModel::create([
-            'mahasiswa_id' => $mahasiswa->mahasiswa_id, // Gunakan primary key yang benar
-            'kompetensi_id' => 3
-        ]);
+        foreach ($mahasiswas as $idx => $mahasiswa) {
+            // Pilih kompetensi set berdasarkan urutan mahasiswa
+            $set = $kompetensiSets[$idx % count($kompetensiSets)];
+            foreach ($set as $namaKompetensi) {
+                $kompetensi = KompetensiModel::where('nama', $namaKompetensi)->first();
+                if ($kompetensi) {
+                    MahasiswaKompetensiModel::create([
+                        'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                        'kompetensi_id' => $kompetensi->kompetensi_id
+                    ]);
+                }
+            }
+        }
 
         $this->command->info('Data mahasiswa kompetensi berhasil diimpor.');
     }

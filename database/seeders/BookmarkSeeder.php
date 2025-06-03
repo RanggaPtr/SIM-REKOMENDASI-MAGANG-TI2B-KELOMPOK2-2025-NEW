@@ -11,7 +11,7 @@ class BookmarkSeeder extends Seeder
 {
    public function run()
     {
-        $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
+        $mahasiswa = MahasiswaModel::where('nim', '123456781')->first();
 
         if (!$mahasiswa) {
             $this->command->error('Mahasiswa dengan nim 123456789 tidak ditemukan. Pastikan MahasiswaSeeder membuat data ini.');

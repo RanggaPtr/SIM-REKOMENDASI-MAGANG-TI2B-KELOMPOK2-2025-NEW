@@ -13,40 +13,25 @@ class MahasiswaSeeder extends Seeder
 {
     public function run()
     {
-        $user = UsersModel::where('email', 'mahasiswa1@simmagang.com')->first();
-        $programStudi = ProgramStudiModel::where('nama', 'D-IV Teknik Informatika')->first();
-        $wilayah = WilayahModel::where('nama', 'KOTA MALANG')->first();
-        $skema = SkemaModel::where('nama', 'Magang Reguler')->first();
+        // Ambil semua user dengan role mahasiswa
+        $mahasiswaUsers = UsersModel::where('role', 'mahasiswa')->get();
 
-        if (!$user) {
-            $this->command->error('Pengguna dengan email mahasiswa1@simmagang.com tidak ditemukan. Pastikan UsersSeeder membuat pengguna ini.');
-            return;
+        // Data default
+        $programStudi = ProgramStudiModel::first();
+        $wilayah = WilayahModel::first();
+        $skema = SkemaModel::first();
+
+        foreach ($mahasiswaUsers as $idx => $user) {
+            MahasiswaModel::create([
+                'user_id' => $user->user_id,
+                'nim' => '12345678' . ($idx + 1),
+                'program_studi_id' => $programStudi ? $programStudi->prodi_id : 1,
+                'wilayah_id' => $wilayah ? $wilayah->wilayah_id : 1,
+                'skema_id' => $skema ? $skema->skema_id : 1,
+                'periode_id' => 1,
+                'ipk' => 3.5 + ($idx * 0.1)
+            ]);
         }
-
-        if (!$programStudi) {
-            $this->command->error('Program studi D-IV Teknik Informatika tidak ditemukan. Pastikan ProgramStudiSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$wilayah) {
-            $this->command->error('Wilayah KOTA MALANG tidak ditemukan. Pastikan WilayahSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$skema) {
-            $this->command->error('Skema Magang Reguler tidak ditemukan. Pastikan SkemaSeeder membuat data ini.');
-            return;
-        }
-
-        MahasiswaModel::create([
-            'user_id' => $user->user_id,
-            'nim' => '123456789',
-            'program_studi_id' => $programStudi->prodi_id,
-            'wilayah_id' => $wilayah->wilayah_id,
-            'skema_id' => $skema->skema_id,
-            'periode_id' => 1,
-            'ipk' => 3.75
-        ]);
 
         $this->command->info('Data mahasiswa berhasil diimpor.');
     }

@@ -11,23 +11,31 @@ class MahasiswaKeahlianSeeder extends Seeder
 {
     public function run()
     {
-        $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
-        $keahlian = KeahlianModel::where('nama', 'Laravel')->first();
+        // Ambil semua mahasiswa
+        $mahasiswas = MahasiswaModel::all();
 
-        if (!$mahasiswa) {
-            $this->command->error('Mahasiswa dengan nim 123456789 tidak ditemukan. Pastikan MahasiswaSeeder membuat data ini.');
-            return;
+        // Daftar keahlian untuk dummy (bisa disesuaikan)
+        $keahlianSets = [
+            ['Laravel', 'MySQL', 'JavaScript'],
+            ['React', 'Node.js', 'MongoDB'],
+            ['Python', 'Django', 'TensorFlow'],
+            ['Java', 'Spring Boot', 'Kotlin'],
+            ['Flutter', 'Firebase', 'Swift'],
+        ];
+
+        foreach ($mahasiswas as $idx => $mahasiswa) {
+            // Pilih keahlian set berdasarkan urutan mahasiswa
+            $set = $keahlianSets[$idx % count($keahlianSets)];
+            foreach ($set as $namaKeahlian) {
+                $keahlian = KeahlianModel::where('nama', $namaKeahlian)->first();
+                if ($keahlian) {
+                    MahasiswaKeahlianModel::create([
+                        'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                        'keahlian_id' => $keahlian->keahlian_id
+                    ]);
+                }
+            }
         }
-
-        if (!$keahlian) {
-            $this->command->error('Keahlian Laravel tidak ditemukan. Pastikan KeahlianSeeder membuat data ini.');
-            return;
-        }
-
-        MahasiswaKeahlianModel::create([
-            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
-            'keahlian_id' => $keahlian->keahlian_id
-        ]);
 
         $this->command->info('Data mahasiswa keahlian berhasil diimpor.');
     }

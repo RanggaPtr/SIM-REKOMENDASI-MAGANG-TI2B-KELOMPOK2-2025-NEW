@@ -11,7 +11,7 @@ class KompetensiModel extends Model
     public $incrementing = true;
     public $timestamps = true;
 
-    protected $fillable = ['nama', 'deskripsi'];
+    protected $fillable = ['nama', 'deskripsi', 'program_studi_id'];    
 
     public function mahasiswaKompetensi()
     {

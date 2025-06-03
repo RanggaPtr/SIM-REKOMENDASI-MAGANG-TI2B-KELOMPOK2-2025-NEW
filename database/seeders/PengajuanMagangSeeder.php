@@ -13,7 +13,7 @@ class PengajuanMagangSeeder extends Seeder
 {
    public function run()
     {
-        $mahasiswa = MahasiswaModel::where('nim', '123456789')->first();
+        $mahasiswa = MahasiswaModel::where('nim', '123456781')->first();
         $dosen = DosenModel::where('nik', '1234567890')->first();
         $periode = PeriodeMagangModel::where('nama', 'Januari-Juni 2025')->first();
 

@@ -9,7 +9,7 @@
     <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<table class="table table-bordered">
+<table id="sertifikatTable" class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Nama Sertifikat</th>
@@ -43,3 +43,20 @@
     </tbody>
 </table>
 @endsection
+
+@push('css')
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+@endpush
+
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#sertifikatTable').DataTable({
+                // opsi bisa ditambah sesuai kebutuhan, misal paging, searching, dll
+            });
+        });
+    </script>
+@endpush

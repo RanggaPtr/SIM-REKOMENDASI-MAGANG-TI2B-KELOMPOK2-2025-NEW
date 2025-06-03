@@ -18,28 +18,24 @@ class PengajuanMagangController extends Controller
         return view('roles.admin.pengajuan.index', ['activeMenu' => 'pengajuan']);
     }
 
- public function list(Request $request)
-{
-    $pengajuan = PengajuanMagangModel::with(['mahasiswa.user', 'lowongan.perusahaan', 'dosen.user', 'periode'])
-        ->select('t_pengajuan_magang.*');
+    public function list(Request $request)
+    {
+        $pengajuan = PengajuanMagangModel::with(['mahasiswa.user', 'lowongan.perusahaan', 'dosen.user', 'periode'])
+            ->select('t_pengajuan_magang.*');
 
-    // Debugging: Tampilkan data untuk memeriksa relasi
-    $data = $pengajuan->get();
-    foreach ($data as $row) {
-        \Log::info('Pengajuan ID: ' . $row->pengajuan_id);
-        \Log::info('Mahasiswa: ' . json_encode($row->mahasiswa));
-        \Log::info('User: ' . json_encode($row->mahasiswa ? $row->mahasiswa->user : null));
+        return DataTables::eloquent($pengajuan)
+            ->addColumn('mahasiswa_name', fn($row) => $row->mahasiswa && $row->mahasiswa->user ? $row->mahasiswa->user->name : '-')
+            ->addColumn('perusahaan_name', fn($row) => $row->lowongan && $row->lowongan->perusahaan ? $row->lowongan->perusahaan->nama : 'Belum ditentukan')
+            ->addColumn('lowongan_judul', fn($row) => $row->lowongan ? $row->lowongan->judul : 'Belum ditentukan')
+            ->addColumn('dosen_name', fn($row) => $row->dosen && $row->dosen->user ? $row->dosen->user->name : 'Belum ditentukan')
+            ->addColumn('periode_name', fn($row) => $row->periode ? $row->periode->nama : 'Belum ditentukan')
+            ->addColumn('status', fn($row) => ucfirst($row->status))
+            ->addColumn('action', function ($row) {
+                return view('roles.admin.pengajuan.action', compact('row'))->render();
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
-
-    return DataTables::of($pengajuan)
-        ->addColumn('mahasiswa_name', fn($row) => $row->mahasiswa && $row->mahasiswa->user ? $row->mahasiswa->user->name : '-')
-        ->addColumn('perusahaan_name', fn($row) => $row->lowongan && $row->lowongan->perusahaan ? $row->lowongan->perusahaan->nama : '-')
-        ->addColumn('lowongan_judul', fn($row) => $row->lowongan ? $row->lowongan->judul : '-')
-        ->addColumn('dosen_name', fn($row) => $row->dosen && $row->dosen->user ? $row->dosen->user->name : '-')
-        ->addColumn('periode_name', fn($row) => $row->periode ? $row->periode->nama : '-')
-        ->addColumn('action', fn($row) => view('roles.admin.pengajuan.action', compact('row')))
-        ->make(true);
-}
 
     public function show_ajax($id)
     {
@@ -65,13 +61,24 @@ class PengajuanMagangController extends Controller
         DB::beginTransaction();
         try {
             $pengajuan = PengajuanMagangModel::findOrFail($id);
+            $oldDosenId = $pengajuan->dosen_id;
             $pengajuan->status = $request->status;
-            if ($request->status === 'diterima' && $request->dosen_id) {
+
+            // Logika untuk dosen_id: bisa diisi kapan saja, tidak hanya saat 'diterima'
+            if ($request->dosen_id) {
                 $pengajuan->dosen_id = $request->dosen_id;
                 $dosen = DosenModel::find($request->dosen_id);
                 if ($dosen) {
                     $dosen->jumlah_bimbingan += 1;
                     $dosen->save();
+                }
+                // Kurangi jumlah bimbingan dari dosen lama jika ada
+                if ($oldDosenId && $oldDosenId != $request->dosen_id) {
+                    $oldDosen = DosenModel::find($oldDosenId);
+                    if ($oldDosen && $oldDosen->jumlah_bimbingan > 0) {
+                        $oldDosen->jumlah_bimbingan -= 1;
+                        $oldDosen->save();
+                    }
                 }
             } elseif ($request->status === 'selesai' && $pengajuan->dosen_id) {
                 $dosen = DosenModel::find($pengajuan->dosen_id);
@@ -79,7 +86,9 @@ class PengajuanMagangController extends Controller
                     $dosen->jumlah_bimbingan -= 1;
                     $dosen->save();
                 }
+                $pengajuan->dosen_id = null; // Opsional: hapus dosen_id saat selesai
             }
+
             $pengajuan->save();
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Pengajuan berhasil diperbarui']);

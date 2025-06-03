@@ -31,14 +31,6 @@
                     <td>{{ $pengajuan->lowongan->judul }} - {{ $pengajuan->lowongan->perusahaan->nama }}</td>
                 </tr>
                 <tr>
-                    <th>Dosen Pembimbing</th>
-                    <td>{{ $pengajuan->dosen->user->nama }}</td>
-                </tr>
-                <tr>
-                    <th>Periode</th>
-                    <td>{{ $pengajuan->periode->nama }} ({{ $pengajuan->periode->tanggal_mulai }} s/d {{ $pengajuan->periode->tanggal_selesai }})</td>
-                </tr>
-                <tr>
                     <th>Tanggal Pengajuan</th>
                     <td>{{ $pengajuan->created_at }}</td>
                 </tr>

@@ -5,7 +5,8 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-pengguna/import') }}')" class="btn btn-success btn-sm">
+                <button onclick="modalAction('{{ url('/admin/management-pengguna/import') }}')"
+                    class="btn btn-success btn-sm">
                     <i class="fa fa-file-import"></i>
                     Import User
                 </button>
@@ -13,7 +14,8 @@
                     <i class="fa fa-file-excel"></i> Export Excel</a>
                 <a href="{{ url('/admin/management-pengguna/export_pdf') }}" class="btn btn-warning btn-sm">
                     <i class="fa fa-file-pdf"></i> Export PDF</a>
-                <button onclick="modalAction('{{ url('/admin/management-pengguna/create_ajax') }}')" class="btn btn-success">
+                <button onclick="modalAction('{{ url('/admin/management-pengguna/create_ajax') }}')"
+                    class="btn btn-success">
                     <i class="fa fa-plus"></i>
                     Tambah User
                 </button>
@@ -63,7 +65,7 @@
 
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function () {
+            $('#myModal').load(url, function() {
                 var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
                     keyboard: false,
                     backdrop: 'static'
@@ -72,7 +74,7 @@
             });
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             window.dataUser = $('#table_user').DataTable({
                 serverSide: true,
                 processing: true,
@@ -84,14 +86,38 @@
                         d._token = '{{ csrf_token() }}';
                     }
                 },
-                columns: [
-                    { data: "user_id", className: "text-center" },
-                    { data: "username", className: "" },
-                    { data: "nama", className: "" },
-                    { data: "email", className: "" },
-                    { data: "role", className: "" },
-                    { data: "no_telepon", className: "" },
-                    { data: "aksi", className: "text-center", orderable: false, searchable: false }
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "username",
+                        className: ""
+                    },
+                    {
+                        data: "nama",
+                        className: ""
+                    },
+                    {
+                        data: "email",
+                        className: ""
+                    },
+                    {
+                        data: "role",
+                        className: ""
+                    },
+                    {
+                        data: "no_telepon",
+                        className: ""
+                    },
+                    {
+                        data: "aksi",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
 

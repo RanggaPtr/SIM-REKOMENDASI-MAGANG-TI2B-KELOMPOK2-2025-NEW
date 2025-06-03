@@ -14,6 +14,52 @@
 @endpush
 
 @section('content')
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: 'Oops...',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33',
+                background: '#fff0f0',
+                timer: 7000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
+        </script>
+    @endif
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+                background: '#f0fff0',
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+            });
+        </script>
+    @endif
+
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                title: 'Validasi Gagal',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#d33',
+                background: '#fff0f0',
+                timer: 8000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
+        </script>
+    @endif
+
+
     <div class="bg-transparent min-vh-100 pt-1">
         <div class="row g-3">
             {{-- Main Content --}}

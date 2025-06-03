@@ -22,21 +22,10 @@ class PengajuanMagangSeeder extends Seeder
             return;
         }
 
-        if (!$dosen) {
-            $this->command->error('Dosen dengan nik 1234567890 tidak ditemukan. Pastikan DosenSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$periode) {
-            $this->command->error('Periode Januari-Juni 2025 tidak ditemukan. Pastikan PeriodeMagangSeeder membuat data ini.');
-            return;
-        }
 
         PengajuanMagangModel::create([
             'mahasiswa_id' => $mahasiswa->mahasiswa_id,
             'lowongan_id' => 1,
-            'dosen_id' => $dosen->dosen_id,
-            'periode_id' => $periode->periode_id,
             'status' => 'diajukan'
         ]);
 

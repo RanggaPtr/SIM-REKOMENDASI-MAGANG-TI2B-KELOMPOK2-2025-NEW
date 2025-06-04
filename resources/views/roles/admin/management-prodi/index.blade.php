@@ -5,8 +5,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-prodi/import') }}')"
-                    class="btn btn-success btn-sm">
+                <button onclick="modalAction('{{ url('/admin/management-prodi/import') }}')" class="btn btn-success btn-sm">
                     <i class="fa fa-file-import"></i>
                     Import Program Studi
                 </button>

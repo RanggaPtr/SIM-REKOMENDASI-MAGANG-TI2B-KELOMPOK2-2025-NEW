@@ -138,12 +138,13 @@
                             @enderror
                         </div>
 
-                        <!-- Role Spesifik Fields -->
-                        @if (Auth::user()->role === 'dosen')
-                            @php
-                                $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
-                                $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
-                            @endphp
+                    <!-- Role Spesifik Fields -->
+                    @if (Auth::user()->role === 'dosen')
+                    @php
+                    $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
+                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
+                    @endphp
 
                             <div class="mb-3">
                                 <label for="nik" class="form-label fw-bold">NIK</label>
@@ -154,33 +155,57 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                                <select class="form-select @error('prodi_id') is-invalid @enderror" id="prodi_id"
-                                    name="prodi_id" required>
-                                    <option value="">-- Pilih Program Studi --</option>
-                                    @foreach ($programStudiList as $prodi)
-                                        <option value="{{ $prodi->prodi_id }}"
-                                            {{ old('prodi_id', $dosen->prodi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
-                                            {{ $prodi->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('prodi_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        @elseif (Auth::user()->role === 'mahasiswa')
-                            @php
-                                $mahasiswa = \App\Models\MahasiswaModel::where(
-                                    'user_id',
-                                    Auth::user()->user_id,
-                                )->first();
-                                $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
-                                $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
-                                $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
-                                $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
-                            @endphp
+                    <div class="mb-3">
+                        <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
+                        <select class="form-select @error('prodi_id') is-invalid @enderror"
+                            id="prodi_id" name="prodi_id" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                            @foreach ($programStudiList as $prodi)
+                            <option value="{{ $prodi->prodi_id }}"
+                                {{ old('prodi_id', $dosen->prodi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                {{ $prodi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('prodi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kompetensi_id" class="form-label fw-bold">Kompetensi</label>
+                        <select class="form-select @error('kompetensi_id') is-invalid @enderror"
+                            id="kompetensi_id" name="kompetensi_id">
+                            <option value="">-- Pilih Kompetensi (Opsional) --</option>
+                            @foreach ($kompetensiList as $kompetensi)
+                            <option value="{{ $kompetensi->kompetensi_id }}"
+                                {{ old('kompetensi_id', $dosen->kompetensi_id ?? '') == $kompetensi->kompetensi_id ? 'selected' : '' }}>
+                                {{ $kompetensi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('kompetensi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    @elseif (Auth::user()->role === 'mahasiswa')
+                    @php
+                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
+                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                    $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
+                    $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
+                    $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
+
+                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
+                    $keahlianList = \App\Models\KeahlianModel::orderBy('nama')->get();
+
+                    // Ambil data mahasiswa dan relasinya, ubah 'keahlian' menjadi 'mahasiswaKeahlian'
+                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->with('mahasiswaKeahlian')->first();
+
+                    // Ubah 'keahlian' menjadi 'mahasiswaKeahlian' saat mengambil keahlian_ids
+                    $selectedKeahlianIds = old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? []);
+                    @endphp
 
                             <div class="mb-3">
                                 <label for="nim" class="form-label fw-bold">NIM</label>
@@ -192,39 +217,97 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                                <select class="form-select @error('program_studi_id') is-invalid @enderror"
-                                    id="program_studi_id" name="program_studi_id" required>
-                                    <option value="">-- Pilih Program Studi --</option>
-                                    @foreach ($programStudiList as $prodi)
-                                        <option value="{{ $prodi->prodi_id }}"
-                                            {{ old('program_studi_id', $mahasiswa->program_studi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
-                                            {{ $prodi->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('program_studi_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                    <div class="mb-3">
+                        <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
+                        <select class="form-select @error('program_studi_id') is-invalid @enderror"
+                            id="program_studi_id" name="program_studi_id" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                            @foreach ($programStudiList as $prodi)
+                            <option value="{{ $prodi->prodi_id }}"
+                                {{ old('program_studi_id', $mahasiswa->program_studi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                {{ $prodi->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('program_studi_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <!-- Kompetensi (single select checkbox) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kompetensi</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($kompetensiList as $kompetensi)
+                            <div class="form-check">
+                                <input class="form-check-input @error('kompetensi_id') is-invalid @enderror"
+                                    type="checkbox"
+                                    name="kompetensi_id"
+                                    value="{{ $kompetensi->kompetensi_id }}"
+                                    id="kompetensi_{{ $kompetensi->kompetensi_id }}"
+                                    {{ old('kompetensi_id', $mahasiswa->mahasiswaKompetensi->pluck('kompetensi_id')->first() ?? '') == $kompetensi->kompetensi_id ? 'checked' : '' }}
+                                    onchange="ensureSingleKompetensi(this)">
+                                <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
+                                    {{ $kompetensi->nama }}
+                                </label>
                             </div>
+                            @endforeach
+                        </div>
+                        @error('kompetensi_id')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-                            <div class="mb-3">
-                                <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                                <select class="form-select @error('wilayah_id') is-invalid @enderror" id="wilayah_id"
-                                    name="wilayah_id" required>
-                                    <option value="">-- Pilih Wilayah --</option>
-                                    @foreach ($wilayahList as $wilayah)
-                                        <option value="{{ $wilayah->wilayah_id }}"
-                                            {{ old('wilayah_id', $mahasiswa->wilayah_id ?? '') == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                            {{ $wilayah->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('wilayah_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                    <!-- Keahlian (multi select checkbox) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Keahlian</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($keahlianList as $keahlian)
+                            <div class="form-check">
+                                <input class="form-check-input @error('keahlian_ids') is-invalid @enderror"
+                                    type="checkbox"
+                                    name="keahlian_ids[]"
+                                    value="{{ $keahlian->keahlian_id }}"
+                                    id="keahlian_{{ $keahlian->keahlian_id }}"
+                                    {{ in_array($keahlian->keahlian_id, old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? [])) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
+                                    {{ $keahlian->nama }}
+                                </label>
                             </div>
+                            @endforeach
+                        </div>
+                        @error('keahlian_ids')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="file_cv" class="form-label fw-bold">Upload CV</label>
+                        <input type="file" class="form-control @error('file_cv') is-invalid @enderror"
+                            id="file_cv" name="file_cv" accept=".pdf">
+                        @error('file_cv')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        @if ($mahasiswa->file_cv)
+                        <small class="form-text text-muted">
+                            CV saat ini: <a href="{{ url('/storage/' . $mahasiswa->file_cv) }}" target="_blank">Lihat CV</a>
+                        </small>
+                        @endif
+                    </div>
+                    <div class="mb-3">
+                        <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
+                        <select class="form-select @error('wilayah_id') is-invalid @enderror"
+                            id="wilayah_id" name="wilayah_id" required>
+                            <option value="">-- Pilih Wilayah --</option>
+                            @foreach ($wilayahList as $wilayah)
+                            <option value="{{ $wilayah->wilayah_id }}"
+                                {{ old('wilayah_id', $mahasiswa->wilayah_id ?? '') == $wilayah->wilayah_id ? 'selected' : '' }}>
+                                {{ $wilayah->nama }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('wilayah_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                             <div class="mb-3">
                                 <label for="skema_id" class="form-label fw-bold">Skema</label>
@@ -366,4 +449,14 @@
             }, 2000);
         });
     @endif
+
+    // Pastikan hanya satu kompetensi yang bisa dipilih
+    function ensureSingleKompetensi(checkbox) {
+        const checkboxes = document.querySelectorAll('input[name="kompetensi_id"]');
+        checkboxes.forEach((cb) => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+    }
 </script>

@@ -80,10 +80,13 @@
                             text: response.message,
                             icon: 'success',
                             confirmButtonText: 'OK'
+                        }).then(function () {
+                            if (window.dataProdi) {
+                                window.dataProdi.ajax.reload(null, false);
+                            } else {
+                                location.reload();
+                            }
                         });
-                        if (typeof dataProdi !== 'undefined') {
-                            dataProdi.ajax.reload(null, false);
-                        }
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {

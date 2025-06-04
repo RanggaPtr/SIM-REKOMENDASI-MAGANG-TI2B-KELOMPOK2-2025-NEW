@@ -13,6 +13,7 @@ use App\Http\Controllers\Dosen\MonitoringMagangController;
 use App\Http\Controllers\Dosen\SertifikatDosenController as DosenSertifikatDosenController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
+use App\Http\Controllers\Mahasiswa\FeedbackController;
 use App\Http\Controllers\Mahasiswa\LogAktivitasController;
 use App\Http\Controllers\Mahasiswa\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
@@ -89,12 +90,10 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         // Manajemen Pengajuan Magang (Placeholder)
-       // Manajemen Pengajuan Magang - Gunakan alias AdminPengajuanMagangController
-       Route::prefix('management-pengajuan-magang')->name('pengajuan.')->group(function () {
+        // Manajemen Pengajuan Magang - Gunakan alias AdminPengajuanMagangController
+        Route::prefix('management-pengajuan-magang')->name('pengajuan.')->group(function () {
             Route::get('/', [AdminPengajuanMagangController::class, 'index'])->name('index');
             Route::post('/list', [AdminPengajuanMagangController::class, 'list'])->name('list');
-            Route::get('/create_ajax', [AdminPengajuanMagangController::class, 'create_ajax'])->name('create_ajax');
-            Route::post('/ajax', [AdminPengajuanMagangController::class, 'store_ajax'])->name('store_ajax');
             Route::get('/{id}/show_ajax', [AdminPengajuanMagangController::class, 'show_ajax'])->name('show_ajax');
             Route::get('/{id}/edit_ajax', [AdminPengajuanMagangController::class, 'edit_ajax'])->name('edit_ajax');
             Route::put('/{id}/update_ajax', [AdminPengajuanMagangController::class, 'update_ajax'])->name('update_ajax');
@@ -164,11 +163,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [PerusahaanController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf'])->name('export_pdf');
         });
-
-        // Statistik Tren
-        Route::prefix('statistik-data-tren')->name('statistik-data-tren.')->group(function () {
-            // Route::get('/', [StatistikController::class, 'index'])->name('index');
-        });
     });
 
     // Dosen Routes
@@ -228,7 +222,18 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Sertifikat & Feedback
         Route::get('/sertifikat', fn() => view('roles.mahasiswa.sertifikat', ['activeMenu' => 'sertifikasiFeedback']))->name('sertifikat');
+
         Route::get('/feedback', fn() => view('roles.mahasiswa.feedback', ['activeMenu' => 'sertifikasiFeedback']))->name('feedback');
+        // routes/web.php
+
+        // Dalam group route mahasiswa
+    
+            // ... route lainnya
+
+            // Feedback
+            Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
+            Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
     });
 
     // Perusahaan Routes

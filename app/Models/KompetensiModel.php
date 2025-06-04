@@ -27,4 +27,9 @@ class KompetensiModel extends Model
     {
         return $this->belongsTo(ProgramStudiModel::class, 'program_studi_id', 'prodi_id');
     }
+
+    public function dosen()
+    {
+        return $this->hasMany(DosenModel::class, 'kompetensi_id', 'kompetensi_id');
+    }
 }

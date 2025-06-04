@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('t_pengajuan_magang', function (Blueprint $table) {
             $table->bigIncrements('pengajuan_id');
             $table->unsignedBigInteger('mahasiswa_id');
+            $table->unsignedBigInteger('dosen_id')->nullable(); 
             $table->unsignedBigInteger('lowongan_id');
             $table->decimal('feedback_rating', 2, 1)->nullable(); // Allows values like 4.5, 3.0, etc.Add commentMore actions
             $table->string('feedback_deskripsi')->nullable();

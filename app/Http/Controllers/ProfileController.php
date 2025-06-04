@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use App\Models\MahasiswaKompetensiModel; // Tambahkan ini
+use App\Models\MahasiswaKeahlianModel;  // Tambahkan ini
 
 class ProfileController extends Controller
 {
@@ -78,7 +80,8 @@ class ProfileController extends Controller
                     $dosenValidated = $request->validate([
                         'nik' => 'required|string|max:50',
                         'prodi_id' => 'required|exists:m_program_studi,prodi_id',
-                        'jumlah_bimbingan' => 'nullable|integer|min:0', // Ubah menjadi nullable
+                        'jumlah_bimbingan' => 'nullable|integer|min:0',
+                        'kompetensi_id' => 'nullable|exists:m_kompetensi,kompetensi_id',
                     ]);
 
                     $dosenUpdated = DosenModel::updateOrCreate(
@@ -86,7 +89,8 @@ class ProfileController extends Controller
                         [
                             'nik' => $dosenValidated['nik'],
                             'prodi_id' => $dosenValidated['prodi_id'],
-                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'] ?? 0, // Default 0 jika null
+                            'jumlah_bimbingan' => $dosenValidated['jumlah_bimbingan'] ?? 0,
+                            'kompetensi_id' => $dosenValidated['kompetensi_id'] ?? null,
                         ]
                     );
 
@@ -105,19 +109,61 @@ class ProfileController extends Controller
                         'skema_id' => 'required|exists:m_skema,skema_id',
                         'periode_id' => 'required|exists:m_periode_magang,periode_id',
                         'ipk' => 'required|numeric|between:0,4',
+                        'file_cv' => 'nullable|file|mimes:pdf|max:2048',
+                        'kompetensi_id' => 'required|exists:m_kompetensi,kompetensi_id',
+                        'keahlian_ids' => 'nullable|array',
+                        'keahlian_ids.*' => 'exists:m_keahlian,keahlian_id',
                     ]);
 
+                    // Ambil data mahasiswa berdasarkan user_id
+                    $mahasiswa = MahasiswaModel::where('user_id', $user->user_id)->first();
+
+                    // Prepare data untuk update MahasiswaModel
+                    $mahasiswaData = [
+                        'nim' => $mahasiswaValidated['nim'],
+                        'program_studi_id' => $mahasiswaValidated['program_studi_id'],
+                        'wilayah_id' => $mahasiswaValidated['wilayah_id'],
+                        'skema_id' => $mahasiswaValidated['skema_id'],
+                        'periode_id' => $mahasiswaValidated['periode_id'],
+                        'ipk' => $mahasiswaValidated['ipk'],
+                    ];
+
+                    // Upload file CV jika ada
+                    if ($request->hasFile('file_cv')) {
+                        // Hapus CV lama jika ada
+                        if ($mahasiswa && $mahasiswa->file_cv && Storage::exists('public/' . $mahasiswa->file_cv)) {
+                            Storage::delete('public/' . $mahasiswa->file_cv);
+                        }
+
+                        $path = $request->file('file_cv')->store('public/cv');
+                        $mahasiswaData['file_cv'] = str_replace('public/', '', $path);
+                    }
+
+                    // Update atau buat data mahasiswa
                     $mahasiswaUpdated = MahasiswaModel::updateOrCreate(
                         ['user_id' => $user->user_id],
-                        [
-                            'nim' => $mahasiswaValidated['nim'],
-                            'program_studi_id' => $mahasiswaValidated['program_studi_id'],
-                            'wilayah_id' => $mahasiswaValidated['wilayah_id'],
-                            'skema_id' => $mahasiswaValidated['skema_id'],
-                            'periode_id' => $mahasiswaValidated['periode_id'],
-                            'ipk' => $mahasiswaValidated['ipk'],
-                        ]
+                        $mahasiswaData
                     );
+
+                    // Simpan kompetensi (hanya satu)
+                    MahasiswaKompetensiModel::where('mahasiswa_id', $mahasiswaUpdated->mahasiswa_id)->delete();
+                    if ($mahasiswaValidated['kompetensi_id']) {
+                        MahasiswaKompetensiModel::create([
+                            'mahasiswa_id' => $mahasiswaUpdated->mahasiswa_id,
+                            'kompetensi_id' => $mahasiswaValidated['kompetensi_id'],
+                        ]);
+                    }
+
+                    // Simpan keahlian (bisa banyak)
+                    MahasiswaKeahlianModel::where('mahasiswa_id', $mahasiswaUpdated->mahasiswa_id)->delete();
+                    if (!empty($mahasiswaValidated['keahlian_ids'])) {
+                        foreach ($mahasiswaValidated['keahlian_ids'] as $keahlian_id) {
+                            MahasiswaKeahlianModel::create([
+                                'mahasiswa_id' => $mahasiswaUpdated->mahasiswa_id,
+                                'keahlian_id' => $keahlian_id,
+                            ]);
+                        }
+                    }
 
                     Log::info('Mahasiswa profile updated', [
                         'user_id' => $user->user_id,

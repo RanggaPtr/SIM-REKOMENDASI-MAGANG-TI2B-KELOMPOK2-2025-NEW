@@ -9,7 +9,7 @@
     {{-- CARD --}}
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-4 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card shadow text-center" style="background: #e3fcec; border-left: 8px solid #28a745;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#218838;">Jumlah Dosen</h5>
@@ -17,7 +17,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card shadow text-center" style="background: #e9ecef; border-left: 8px solid #007bff;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#0056b3;">Jumlah Mahasiswa</h5>
@@ -25,7 +25,15 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
+            <div class="col-md-3 mb-4">
+                <div class="card shadow text-center" style="background: #f0e6ff; border-left: 8px solid #6f42c1;">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color:#6f42c1;">Jumlah Pengajuan Magang</h5>
+                        <h2 class="card-text" style="color:#6f42c1;">{{ $total_pengajuan }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
                 <div class="card shadow text-center" style="background: #fff3cd; border-left: 8px solid #ffc107;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#856404;">Mahasiswa Sudah Magang</h5>
@@ -37,9 +45,14 @@
     </div>
 
     {{-- GRAFIK --}}
-    <h5 class="mt-4">Grafik Peminatan Bidang Industri</h5>
+    <h5 class="mt-4">Grafik Penyebaran Penerimaan Magang</h5>
     <div class="mb-4 p-4" style="border-radius: 12px; background: #fff;">
         <canvas id="kompetensiChart" style="height: 400px;"></canvas>
+    </div>
+
+    <h5 class="mt-4">Grafik Peminatan Bidang Industri Berdasarkan Kompetensi</h5>
+    <div class="mb-4 p-4" style="border-radius: 12px; background: #fff;">
+        <canvas id="bidangIndustriChart" style="height: 400px;"></canvas>
     </div>
 
     <h5 class="mt-4">Grafik Rasio Penerimaan Magang</h5>
@@ -70,8 +83,8 @@
             }
         };
 
-        // Data untuk grafik kompetensi
-        const kompetensiData = @json($data_kompetensi);
+        // Data Grafik Penyebaran Penerimaan Magang
+        const kompetensiData = @json($data_kompetensi_diterima);
         const labelsKompetensi = kompetensiData.map(item => item.nama);
         const dataKompetensi = kompetensiData.map(item => item.total);
 
@@ -94,6 +107,12 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
                         title: {
                             display: true,
                             text: 'Jumlah Mahasiswa'
@@ -102,7 +121,6 @@
                     x: {
                         title: {
                             display: true,
-                            text: 'Bidang Industri'
                         }
                     }
                 },
@@ -110,7 +128,7 @@
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: 'Grafik Peminatan Bidang Industri',
+                        text: 'Grafik Penyebaran Penerimaan Magang',
                         font: { size: 16 }
                     }
                 }
@@ -118,7 +136,61 @@
             plugins: [whiteBg]
         });
 
-        // Data untuk grafik rasio penerimaan magang
+        // Data Grafik Peminatan Bidang Industri
+        const bidangIndustriData = @json($data_kompetensi_pengajuan);
+        const labelsBidang = bidangIndustriData.map(item => item.nama);
+        const dataBidang = bidangIndustriData.map(item => item.total);
+
+        const ctxBidang = document.getElementById('bidangIndustriChart').getContext('2d');
+        new Chart(ctxBidang, {
+            type: 'bar',
+            data: {
+                labels: labelsBidang,
+                datasets: [{
+                    label: 'Jumlah Pengajuan',
+                    data: dataBidang,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        title: {
+                            display: true,
+                            text: 'Jumlah Mahasiswa'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                        },
+
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Grafik Peminatan Bidang Industri Berdasarkan Kompetensi',
+                        font: { size: 16 }
+                    }
+                }
+            },
+            plugins: [whiteBg]
+        });
+
+        // Data Grafik Rasio Penerimaan Magang
         let totalDiterima = {{ $total_diterima ?? 0 }};
         let totalDitolak = {{ $total_ditolak ?? 0 }};
 

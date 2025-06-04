@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('wilayah_id');
             $table->unsignedBigInteger('periode_id');
             $table->unsignedBigInteger('skema_id');
+            $table->string('file_cv', 255)->nullable(); // Disimpan sebagai path
             $table->decimal('ipk', 3, 2);
             $table->timestamps();
 

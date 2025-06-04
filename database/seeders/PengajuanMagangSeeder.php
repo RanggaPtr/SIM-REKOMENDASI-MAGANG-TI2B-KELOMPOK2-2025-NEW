@@ -32,7 +32,7 @@ class PengajuanMagangSeeder extends Seeder
          PengajuanMagangModel::create([
             'mahasiswa_id' => $mahasiswa->mahasiswa_id,
             'lowongan_id' => 2,
-            'status' => 'diajukan'
+            'status' => 'selesai'
         ]);
 
         $this->command->info('Data pengajuan magang berhasil diimpor.');

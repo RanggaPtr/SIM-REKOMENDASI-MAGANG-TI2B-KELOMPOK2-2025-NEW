@@ -199,4 +199,18 @@ class DashboardController extends Controller
         // Ambil K teratas (atau semua)
         return collect($result)->pluck('lowongan');
     }
+
+    public function getLowonganDetail(Request $request)
+    {
+        $id = $request->input('lowongan_id');
+        $lowongan = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'])
+            ->findOrFail($id);
+
+        // Tambahkan selisih hari ke dalam variabel lowongan
+        $lowongan->selisih_hari = $lowongan->getSelisihHari();
+
+        $html = view('component.detail-lowongan-overlay', compact('lowongan'))->render();
+
+        return response()->json(['html' => $html]);
+    }
 }

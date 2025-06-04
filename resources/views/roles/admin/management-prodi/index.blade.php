@@ -3,37 +3,31 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Manajemen Pengajuan Magang</h3>
+            <h3 class="card-title">{{ $page->title }}</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-pengajuan-magang/create_ajax') }}')" class="btn btn-success btn-sm">
-                    <i class="fa fa-plus"></i> Tambah Pengajuan
+                <button onclick="modalAction('{{ url('/admin/management-prodi/import') }}')" class="btn btn-success btn-sm">
+                    <i class="fa fa-file-import"></i>
+                    Import Program Studi
                 </button>
-                <button onclick="modalAction('{{ url('/admin/management-pengajuan-magang/import') }}')" class="btn btn-success btn-sm">
-                    <i class="fa fa-file-import"></i> Import Data
+                <a href="{{ url('/admin/management-prodi/export_excel') }}" class="btn btn-warning btn-sm">
+                    <i class="fa fa-file-excel"></i> Export Excel</a>
+                <a href="{{ url('/admin/management-prodi/export_pdf') }}" class="btn btn-warning btn-sm">
+                    <i class="fa fa-file-pdf"></i> Export PDF</a>
+                <button onclick="modalAction('{{ url('/admin/management-prodi/create_ajax') }}')" class="btn btn-success">
+                    <i class="fa fa-plus"></i>
+                    Tambah Program Studi
                 </button>
-                <a href="{{ url('/admin/management-pengajuan-magang/export_excel') }}" class="btn btn-warning btn-sm">
-                    <i class="fa fa-file-excel"></i> Export Excel
-                </a>
-                <a href="{{ url('/admin/management-pengajuan-magang/export_pdf') }}" class="btn btn-warning btn-sm">
-                    <i class="fa fa-file-pdf"></i> Export PDF
-                </a>
             </div>
         </div>
         <div class="card-body">
-            <table id="pengajuanTable" class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="table_programstudi">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Mahasiswa</th>
-                        <th>Perusahaan</th>
-                        <th>Judul Lowongan</th>
-                        <th>Dosen Pembimbing</th>
-                        <th>Periode</th>
-                        <th>Status</th>
+                        <th>Nama Prodi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
             </table>
         </div>
         <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
@@ -64,26 +58,18 @@
         }
 
         $(document).ready(function () {
-            $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-            });
-
-            window.pengajuanTable = $('#pengajuanTable').DataTable({
-                processing: true,
+            window.tableProdi = $('#table_programstudi').DataTable({
                 serverSide: true,
+                processing: true,
                 ajax: {
-                    url: '{{ route("admin.pengajuan.list") }}',
-                    type: 'POST'
+                    url: "{{ url('admin/management-prodi/list') }}",
+                    type: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 },
                 columns: [
-                    { data: 'pengajuan_id', name: 'pengajuan_id' },
-                    { data: 'mahasiswa_name', name: 'mahasiswa_name' },
-                    { data: 'perusahaan_name', name: 'perusahaan_name' },
-                    { data: 'lowongan_judul', name: 'lowongan_judul' },
-                    { data: 'dosen_name', name: 'dosen_name' },
-                    { data: 'periode_name', name: 'periode_name' },
-                    { data: 'status', name: 'status' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
+                    { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false, className: "text-center" },
+                    { data: "nama", name: "nama" },
+                    { data: "aksi", name: "aksi", orderable: false, searchable: false, className: "text-center" }
                 ]
             });
         });

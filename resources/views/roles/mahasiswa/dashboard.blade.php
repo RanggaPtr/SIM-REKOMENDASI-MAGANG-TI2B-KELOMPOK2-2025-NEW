@@ -10,6 +10,10 @@
             line-height: 1.5rem;
             /* Explicit line-height for JS calculation */
         }
+
+        body.detail-slide-open {
+            overflow: hidden;
+        }
     </style>
 @endpush
 
@@ -81,7 +85,6 @@
                 </div>
             </div>
 
-
             {{-- Sidebar Filter --}}
             <div class="col-md-3 rounded-3">
                 <div class="bg-white rounded py-3 px-4 shadow-sm rounded-3">
@@ -143,8 +146,8 @@
                                     {{-- Loop untuk 5 bintang --}}
                                     @for ($i = 1; $i <= 5; $i++)
                                         <div class="form-check bg-transparent mb-1 bg-transparent">
-                                            <input class="form-check-input" type="checkbox" name="rating" id="rating{{ $i }}"
-                                                value="{{ $i }}">
+                                            <input class="form-check-input" type="checkbox" name="rating"
+                                                id="rating{{ $i }}" value="{{ $i }}">
                                             <label class="form-check-label bg-transparent" for="rating{{ $i }}">
                                                 @for ($star = 1; $star <= $i; $star++)
                                                     <i class="fa-solid fa-star text-warning bg-transparent"></i>
@@ -176,26 +179,26 @@
                             </div>
                             <div class="bg-transparent fw-bold">Tunjangan</div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" id="tunjangan0" value="1">
-                                <label class="form-check-label bg-transparent" 
-                                    for="tunjangan0">Rp. 0 - Rp. 500k</label>
+                                <input class="form-check-input" type="checkbox" name="tunjangan" id="tunjangan0"
+                                    value="1">
+                                <label class="form-check-label bg-transparent" for="tunjangan0">Rp. 0 - Rp. 500k</label>
                             </div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="2" id="tunjangan1">
-                                <label class="form-check-label bg-transparent" 
-                                    for="tunjangan1">Rp. 500k - Rp.
+                                <input class="form-check-input" type="checkbox" name="tunjangan" value="2"
+                                    id="tunjangan1">
+                                <label class="form-check-label bg-transparent" for="tunjangan1">Rp. 500k - Rp.
                                     1.000k</label>
                             </div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="3" id="tunjangan2">
-                                <label class="form-check-label bg-transparent" 
-                                    for="tunjangan2">Rp. 1.000k - Rp.
+                                <input class="form-check-input" type="checkbox" name="tunjangan" value="3"
+                                    id="tunjangan2">
+                                <label class="form-check-label bg-transparent" for="tunjangan2">Rp. 1.000k - Rp.
                                     1.500k</label>
                             </div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="4" id="tunjangan3">
-                                <label class="form-check-label bg-transparent" 
-                                    for="tunjangan3">Rp. 1.500k </label>
+                                <input class="form-check-input" type="checkbox" name="tunjangan" value="4"
+                                    id="tunjangan3">
+                                <label class="form-check-label bg-transparent" for="tunjangan3">Rp. 1.500k </label>
                             </div>
                             {{-- Periode --}}
                             <div class="bg-transparent fw-bold mt-3">Periode</div>
@@ -224,6 +227,36 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="detailOverlay"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1050;">
+    </div>
+    <!-- Slide Panel -->
+    <div id="detailSlide"
+        style="
+        display:none;
+        position:fixed;
+        top:0;
+        right:0;
+        width:75vw;
+        height:100vh;
+        background:#fff;
+        z-index:1100;
+        box-shadow: -4px 0 16px rgba(0,0,0,0.2);
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(.77,0,.18,1);
+        overflow-y:auto;
+    ">
+        <div class="justify-content-start bg-white"
+            style="border:none;border-bottom:1px solid #dee2e6;padding:2rem 2rem 3rem 2rem;outline:none; height:2rem; width: 100%;position:sticky;top:0;z-index:2;"
+            aria-label="Close Detail Slide" title="Close Detail Slide" class="text-dark bg-transparent">
+            <i id="closeDetailSlide" class="fa-solid fa-arrow-left bg-transparent" style="cursor:pointer;line-height:1;"></i>
+        </div>
+        <div id="detailSlideContent" class="bg-transparent" style="height: calc(100vh - 5.1rem); overflow-y:auto;">
+            <!-- Konten detail akan dimasukkan di sini -->
         </div>
     </div>
 @endsection
@@ -351,37 +384,45 @@
         document.addEventListener('DOMContentLoaded', function() {
             function fetchLowongans() {
                 const keyword = document.querySelector('#keywordLowongan').value;
-                const kompetensi = Array.from(document.querySelectorAll('input[name="kompetensi"]:checked')).map(cb => cb.value);
-                const keahlian = Array.from(document.querySelectorAll('input[name="keahlian"]:checked')).map(cb => cb.value);
-                const wilayah = Array.from(document.querySelectorAll('input[name="wilayah"]:checked')).map(cb => cb.value);
-                const skema = Array.from(document.querySelectorAll('input[name="skema"]:checked')).map(cb => cb.value);
-                const periode = Array.from(document.querySelectorAll('input[name="periode"]:checked')).map(cb => cb.value);
-                const tunjangan = Array.from(document.querySelectorAll('input[name="tunjangan"]:checked')).map(cb => cb.value);
-                const rating = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb.value); // Tambahkan ini
+                const kompetensi = Array.from(document.querySelectorAll('input[name="kompetensi"]:checked')).map(
+                    cb => cb.value);
+                const keahlian = Array.from(document.querySelectorAll('input[name="keahlian"]:checked')).map(cb =>
+                    cb.value);
+                const wilayah = Array.from(document.querySelectorAll('input[name="wilayah"]:checked')).map(cb => cb
+                    .value);
+                const skema = Array.from(document.querySelectorAll('input[name="skema"]:checked')).map(cb => cb
+                    .value);
+                const periode = Array.from(document.querySelectorAll('input[name="periode"]:checked')).map(cb => cb
+                    .value);
+                const tunjangan = Array.from(document.querySelectorAll('input[name="tunjangan"]:checked')).map(cb =>
+                    cb.value);
+                const rating = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb
+                    .value); // Tambahkan ini
 
                 fetch('/mahasiswa/getLowongan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        keyword,
-                        kompetensi,
-                        keahlian,
-                        wilayah,
-                        skema,
-                        periode,
-                        tunjangan,
-                        rating // Tambahkan ini
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        },
+                        body: JSON.stringify({
+                            keyword,
+                            kompetensi,
+                            keahlian,
+                            wilayah,
+                            skema,
+                            periode,
+                            tunjangan,
+                            rating // Tambahkan ini
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('internCards').innerHTML = data.lowongans;
-                    limitSkillsContainerLines();
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('internCards').innerHTML = data.lowongans;
+                        limitSkillsContainerLines();
+                    })
+                    .catch(error => console.error('Error:', error));
             }
 
             fetchLowongans();
@@ -393,6 +434,58 @@
             filterElements.forEach(el => {
                 el.addEventListener('change', fetchLowongans);
                 el.addEventListener('input', fetchLowongans);
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Buka slide
+            window.openDetailSlide = function(htmlContent) {
+                document.getElementById('detailOverlay').style.display = 'block';
+                document.getElementById('detailSlide').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('detailSlide').style.transform = 'translateX(0)';
+                }, 10);
+                document.body.classList.add('detail-slide-open');
+                if (htmlContent) {
+                    document.getElementById('detailSlideContent').innerHTML = htmlContent;
+                }
+            };
+
+            // Tutup slide
+            function closeDetailSlide() {
+                document.getElementById('detailSlide').style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.getElementById('detailSlide').style.display = 'none';
+                    document.getElementById('detailOverlay').style.display = 'none';
+                    document.body.classList.remove('detail-slide-open');
+                }, 400);
+            }
+
+            document.getElementById('closeDetailSlide').onclick = closeDetailSlide;
+            document.getElementById('detailOverlay').onclick = closeDetailSlide;
+
+            // Delegasi klik tombol detail
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.btn-detail-lowongan')) {
+                    const id = e.target.getAttribute('data-id');
+                    fetch('/mahasiswa/getLowonganDetail', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content
+                            },
+                            body: JSON.stringify({
+                                lowongan_id: id
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            document.getElementById('detailSlideContent').innerHTML = data.html;
+                            window.openDetailSlide();
+                        });
+                }
             });
         });
     </script>

@@ -163,7 +163,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [PerusahaanController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [PerusahaanController::class, 'export_pdf'])->name('export_pdf');
         });
-
     });
 
     // Dosen Routes
@@ -193,9 +192,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
+        // Dashboard
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/getLowonganDetail', [MahasiswaDashboardController::class, 'getLowonganDetail'])->name('mahasiswa.getLowonganDetail');
         Route::post('/getLowongan', [MahasiswaDashboardController::class, 'getLowongan'])->name('mahasiswa.getLowongan');
-
+    
         // Log Harian
         Route::prefix('log-harian')->name('log-harian.')->group(function () {
             Route::get('/', [LogAktivitasController::class, 'index'])->name('index');

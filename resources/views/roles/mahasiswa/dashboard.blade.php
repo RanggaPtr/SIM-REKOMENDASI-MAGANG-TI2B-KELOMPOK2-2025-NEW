@@ -75,9 +75,9 @@
                         <option>Sort: Ascending</option>
                         <option>Sort: Descending</option>
                     </select>
-                    <button class="rounded-3"
-                        style="flex: 1; border: 1px solid #DEE2E6; background-color: #fff; color: #212529; padding: 0.375rem 0.75rem;">
-                        <i class="fa-solid fa-book-bookmark"></i>
+                    <button id="toggleBookmarkView" class="rounded-3"
+                        style="flex: 1; border: 1px solid #DEE2E6; background-color: #212529; color: #fff; padding: 0.375rem 0.75rem;">
+                        <i class="fa-solid fa-book-bookmark bg-transparent"></i>
                     </button>
                 </div>
                 <div id="internCards">
@@ -253,7 +253,8 @@
         <div class="justify-content-start bg-white"
             style="border:none;border-bottom:1px solid #dee2e6;padding:2rem 2rem 3rem 2rem;outline:none; height:2rem; width: 100%;position:sticky;top:0;z-index:2;"
             aria-label="Close Detail Slide" title="Close Detail Slide" class="text-dark bg-transparent">
-            <i id="closeDetailSlide" class="fa-solid fa-arrow-left bg-transparent" style="cursor:pointer;line-height:1;"></i>
+            <i id="closeDetailSlide" class="fa-solid fa-arrow-left bg-transparent"
+                style="cursor:pointer;line-height:1;"></i>
         </div>
         <div id="detailSlideContent" class="bg-transparent" style="height: calc(100vh - 5.1rem); overflow-y:auto;">
             <!-- Konten detail akan dimasukkan di sini -->
@@ -486,6 +487,109 @@
                             window.openDetailSlide();
                         });
                 }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('bookmark-icon')) {
+                e.stopPropagation();
+                const icon = e.target;
+                const lowonganId = icon.dataset.id;
+                const isBookmarked = icon.classList.contains('fa-solid');
+                const url = '/mahasiswa/bookmark';
+                const method = isBookmarked ? 'DELETE' : 'POST';
+                fetch(url, {
+                        method: method,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            lowongan_id: lowonganId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            icon.classList.toggle('fa-solid');
+                            icon.classList.toggle('fa-regular');
+                            icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
+                        }
+                    });
+            }
+        });
+    </script>
+    <script>
+        let bookmarkViewOn = false;
+
+        function updateBookmarkButton() {
+            const btn = document.getElementById('toggleBookmarkView');
+            if (bookmarkViewOn) {
+                btn.style.backgroundColor = '#ffc107';
+                btn.style.color = '#fff';
+            } else {
+                btn.style.backgroundColor = '#fff';
+                btn.style.color = '#212529';
+            }
+        }
+
+        document.getElementById('toggleBookmarkView').addEventListener('click', function() {
+            bookmarkViewOn = !bookmarkViewOn;
+            updateBookmarkButton();
+            fetchLowongans();
+        });
+
+        function fetchLowongans() {
+            const keyword = document.querySelector('#keywordLowongan').value;
+            const kompetensi = Array.from(document.querySelectorAll('input[name="kompetensi"]:checked')).map(cb => cb
+            .value);
+            const keahlian = Array.from(document.querySelectorAll('input[name="keahlian"]:checked')).map(cb => cb.value);
+            const wilayah = Array.from(document.querySelectorAll('input[name="wilayah"]:checked')).map(cb => cb.value);
+            const skema = Array.from(document.querySelectorAll('input[name="skema"]:checked')).map(cb => cb.value);
+            const periode = Array.from(document.querySelectorAll('input[name="periode"]:checked')).map(cb => cb.value);
+            const tunjangan = Array.from(document.querySelectorAll('input[name="tunjangan"]:checked')).map(cb => cb.value);
+            const rating = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb.value);
+
+            fetch('/mahasiswa/getLowongan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        keyword,
+                        kompetensi,
+                        keahlian,
+                        wilayah,
+                        skema,
+                        periode,
+                        tunjangan,
+                        rating,
+                        only_bookmarked: bookmarkViewOn ? 1 : 0 // <-- Add this
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('internCards').innerHTML = data.lowongans;
+                    limitSkillsContainerLines();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update all filter triggers to use the new fetchLowongans
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBookmarkButton();
+            fetchLowongans();
+
+            const filterElements = document.querySelectorAll(
+                '#keywordLowongan, input[name="kompetensi"], input[name="keahlian"], input[name="wilayah"], input[name="skema"], input[name="periode"], input[name="tunjangan"], input[name="rating"]'
+            );
+
+            filterElements.forEach(el => {
+                el.addEventListener('change', fetchLowongans);
+                el.addEventListener('input', fetchLowongans);
             });
         });
     </script>

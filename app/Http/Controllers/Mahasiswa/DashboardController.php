@@ -13,6 +13,7 @@ use App\Models\SkemaModel;
 use Carbon\Carbon;
 use App\Models\MahasiswaModel;
 use Illuminate\Support\Facades\Http;
+use App\Models\BookmarkModel;
 
 class DashboardController extends Controller
 {
@@ -25,6 +26,8 @@ class DashboardController extends Controller
         $periodes = PeriodeMagangModel::where('tanggal_selesai', '>=', Carbon::today())->get();
         $skemas = SkemaModel::all();
 
+        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
+
         return view('roles.mahasiswa.dashboard', compact('activeMenu', 'kompetensis', 'keahlians', 'periodes', 'skemas'));
     }
 
@@ -34,10 +37,22 @@ class DashboardController extends Controller
     public function getLowongan(Request $request)
     {
         $lowongans = $this->getFilteredLowongan($request);
+
+        // Filter only bookmarked if requested
+        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
+        $bookmarks = $mahasiswa ? $mahasiswa->bookmark()->pluck('lowongan_id')->toArray() : [];
+
+        if ($request->input('only_bookmarked')) {
+            $lowongans = $lowongans->whereIn('lowongan_id', $bookmarks);
+        }
+
         $recomendedLowongans = $this->rekomendasiKNN($lowongans);
 
         return response()->json([
-            'lowongans' => view('component.intern-cards', ['lowongans' => $recomendedLowongans])->render()
+            'lowongans' => view('component.intern-cards', [
+                'lowongans' => $recomendedLowongans,
+                'bookmarks' => $bookmarks
+            ])->render()
         ]);
     }
 
@@ -215,5 +230,27 @@ class DashboardController extends Controller
         return response()->json(['html' => $html]);
     }
 
-    
+    public function addBookmark(Request $request)
+    {
+        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
+        if (!$mahasiswa) return response()->json(['success' => false, 'message' => 'Mahasiswa not found'], 404);
+
+        $bookmark = BookmarkModel::firstOrCreate([
+            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+            'lowongan_id' => $request->input('lowongan_id'),
+        ]);
+        return response()->json(['success' => true]);
+    }
+
+    public function removeBookmark(Request $request)
+    {
+        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
+        if (!$mahasiswa) return response()->json(['success' => false, 'message' => 'Mahasiswa not found'], 404);
+
+        BookmarkModel::where([
+            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+            'lowongan_id' => $request->input('lowongan_id'),
+        ])->delete();
+        return response()->json(['success' => true]);
+    }
 }

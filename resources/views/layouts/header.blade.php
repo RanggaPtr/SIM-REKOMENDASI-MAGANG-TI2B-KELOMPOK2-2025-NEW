@@ -4,12 +4,13 @@
 
     <!-- Kanan: Bell, Profile, dan Edit Profile -->
     <div class="d-flex align-items-center gap-2 me-2">
-        <!-- Bell Icon -->
+        <!-- Bell Icon: Only show for mahasiswa -->
+        @if (Auth::user()->role === 'mahasiswa')
         <div style="position: relative;">
             <i class="fas fa-bell me-5" id="notifBell" style="cursor:pointer;"></i>
-            <div id="notifDropdown" class="shadow rounded-3"
+            <div id="notifDropdown" class="shadow rounded-4"
                 style="display:none; position:absolute; top:40px; right:0; width:320px; z-index:2000;">
-                <div class="p-3 border-bottom fw-bold d-flex justify-content-between align-items-center bg-white">
+                <div class="p-3 border-bottom fw-bold d-flex justify-content-between align-items-center bg-white rounded-top-4">
                     <span class="bg-white">Notifikasi</span>
                     <a href="#" id="markAllRead" style="font-size:13px;" class="bg-white">Tandai semua dibaca</a>
                 </div>
@@ -21,10 +22,11 @@
                     </div>
                     <!-- Notifikasi akan dimuat via JS -->
                 </div>
-                <div class="text-center p-2 bg-white">
+                <div class="text-center p-2 bg-white rounded-bottom-4">
                 </div>
             </div>
         </div>
+        @endif
 
         <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
             alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
@@ -34,7 +36,7 @@
         </div>
         <!-- Tombol Edit Profile -->
         <button class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-            <i class="fas fa-edit"></i> Edit
+            <i class="fas fa-edit bg-transparent"></i> Edit
         </button>
     </div>
 </div>

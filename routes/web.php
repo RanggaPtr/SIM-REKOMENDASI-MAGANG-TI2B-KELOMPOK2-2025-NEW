@@ -196,7 +196,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
         Route::post('/getLowonganDetail', [MahasiswaDashboardController::class, 'getLowonganDetail'])->name('mahasiswa.getLowonganDetail');
         Route::post('/getLowongan', [MahasiswaDashboardController::class, 'getLowongan'])->name('mahasiswa.getLowongan');
-    
+
+        // Bookmark routes (inside mahasiswa group)
+        Route::post('/bookmark', [MahasiswaDashboardController::class, 'addBookmark'])->name('mahasiswa.bookmark.add');
+        Route::delete('/bookmark', [MahasiswaDashboardController::class, 'removeBookmark'])->name('mahasiswa.bookmark.remove');
+
         // Log Harian
         Route::prefix('log-harian')->name('log-harian.')->group(function () {
             Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
@@ -227,12 +231,11 @@ Route::group(['middleware' => 'auth'], function () {
         // routes/web.php
 
         // Dalam group route mahasiswa
-    
-            // ... route lainnya
-            // Feedback
-            Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
-            Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
+        // ... route lainnya
+        // Feedback
+        Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
+        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
     });
 
     // Perusahaan Routes

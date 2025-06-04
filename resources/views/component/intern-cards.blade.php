@@ -22,8 +22,12 @@
                     <div class="bg-{{ $cardBg }} px-3 pt-3 pb2 mb-2 rounded-2 d-flex flex-column h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3 bg-transparent">
                             <span class="badge bg-white text-dark">{{ $lowongan->tanggal_buka->format('d M, Y') }}</span>
-                            <i class="fa-regular fa-bookmark bg-transparent"
-                                style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer;"></i>
+                            @php
+                                $isBookmarked = in_array($lowongan->lowongan_id, $bookmarks ?? []);
+                            @endphp
+                            <i class="fa{{ $isBookmarked ? '-solid' : '-regular' }} text-dark fa-bookmark bookmark-icon bg-transparent"
+                               data-id="{{ $lowongan->lowongan_id }}"
+                               style="font-size:1.2rem; transition: color 0.2s, transform 0.2s; margin-right:2%;cursor:pointer; color:{{ $isBookmarked ? '#ffc107' : 'inherit' }};"></i>
                         </div>
                         <div class="text-dark bg-transparent">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
                         <h5 class="card-title bg-transparent fw-bold fs-4" style="margin-bottom:0rem">

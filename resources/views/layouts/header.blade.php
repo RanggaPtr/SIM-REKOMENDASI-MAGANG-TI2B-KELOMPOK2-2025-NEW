@@ -1,6 +1,6 @@
 <div class="container-fluid py-2 px-0 d-flex justify-content-between align-items-center text-dark">
     <!-- Kiri: Beranda -->
-    <div class="fs-4 text-secondary"><b>Beranda</b></div>
+    <div class="fs-4 text-secondary"><b>activeMenu</b></div>
 
     <!-- Kanan: Bell, Profile, dan Edit Profile -->
     <div class="d-flex align-items-center gap-2 me-2">
@@ -8,32 +8,27 @@
         <div style="position: relative;">
             <i class="fas fa-bell me-5" id="notifBell" style="cursor:pointer;"></i>
             <div id="notifDropdown" class="shadow rounded-3"
-                style="display:none; position:absolute; top:40px; right:0; width:320px; background:#fff; z-index:2000;">
-                <div class="p-3 border-bottom fw-bold d-flex justify-content-between align-items-center">
-                    <span>Notifikasi</span>
-                    <a href="#" style="font-size:13px;">Tandai semua dibaca</a>
+                style="display:none; position:absolute; top:40px; right:0; width:320px; z-index:2000;">
+                <div class="p-3 border-bottom fw-bold d-flex justify-content-between align-items-center bg-white">
+                    <span class="bg-white">Notifikasi</span>
+                    <a href="#" id="markAllRead" style="font-size:13px;" class="bg-white">Tandai semua dibaca</a>
                 </div>
-                <div style="max-height:300px; overflow-y:auto;">
-                    <!-- Contoh notifikasi -->
-                    <div class="p-3 border-bottom bg-light">
-                        <b>Stephan Parker</b> menandai tugas selesai<br>
-                        <small class="text-muted">1 hari lalu</small>
+                <div id="notifList" style="max-height:300px; overflow-y:auto;" class="bg-white">
+                    <div class="text-center py-3 bg-white" id="notifLoading">    
+                        <div class="spinner-border text-primary bg-white" role="status" style="width: 2rem; height: 2rem;">
+                            <span class="visually-hidden bg-white">Loading...</span>
+                        </div>
                     </div>
-                    <div class="p-3 border-bottom">
-                        <b>Steve O'Reilly</b> membalas komentarmu<br>
-                        <small class="text-muted">1 hari lalu</small>
-                    </div>
-                    <!-- dst -->
+                    <!-- Notifikasi akan dimuat via JS -->
                 </div>
-                <div class="text-center p-2">
-                    <a href="#">Lihat Semua</a>
+                <div class="text-center p-2 bg-white">
                 </div>
             </div>
         </div>
 
         <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
             alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
-        <div class="column ms-2">
+        <div class="column ms-2"> 
             <b class="mb-0">{{ Auth::user()->nama }}</b>
             <p class="mb-0" style="font-size: 13px;">{{ ucfirst(Auth::user()->role) }}</p>
         </div>
@@ -45,8 +40,8 @@
 </div>
 
 <!-- Modal Edit Profile -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal fade" id="editProfileModal" style="background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg rounded-4">
         <div class="modal-content rounded-4 shadow-lg">
             <div class="modal-header bg-primary text-white rounded-top-4">
                 <h5 class="modal-title fw-bold" id="editProfileModalLabel" style="color: black;background-color:none;">
@@ -412,17 +407,227 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    function loadMahasiswaNotifikasi() {
+        const notifList = document.getElementById('notifList');
+        notifList.innerHTML = `<div class="text-center py-3" id="notifLoading">
+            <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>`;
+        fetch("{{ route('profile.notifikasi') }}")
+            .then(res => res.json())
+            .then(res => {
+                notifList.innerHTML = '';
+                if (res.data && res.data.length > 0) {
+                    res.data.forEach(notif => {
+                        let icon = '';
+                        if (notif.status === 'diterima') {
+                            icon = `<i class="fa-solid fa-circle-check text-success me-2"></i>`;
+                        } else if (notif.status === 'ditolak') {
+                            icon = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>`;
+                        }
+                        notifList.innerHTML += `
+                            <div class="p-3 border-bottom bg-white d-flex justify-content-between bg-white align-items-center" data-id="${notif.mhs_notifikasi_id}">
+                                <div class="d-flex align-items-center w-100 bg-white">
+                                    <span class="d-flex align-items-center justify-content-center mx-2" style="font-size:1.7rem; min-width:2.2rem;">
+                                        ${
+                                            notif.status === 'diterima'
+                                                ? `<i class="fa-solid fa-circle-check text-success"></i>`
+                                                : `<i class="fa-solid fa-circle-xmark text-danger"></i>`
+                                        }
+                                    </span>
+                                    <div class="flex-grow-1" style="background-color: white;">
+                                        <div class="bg-white">${notif.deskripsi}</div>
+                                        <small class="text-muted bg-white">${formatDate(notif.created_at)}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-link text-muted bg-white ms-2 px-1 py-0 align-self-center" onclick="deleteNotifikasi(${notif.mhs_notifikasi_id}, this)" title="Hapus">
+                                        <i class="fas fa-times fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    notifList.innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                }
+            })
+            .catch(() => {
+                notifList.innerHTML = `<div class="text-center py-3 text-danger">Gagal memuat notifikasi.</div>`;
+            });
+    }
+
+    function deleteNotifikasi(id, btn) {
+        btn.disabled = true;
+        fetch(`/profile/notifikasi/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                // Remove the notification from the list
+                const notifDiv = btn.closest('[data-id]');
+                if (notifDiv) notifDiv.remove();
+                // If no more notifications, show empty state
+                if (document.querySelectorAll('#notifList [data-id]').length === 0) {
+                    document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                }
+            } else {
+                alert(res.error || 'Gagal menghapus notifikasi.');
+                btn.disabled = false;
+            }
+        })
+        .catch(() => {
+            alert('Gagal menghapus notifikasi.');
+            btn.disabled = false;
+        });
+    }
+
+    document.getElementById('markAllRead').addEventListener('click', function(e) {
+    e.preventDefault();
+    fetch("{{ route('profile.notifikasi.deleteAll') }}", {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+        } else {
+            alert(res.error || 'Gagal menghapus semua notifikasi.');
+        }
+    })
+    .catch(() => {
+        alert('Gagal menghapus semua notifikasi.');
+    });
+});
+    // Format date (simple, you can improve as needed)
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        if (isNaN(date)) return '';
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'Baru saja';
+        if (diff < 3600) return `${Math.floor(diff/60)} menit lalu`;
+        if (diff < 86400) return `${Math.floor(diff/3600)} jam lalu`;
+        if (diff < 604800) return `${Math.floor(diff/86400)} hari lalu`;
+        return date.toLocaleDateString();
+    }
+
+    // Fetch notifications when bell is clicked
     document.getElementById('notifBell').addEventListener('click', function(e) {
         e.stopPropagation();
         const dropdown = document.getElementById('notifDropdown');
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        if (dropdown.style.display === 'block') {
+            loadMahasiswaNotifikasi();
+        }
     });
-    document.addEventListener('click', function() {
-        document.getElementById('notifDropdown').style.display = 'none';
-    });
-    document.getElementById('notifDropdown').addEventListener('click', function(e){
-        e.stopPropagation();
-    });
+
+    document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('notifDropdown');
+    const bell = document.getElementById('notifBell');
+    if (!dropdown.contains(e.target) && e.target !== bell) {
+        dropdown.style.display = 'none';
+    }
+});
+    function loadMahasiswaNotifikasi() {
+        const notifList = document.getElementById('notifList');
+        notifList.innerHTML = `<div class="text-center py-3" id="notifLoading">
+            <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>`;
+        fetch("{{ route('profile.notifikasi') }}")
+            .then(res => res.json())
+            .then(res => {
+                notifList.innerHTML = '';
+                if (res.data && res.data.length > 0) {
+                    res.data.forEach(notif => {
+                        let icon = '';
+                        if (notif.status === 'diterima') {
+                            icon = `<i class="fa-solid fa-circle-check text-success me-2"></i>`;
+                        } else if (notif.status === 'ditolak') {
+                            icon = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>`;
+                        }
+                        notifList.innerHTML += `
+                            <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center" data-id="${notif.mhs_notifikasi_id}">
+                                <div class="d-flex align-items-center w-100 bg-white">
+                                    <span class="d-flex align-items-center justify-content-center mx-2 bg-transparent" style="font-size:1.7rem; min-width:2.2rem;">
+                                        ${
+                                            notif.status === 'diterima'
+                                                ? `<i class="fa-solid fa-circle-check text-success bg-transparent"></i>`
+                                                : `<i class="fa-solid fa-circle-xmark text-danger bg-transparent"></i>`
+                                        }
+                                    </span>
+                                    <div class="flex-grow-1 bg-transparent">
+                                        <div class="bg-transparent">${notif.deskripsi}</div>
+                                        <small class="text-muted bg-transparent">${formatDate(notif.created_at)}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-link text-muted ms-2 px-1 py-0 align-self-center" onclick="deleteNotifikasi(${notif.mhs_notifikasi_id}, this)" title="Hapus">
+                                        <i class="fas fa-times fa-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    notifList.innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                }
+            })
+            .catch(() => {
+                notifList.innerHTML = `<div class="text-center py-3 text-danger">Gagal memuat notifikasi.</div>`;
+            });
+    }
+
+    function deleteNotifikasi(id, btn) {
+        btn.disabled = true;
+        fetch(`/profile/notifikasi/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                // Remove the notification from the list
+                const notifDiv = btn.closest('[data-id]');
+                if (notifDiv) notifDiv.remove();
+                // If no more notifications, show empty state
+                if (document.querySelectorAll('#notifList [data-id]').length === 0) {
+                    document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                }
+            } else {
+                alert(res.error || 'Gagal menghapus notifikasi.');
+                btn.disabled = false;
+            }
+        })
+        .catch(() => {
+            alert('Gagal menghapus notifikasi.');
+            btn.disabled = false;
+        });
+    }
+
+    // Format date (simple, you can improve as needed)
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        if (isNaN(date)) return '';
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'Baru saja';
+        if (diff < 3600) return `${Math.floor(diff/60)} menit lalu`;
+        if (diff < 86400) return `${Math.floor(diff/3600)} jam lalu`;
+        if (diff < 604800) return `${Math.floor(diff/86400)} hari lalu`;
+        return date.toLocaleDateString();
+    }
 </script>
 
 <!-- Script untuk preview foto -->

@@ -229,7 +229,6 @@ Route::group(['middleware' => 'auth'], function () {
         // Dalam group route mahasiswa
     
             // ... route lainnya
-
             // Feedback
             Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
             Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
@@ -239,5 +238,12 @@ Route::group(['middleware' => 'auth'], function () {
     // Perusahaan Routes
     Route::prefix('perusahaan')->name('perusahaan.')->middleware('authorize:perusahaan')->group(function () {
         Route::get('/dashboard', fn() => view('roles.perusahaan.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        // ...route lain...
+        Route::get('/profile/notifikasi', [\App\Http\Controllers\ProfileController::class, 'getMahasiswaNotifikasi'])->name('profile.notifikasi');
+        Route::delete('/profile/notifikasi/{id}', [\App\Http\Controllers\ProfileController::class, 'deleteMahasiswaNotifikasi'])->name('profile.notifikasi.delete');
+        Route::delete('/profile/notifikasi/all', [ProfileController::class, 'deleteAllMahasiswaNotifikasi'])->name('profile.notifikasi.deleteAll');
     });
 });

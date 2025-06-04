@@ -179,19 +179,20 @@ class DashboardController extends Controller
 
         //     $check[] = [
         //         'id' => $lowongan->lowongan_id,
+        //         'judul' => $lowongan->judul,
         //         'similarity' => $item['similarity'],
-        //         // Atribut dari lowongan
-        //         'keahlian_lowongan' => $lowongan->lowonganKeahlian->pluck('keahlian_id')->toArray(),
-        //         'kompetensi_lowongan' => $lowongan->lowonganKompetensi->pluck('kompetensi_id')->toArray(),
-        //         'skema_lowongan' => $lowongan->skema_id,
-        //         'periode_lowongan' => $lowongan->periode_id,
-        //         'prodi_lowongan' => $lowongan->lowonganKompetensi->pluck('program_studi_id')->unique()->toArray(),
-        //         // Atribut dari mahasiswa (di akhir)
-        //         'keahlian_mahasiswa' => $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray(),
-        //         'kompetensi_mahasiswa' => $mahasiswa->mahasiswaKompetensi->pluck('kompetensi_id')->toArray(),
-        //         'skema_mahasiswa' => $mahasiswa->skema_id,
-        //         'periode_mahasiswa' => $mahasiswa->periode_id,
-        //         'prodi_mahasiswa' => $mahasiswa->programStudi->prodi_id,
+        //         // Atribut dari lowongan (pakai nama)
+        //         'keahlian_lowongan' => $lowongan->lowonganKeahlian->pluck('keahlian.nama')->toArray(),
+        //         'kompetensi_lowongan' => $lowongan->lowonganKompetensi->pluck('kompetensi.nama')->toArray(),
+        //         'skema_lowongan' => $lowongan->skema ? $lowongan->skema->nama : null,
+        //         'periode_lowongan' => $lowongan->periode ? $lowongan->periode->nama : null,
+        //         'prodi_lowongan' => $lowongan->lowonganKompetensi->pluck('kompetensi.programStudi.nama')->unique()->toArray(),
+        //         // Atribut dari mahasiswa (pakai nama)
+        //         'keahlian_mahasiswa' => $mahasiswa->mahasiswaKeahlian->pluck('keahlian.nama')->toArray(),
+        //         'kompetensi_mahasiswa' => $mahasiswa->mahasiswaKompetensi->pluck('kompetensi.nama')->toArray(),
+        //         'skema_mahasiswa' => $mahasiswa->skema ? $mahasiswa->skema->nama : null,
+        //         'periode_mahasiswa' => $mahasiswa->periode ? $mahasiswa->periode->nama : null,
+        //         'prodi_mahasiswa' => $mahasiswa->programStudi ? $mahasiswa->programStudi->nama : null,
         //     ];
         // }
         // echo json_encode($check, JSON_PRETTY_PRINT);
@@ -213,4 +214,6 @@ class DashboardController extends Controller
 
         return response()->json(['html' => $html]);
     }
+
+    
 }

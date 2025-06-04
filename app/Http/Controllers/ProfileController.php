@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Models\MahasiswaKompetensiModel; // Tambahkan ini
 use App\Models\MahasiswaKeahlianModel;  // Tambahkan ini
+use App\Models\MahasiswaNotifikasiModel; // Tambahkan di bagian use
 
 class ProfileController extends Controller
 {
@@ -260,5 +261,62 @@ class ProfileController extends Controller
         }
 
         return response()->json($debug);
+    }
+
+    /**
+     * Ambil notifikasi mahasiswa (AJAX)
+     */
+    public function getMahasiswaNotifikasi()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'mahasiswa') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', $user->user_id)->first();
+        if (!$mahasiswa) {
+            return response()->json(['data' => []]);
+        }
+        $notifikasi = MahasiswaNotifikasiModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['data' => $notifikasi]);
+    }
+
+    /**
+     * Hapus notifikasi mahasiswa (AJAX)
+     */
+    public function deleteMahasiswaNotifikasi($id)
+    {
+        $user = Auth::user();
+        if ($user->role !== 'mahasiswa') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', $user->user_id)->first();
+        $notif = MahasiswaNotifikasiModel::where('mhs_notifikasi_id', $id)
+            ->where('mahasiswa_id', $mahasiswa->mahasiswa_id ?? 0)
+            ->first();
+        if ($notif) {
+            $notif->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['error' => 'Notifikasi tidak ditemukan'], 404);
+    }
+
+    /**
+     * Hapus semua notifikasi mahasiswa (AJAX)
+     */
+    public function deleteAllMahasiswaNotifikasi()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'mahasiswa') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', $user->user_id)->first();
+        if (!$mahasiswa) {
+            return response()->json(['success' => true]);
+        }
+        \App\Models\MahasiswaNotifikasiModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)->delete();
+        return response()->json(['success' => true]);
     }
 }

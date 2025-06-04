@@ -69,6 +69,11 @@
             overflow-y: auto;
             min-height: 0;
         }
+
+        .modal-backdrop {
+            opacity: 0.5 !important;
+            z-index: -1050 !important;
+        }
     </style>
     <div class="main-layout">
         <!-- Sidebar -->

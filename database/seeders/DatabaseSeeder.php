@@ -36,7 +36,8 @@ class DatabaseSeeder extends Seeder
             EvaluasiMagangSeeder::class,
             BookmarkSeeder::class,
             LogAktivitasSeeder::class,
-            SilabusKonversiSksSeeder::class
+            SilabusKonversiSksSeeder::class,
+            MahasiswaNotifikasiSeeder::class,
         ]);
     }
 }

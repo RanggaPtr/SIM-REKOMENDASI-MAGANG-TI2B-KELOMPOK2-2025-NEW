@@ -24,7 +24,6 @@ return new class extends Migration
             $table->foreign('wilayah_id')->references('wilayah_id')->on('m_wilayah')->onDelete('cascade');
             $table->foreign('periode_id')->references('periode_id')->on('m_periode_magang')->onDelete('cascade');
             $table->foreign('skema_id')->references('skema_id')->on('m_skema')->onDelete('cascade');
-
         });
     }
 

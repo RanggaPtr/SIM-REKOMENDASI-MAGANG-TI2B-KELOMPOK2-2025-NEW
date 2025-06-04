@@ -81,4 +81,12 @@ class LowonganMagangModel extends Model
     {
         return $this->hasOne(SilabusKonversiSksModel::class, 'lowongan_id', 'lowongan_id');
     }
+
+    public function getSelisihHari()
+    {
+        // Pastikan tanggal_buka bertipe Carbon (sudah di-cast di $casts)
+        $tanggalBuka = $this->tanggal_buka;
+        $hariIni = now();
+        return $tanggalBuka->diffInDays($hariIni, false); // false agar hasil bisa negatif/positif
+    }
 }

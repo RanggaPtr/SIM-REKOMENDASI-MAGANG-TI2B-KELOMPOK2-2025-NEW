@@ -167,7 +167,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Statistik Tren
         Route::prefix('statistik-data-tren')->name('statistik-data-tren.')->group(function () {
-            Route::get('/', [StatistikController::class, 'index'])->name('index');
+            // Route::get('/', [StatistikController::class, 'index'])->name('index');
         });
     });
 
@@ -198,9 +198,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
+        // Dashboard
         Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/getLowonganDetail', [MahasiswaDashboardController::class, 'getLowonganDetail'])->name('mahasiswa.getLowonganDetail');
         Route::post('/getLowongan', [MahasiswaDashboardController::class, 'getLowongan'])->name('mahasiswa.getLowongan');
-
+    
         // Log Harian
         Route::prefix('log-harian')->name('log-harian.')->group(function () {
             Route::get('/', [LogAktivitasController::class, 'index'])->name('index');

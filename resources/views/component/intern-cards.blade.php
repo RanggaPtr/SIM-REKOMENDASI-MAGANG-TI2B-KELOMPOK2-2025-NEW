@@ -63,23 +63,9 @@
                             </div>
 
                             <div class="d-flex">
-                                {{-- Tombol Ajukan langsung ke store --}}
-                                @if (Auth::user()->role === 'mahasiswa')
-                                    <form action="{{ route('mahasiswa.pengajuan-magang.store') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="lowongan_id" value="{{ $lowongan->lowongan_id }}">
-                                        <button type="submit" class="btn btn-primary me-2">Ajukan</button>
-                                    </form>
-                                @else
-                                    <div class="alert alert-warning me-2">
-                                        Lengkapi profil mahasiswa terlebih dahulu sebelum mengajukan magang
-                                    </div>
-                                @endif
-
                                 {{-- Tombol Detail --}}
-                                <a href="#ongoing" class="btn btn-dark">Detail</a>
+                                <button type="button" class="btn btn-dark btn-detail-lowongan" data-id="{{ $lowongan->lowongan_id }}">Detail</button>
                             </div>
-
                         </div>
                     </div>
                 </div>

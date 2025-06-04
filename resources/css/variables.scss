@@ -33,4 +33,8 @@ $theme-colors: (
   }
 }
 
+.btn-outline-primary:hover {
+  color: #ffffff !important; // atau bisa pakai #fff
+}
+
 @import "../../node_modules/bootstrap/scss/bootstrap";

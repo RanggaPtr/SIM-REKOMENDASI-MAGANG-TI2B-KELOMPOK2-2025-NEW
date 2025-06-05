@@ -279,13 +279,14 @@
         const searchRegency = document.getElementById('searchRegency');
 
         function fetchRegencies(reset = false) {
-            if (regencyLoading || regencyEnd) return;
-            regencyLoading = true;
+            if (regencyLoading) return;
             if (reset) {
                 regencyOffset = 0;
-                regencyEnd = false;
+                regencyEnd = false; // <-- Reset regencyEnd on new search
                 regencyList.innerHTML = '';
             }
+            if (regencyEnd) return;
+            regencyLoading = true;
             fetch(`/api/regencies?q=${encodeURIComponent(regencyQuery)}&offset=${regencyOffset}&limit=${regencyLimit}`, {
                     headers: {
                         'Authorization': `Bearer ${apiToken}`,
@@ -527,7 +528,7 @@
         function updateBookmarkButton() {
             const btn = document.getElementById('toggleBookmarkView');
             if (bookmarkViewOn) {
-                btn.style.backgroundColor = '#ffc107';
+                btn.style.backgroundColor = '#232323';
                 btn.style.color = '#fff';
             } else {
                 btn.style.backgroundColor = '#fff';
@@ -583,14 +584,23 @@
             updateBookmarkButton();
             fetchLowongans();
 
-            const filterElements = document.querySelectorAll(
-                '#keywordLowongan, input[name="kompetensi"], input[name="keahlian"], input[name="wilayah"], input[name="skema"], input[name="periode"], input[name="tunjangan"], input[name="rating"]'
-            );
-
-            filterElements.forEach(el => {
-                el.addEventListener('change', fetchLowongans);
-                el.addEventListener('input', fetchLowongans);
+            // Use event delegation for all filter changes, including dynamically added wilayah checkboxes
+            document.getElementById('filterForm').addEventListener('change', function(e) {
+                if (
+                    e.target.matches('#keywordLowongan') ||
+                    e.target.matches('input[name="kompetensi"]') ||
+                    e.target.matches('input[name="keahlian"]') ||
+                    e.target.matches('input[name="wilayah"]') ||
+                    e.target.matches('input[name="skema"]') ||
+                    e.target.matches('input[name="periode"]') ||
+                    e.target.matches('input[name="tunjangan"]') ||
+                    e.target.matches('input[name="rating"]')
+                ) {
+                    fetchLowongans();
+                }
             });
+
+            document.getElementById('keywordLowongan').addEventListener('input', fetchLowongans);
         });
     </script>
 @endpush

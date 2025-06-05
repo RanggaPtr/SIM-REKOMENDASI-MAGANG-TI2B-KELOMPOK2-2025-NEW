@@ -71,9 +71,9 @@
                 <div class="d-flex mb-3">
                     <input type="text" class="form-control me-3 rounded-3" placeholder="Search" style="flex: 12"
                         id="keywordLowongan">
-                    <select class="form-select w-auto me-3 rounded-3" style="flex: 2; cursor: pointer;">
-                        <option>Sort: Ascending</option>
-                        <option>Sort: Descending</option>
+                    <select id="sortLowongan" class="form-select w-auto me-3 rounded-3" style="flex: 2; cursor: pointer;">
+                        <option value="asc">Sort: Ascending</option>
+                        <option value="desc">Sort: Descending</option>
                     </select>
                     <button id="toggleBookmarkView" class="rounded-3"
                         style="flex: 1; border: 1px solid #DEE2E6; background-color: #212529; color: #fff; padding: 0.375rem 0.75rem;">
@@ -179,26 +179,15 @@
                             </div>
                             <div class="bg-transparent fw-bold">Tunjangan</div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" id="tunjangan0"
-                                    value="1">
-                                <label class="form-check-label bg-transparent" for="tunjangan0">Rp. 0 - Rp. 500k</label>
+                                <input class="form-check-input" type="checkbox" name="tunjangan" id="tunjanganBerbayar"
+                                    value="berbayar">
+                                <label class="form-check-label bg-transparent" for="tunjanganBerbayar">Berbayar</label>
                             </div>
                             <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="2"
-                                    id="tunjangan1">
-                                <label class="form-check-label bg-transparent" for="tunjangan1">Rp. 500k - Rp.
-                                    1.000k</label>
-                            </div>
-                            <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="3"
-                                    id="tunjangan2">
-                                <label class="form-check-label bg-transparent" for="tunjangan2">Rp. 1.000k - Rp.
-                                    1.500k</label>
-                            </div>
-                            <div class="form-check bg-transparent">
-                                <input class="form-check-input" type="checkbox" name="tunjangan" value="4"
-                                    id="tunjangan3">
-                                <label class="form-check-label bg-transparent" for="tunjangan3">Rp. 1.500k </label>
+                                <input class="form-check-input" type="checkbox" name="tunjangan" value="tidak"
+                                    id="tunjanganTidakBerbayar">
+                                <label class="form-check-label bg-transparent" for="tunjanganTidakBerbayar">Tidak
+                                    Berbayar</label>
                             </div>
                             {{-- Periode --}}
                             <div class="bg-transparent fw-bold mt-3">Periode</div>
@@ -400,6 +389,7 @@
                     cb.value);
                 const rating = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb
                     .value); // Tambahkan ini
+                const sort = document.getElementById('sortLowongan').value;
 
                 fetch('/mahasiswa/getLowongan', {
                         method: 'POST',
@@ -416,7 +406,9 @@
                             skema,
                             periode,
                             tunjangan,
-                            rating // Tambahkan ini
+                            rating,
+                            sort,
+                            only_bookmarked: bookmarkViewOn ? 1 : 0
                         })
                     })
                     .then(response => response.json())
@@ -437,6 +429,9 @@
                 el.addEventListener('change', fetchLowongans);
                 el.addEventListener('input', fetchLowongans);
             });
+
+            // Add this to trigger fetchLowongans when sort changes
+            document.getElementById('sortLowongan').addEventListener('change', fetchLowongans);
         });
     </script>
     <script>
@@ -545,13 +540,14 @@
         function fetchLowongans() {
             const keyword = document.querySelector('#keywordLowongan').value;
             const kompetensi = Array.from(document.querySelectorAll('input[name="kompetensi"]:checked')).map(cb => cb
-            .value);
+                .value);
             const keahlian = Array.from(document.querySelectorAll('input[name="keahlian"]:checked')).map(cb => cb.value);
             const wilayah = Array.from(document.querySelectorAll('input[name="wilayah"]:checked')).map(cb => cb.value);
             const skema = Array.from(document.querySelectorAll('input[name="skema"]:checked')).map(cb => cb.value);
             const periode = Array.from(document.querySelectorAll('input[name="periode"]:checked')).map(cb => cb.value);
             const tunjangan = Array.from(document.querySelectorAll('input[name="tunjangan"]:checked')).map(cb => cb.value);
             const rating = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb.value);
+            const sort = document.getElementById('sortLowongan').value;
 
             fetch('/mahasiswa/getLowongan', {
                     method: 'POST',
@@ -568,7 +564,8 @@
                         periode,
                         tunjangan,
                         rating,
-                        only_bookmarked: bookmarkViewOn ? 1 : 0 // <-- Add this
+                        sort,
+                        only_bookmarked: bookmarkViewOn ? 1 : 0
                     })
                 })
                 .then(response => response.json())

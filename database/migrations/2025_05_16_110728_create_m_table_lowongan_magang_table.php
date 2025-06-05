@@ -16,7 +16,7 @@ public function up()
             $table->string('judul', 255);
             $table->text('deskripsi');
             $table->text('persyaratan');
-            $table->integer('tunjangan');
+            $table->boolean('tunjangan');
             $table->date('tanggal_buka');
             $table->date('tanggal_tutup');
             $table->timestamps();

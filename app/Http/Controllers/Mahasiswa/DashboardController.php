@@ -59,18 +59,28 @@ class DashboardController extends Controller
     private function getFilteredLowongan(Request $request)
     {
         $params = [
-            'keyword' => $request->input('keyword', []),
+            'keyword' => $request->input('keyword', ''), // <-- ubah default ke string kosong
             'keahlian' => $request->input('keahlian', []),
             'kompetensi' => $request->input('kompetensi', []),
             'skema' => $request->input('skema', []),
             'periode' => $request->input('periode', []),
             'tunjangan' => $request->input('tunjangan', []),
             'wilayah' => $request->input('wilayah', []),
-            'rating' => $request->input('rating', []), // Tambahkan ini
+            'rating' => $request->input('rating', []),
+            'sort' => $request->input('sort', 'asc'),
         ];
 
-        return LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'])
+        $query = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'])
             // ->where('tanggal_tutup', '>=', Carbon::today())
+            ->when(!empty($params['keyword']), function ($query) use ($params) {
+                $keyword = trim($params['keyword']);
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('judul', 'like', "%{$keyword}%")
+                      ->orWhereHas('perusahaan', function ($q2) use ($keyword) {
+                          $q2->where('nama', 'like', "%{$keyword}%");
+                      });
+                });
+            })
             ->when(!empty($params['keahlian']), function ($query) use ($params) {
                 $query->whereHas('keahlians', function ($q) use ($params) {
                     $q->whereIn('m_lowongan_keahlian.keahlian_id', $params['keahlian']);
@@ -95,14 +105,10 @@ class DashboardController extends Controller
             ->when(!empty($params['tunjangan']), function ($query) use ($params) {
                 $query->where(function ($q) use ($params) {
                     foreach ($params['tunjangan'] as $tunjangan) {
-                        if ($tunjangan == 1) {
-                            $q->orWhereBetween('tunjangan', [0, 500000]);
-                        } elseif ($tunjangan == 2) {
-                            $q->orWhereBetween('tunjangan', [500001, 1000000]);
-                        } elseif ($tunjangan == 3) {
-                            $q->orWhereBetween('tunjangan', [1000001, 1500000]);
-                        } elseif ($tunjangan == 4) {
-                            $q->orWhere('tunjangan', '>', 1500000);
+                        if ($tunjangan == 'berbayar') {
+                            $q->orWhere('tunjangan', true);
+                        } elseif ($tunjangan == 'tidak') {
+                            $q->orWhere('tunjangan', false);
                         }
                     }
                 });
@@ -125,8 +131,12 @@ class DashboardController extends Controller
                         }
                     });
                 });
-            })
-            ->get();
+            });
+
+        // Sorting by judul (or you can change to another field)
+        $query->orderBy('judul', $params['sort'] == 'desc' ? 'desc' : 'asc');
+
+        return $query->get();
     }
 
     public function rekomendasiKNN($lowongans)

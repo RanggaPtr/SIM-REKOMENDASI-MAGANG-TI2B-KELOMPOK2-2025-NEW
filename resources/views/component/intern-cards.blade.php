@@ -55,8 +55,9 @@
                         <div class="d-flex justify-content-between align-items-center w-100 bg-transparent">
                             <div class="bg-transparent">
                                 <div class="bg-transparent">
-                                    <span class="fw-bold bg-transparent">Rp.
-                                        {{ number_format($lowongan->tunjangan ?? 0, 0, ',', '.') }}/Bulan
+                                    <span class="fw-bold bg-transparent">
+                                        <i class="fa-solid fa-money-bill-wave bg-transparent"></i>
+                                        {{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}
                                     </span>
                                 </div>
                                 <div class="text-muted small" style="font-size: 0.85rem; background: transparent;">

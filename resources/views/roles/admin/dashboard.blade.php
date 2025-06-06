@@ -9,40 +9,54 @@
     {{-- CARD --}}
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="card shadow text-center" style="background: #e3fcec; border-left: 8px solid #28a745;">
+            <!-- Card 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow text-center" style="background: #fff8e1; border-left: 8px solid #28a745;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#218838;">Jumlah Dosen</h5>
                         <h2 class="card-text" style="color:#218838;">{{ $jumlah_dosen }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow text-center" style="background: #e9ecef; border-left: 8px solid #007bff;">
+            <!-- Card 2 -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow text-center" style="background: #fff8e1; border-left: 8px solid #007bff;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#0056b3;">Jumlah Mahasiswa</h5>
                         <h2 class="card-text" style="color:#0056b3;">{{ $jumlah_mahasiswa }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow text-center" style="background: #f0e6ff; border-left: 8px solid #6f42c1;">
+            <!-- Card 3 -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow text-center" style="background: #fff8e1; border-left: 8px solid #dc3545;">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color:#dc3545;">Jumlah Perusahaan</h5>
+                        <h2 class="card-text" style="color:#dc3545;">{{ $jumlah_perusahaan }}</h2>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow text-center" style="background: #fff8e1; border-left: 8px solid #6f42c1;">
                     <div class="card-body">
                         <h5 class="card-title" style="color:#6f42c1;">Jumlah Pengajuan Magang</h5>
                         <h2 class="card-text" style="color:#6f42c1;">{{ $total_pengajuan }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow text-center" style="background: #fff3cd; border-left: 8px solid #ffc107;">
+            <!-- Card 5 -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow text-center" style="background: #fff8e1; border-left: 8px solid #ffc107;">
                     <div class="card-body">
-                        <h5 class="card-title" style="color:#856404;">Mahasiswa Sudah Magang</h5>
-                        <h2 class="card-text" style="color:#856404;">{{ $jumlah_magang }}</h2>
+                        <h5 class="card-title" style="color:#b8860b;">Mahasiswa Sudah Magang</h5>
+                        <h2 class="card-text" style="color:#b8860b;">{{ $jumlah_magang }}</h2>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     {{-- GRAFIK --}}
     <h5 class="mt-4">Grafik Penyebaran Penerimaan Magang</h5>

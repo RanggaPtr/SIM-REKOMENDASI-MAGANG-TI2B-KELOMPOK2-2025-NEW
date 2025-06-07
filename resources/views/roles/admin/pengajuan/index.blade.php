@@ -4,7 +4,7 @@
     <div class="card card-outline card-primary">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Manajemen Pengajuan Magang</h3>
-            <!-- <div>
+            <div>
                 <button onclick="modalAction('{{ url('/admin/management-pengajuan-magang/create_ajax') }}')" class="btn btn-success btn-sm">
                     <i class="fa fa-plus"></i> Tambah Pengajuan
                 </button>
@@ -17,8 +17,9 @@
                 <a href="{{ url('/admin/management-pengajuan-magang/export_pdf') }}" class="btn btn-warning btn-sm">
                     <i class="fa fa-file-pdf"></i> Export PDF
                 </a>
-            </div> -->
+            </div>
         </div>
+
         <div class="card-body">
             <table id="pengajuanTable" class="table table-bordered table-striped">
                 <thead>
@@ -36,6 +37,7 @@
                 <tbody></tbody>
             </table>
         </div>
+
         <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
     </div>
 @endsection
@@ -83,8 +85,17 @@
                     { data: 'dosen_name', name: 'dosen_name' },
                     { data: 'periode_name', name: 'periode_name' },
                     { data: 'status', name: 'status' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
-                ]
+                    { 
+                        data: 'action', 
+                        name: 'action', 
+                        orderable: false, 
+                        searchable: false,
+                        className: 'text-center'
+                    }
+                ],
+                order: [[0, 'desc']],
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]]
             });
         });
     </script>

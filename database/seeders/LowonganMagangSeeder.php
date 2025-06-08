@@ -71,7 +71,7 @@ class LowonganMagangSeeder extends Seeder
                 "tanggal_tutup" => "2028-12-20"
             ],
             [
-                "perusahaan_id" => 6,
+                "perusahaan_id" => 5,
                 "periode_id" => 2,
                 "skema_id" => 2,
                 "judul" => "Magang Backend Developer",

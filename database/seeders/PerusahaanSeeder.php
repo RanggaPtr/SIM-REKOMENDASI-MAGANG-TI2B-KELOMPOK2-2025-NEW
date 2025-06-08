@@ -10,16 +10,14 @@ class PerusahaanSeeder extends Seeder
 {
    public function run()
     {
-        $jakarta = WilayahModel::where('kode_wilayah', '3171')->first(); // KOTA JAKARTA PUSAT
+        $jakarta = WilayahModel::where('kode_wilayah', '3173')->first(); // KOTA JAKARTA PUSAT
         $bandung = WilayahModel::where('kode_wilayah', '3273')->first(); // KOTA BANDUNG
+        $surabaya = WilayahModel::where('kode_wilayah', '3578')->first(); // KOTA SURABAYA
+        $yogyakarta = WilayahModel::where('kode_wilayah', '3471')->first(); // KOTA YOGYAKARTA
+        $semarang = WilayahModel::where('kode_wilayah', '3374')->first(); // KOTA SEMARANG
 
-        if (!$jakarta) {
-            $this->command->error('Wilayah KOTA JAKARTA PUSAT tidak ditemukan. Pastikan WilayahSeeder membuat data ini.');
-            return;
-        }
-
-        if (!$bandung) {
-            $this->command->error('Wilayah KOTA BANDUNG tidak ditemukan. Pastikan WilayahSeeder membuat data ini.');
+        if (!$jakarta || !$bandung || !$surabaya || !$yogyakarta || !$semarang) {
+            $this->command->error('Wilayah tidak ditemukan. Pastikan WilayahSeeder membuat data wilayah yang dibutuhkan.');
             return;
         }
 
@@ -53,55 +51,41 @@ class PerusahaanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'nama' => 'PT Kreatif Media',
-                'ringkasan' => 'Agensi kreatif digital di Jakarta.',
-                'deskripsi' => 'PT Kreatif Media fokus pada pengembangan konten digital dan pemasaran online.',
-                'logo' => 'images/default_logo1.png',
-                'alamat' => 'Jl. Sudirman No. 10, Jakarta Pusat',
-                'wilayah_id' => $jakarta->wilayah_id,
-                'kontak' => '02187654321',
-                'bidang_industri' => 'Media & Kreatif',
-                'rating' => 4.0,
-                'deskripsi_rating' => 'Lingkungan kerja yang dinamis dan kreatif.',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nama' => 'PT Solusi Pintar',
-                'ringkasan' => 'Konsultan IT di Bandung.',
-                'deskripsi' => 'PT Solusi Pintar menawarkan solusi konsultasi IT dan pengembangan aplikasi.',
-                'logo' => 'images/default_logo2.png',
-                'alamat' => 'Jl. Merdeka No. 45, Bandung',
-                'wilayah_id' => $bandung->wilayah_id,
-                'kontak' => '02212345678',
-                'bidang_industri' => 'Konsultan IT',
-                'rating' => 4.3,
-                'deskripsi_rating' => 'Tim profesional dan berpengalaman.',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nama' => 'PT Inovasi Digital',
-                'ringkasan' => 'Startup teknologi di Jakarta.',
-                'deskripsi' => 'PT Inovasi Digital mengembangkan produk digital inovatif untuk kebutuhan bisnis.',
-                'logo' => 'images/default_logo1.png',
-                'alamat' => 'Jl. MH Thamrin No. 20, Jakarta Pusat',
-                'wilayah_id' => $jakarta->wilayah_id,
-                'kontak' => '02155566677',
+                'nama' => 'PT Surabaya Digital',
+                'ringkasan' => 'Startup digital di Surabaya.',
+                'deskripsi' => 'PT Surabaya Digital fokus pada pengembangan aplikasi mobile dan web.',
+                'logo' => 'images/default_logo3.png',
+                'alamat' => 'Jl. Pemuda No. 1, Surabaya',
+                'wilayah_id' => $surabaya->wilayah_id,
+                'kontak' => '0311234567',
                 'bidang_industri' => 'Startup Teknologi',
-                'rating' => 4.6,
-                'deskripsi_rating' => 'Budaya kerja yang kolaboratif dan inovatif.',
+                'rating' => 4.4,
+                'deskripsi_rating' => 'Lingkungan kerja kreatif dan kolaboratif.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nama' => 'PT Bandung Cerdas',
-                'ringkasan' => 'Perusahaan edukasi digital di Bandung.',
-                'deskripsi' => 'PT Bandung Cerdas menyediakan platform pembelajaran online dan pelatihan digital.',
-                'logo' => 'images/default_logo2.png',
-                'alamat' => 'Jl. Asia Afrika No. 88, Bandung',
-                'wilayah_id' => $bandung->wilayah_id,
-                'kontak' => '02233445566',
+                'nama' => 'PT Jogja Kreatif',
+                'ringkasan' => 'Agensi kreatif digital di Yogyakarta.',
+                'deskripsi' => 'PT Jogja Kreatif bergerak di bidang desain grafis dan pemasaran digital.',
+                'logo' => 'images/default_logo4.png',
+                'alamat' => 'Jl. Malioboro No. 10, Yogyakarta',
+                'wilayah_id' => $yogyakarta->wilayah_id,
+                'kontak' => '0274123456',
+                'bidang_industri' => 'Kreatif & Digital',
+                'rating' => 4.3,
+                'deskripsi_rating' => 'Tim muda dan inovatif.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'PT Semarang Cerdas',
+                'ringkasan' => 'Perusahaan edukasi digital di Semarang.',
+                'deskripsi' => 'PT Semarang Cerdas menyediakan platform pembelajaran online dan pelatihan digital.',
+                'logo' => 'images/default_logo5.png',
+                'alamat' => 'Jl. Pandanaran No. 88, Semarang',
+                'wilayah_id' => $semarang->wilayah_id,
+                'kontak' => '02433445566',
                 'bidang_industri' => 'Edukasi Digital',
                 'rating' => 4.1,
                 'deskripsi_rating' => 'Fokus pada pengembangan SDM dan teknologi pendidikan.',

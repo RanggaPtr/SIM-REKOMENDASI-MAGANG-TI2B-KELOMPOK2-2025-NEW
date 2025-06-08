@@ -72,8 +72,8 @@
                     <input type="text" class="form-control me-3 rounded-3" placeholder="Search" style="flex: 12"
                         id="keywordLowongan">
                     <select id="sortLowongan" class="form-select w-auto me-3 rounded-3" style="flex: 2; cursor: pointer;">
-                        <option value="asc">Sort: Ascending</option>
                         <option value="desc">Sort: Descending</option>
+                        <option value="asc">Sort: Ascending</option>
                     </select>
                     <button id="toggleBookmarkView" class="rounded-3"
                         style="flex: 1; border: 1px solid #DEE2E6; background-color: #212529; color: #fff; padding: 0.375rem 0.75rem;">

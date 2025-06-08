@@ -50,7 +50,7 @@ class DashboardController extends Controller
 
         // Sorting setelah rekomendasi
         $sort = $request->input('sort', 'asc');
-        $sortedLowongans = $recomendedLowongans->sortBy(function($lowongan) {
+        $sortedLowongans = $recomendedLowongans->sortBy(function ($lowongan) {
             return $lowongan->judul;
         }, SORT_REGULAR, $sort === 'desc')->values();
 
@@ -503,10 +503,19 @@ class DashboardController extends Controller
         $lowongan = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'])
             ->findOrFail($id);
 
+
+        $reviews = \App\Models\PengajuanMagangModel::with(['mahasiswa'])
+            ->whereHas('lowongan', function ($q) use ($lowongan) {
+                $q->where('perusahaan_id', $lowongan->perusahaan_id);
+            })
+            ->whereNotNull('feedback_rating')
+            ->orderByDesc('pengajuan_id')
+            ->get();
+        
         // Tambahkan selisih hari ke dalam variabel lowongan
         $lowongan->selisih_hari = $lowongan->getSelisihHari();
 
-        $html = view('component.detail-lowongan-overlay', compact('lowongan'))->render();
+        $html = view('component.detail-lowongan-overlay', compact('lowongan', 'reviews'))->render();
 
         return response()->json(['html' => $html]);
     }

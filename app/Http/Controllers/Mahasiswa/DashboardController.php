@@ -76,9 +76,9 @@ class DashboardController extends Controller
                 $keyword = trim($params['keyword']);
                 $query->where(function ($q) use ($keyword) {
                     $q->where('judul', 'like', "%{$keyword}%")
-                      ->orWhereHas('perusahaan', function ($q2) use ($keyword) {
-                          $q2->where('nama', 'like', "%{$keyword}%");
-                      });
+                        ->orWhereHas('perusahaan', function ($q2) use ($keyword) {
+                            $q2->where('nama', 'like', "%{$keyword}%");
+                        });
                 });
             })
             ->when(!empty($params['keahlian']), function ($query) use ($params) {
@@ -225,6 +225,24 @@ class DashboardController extends Controller
         // Ambil K teratas (atau semua)
         return collect($result)->pluck('lowongan');
     }
+
+    private function haversineGreatCircleDistance($lat1, $lon1, $lat2, $lon2, $earthRadius = 6371) // km
+    {
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lon1);
+        $latTo   = deg2rad($lat2);
+        $lonTo   = deg2rad($lon2);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(
+            pow(sin($latDelta / 2), 2) +
+                cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)
+        ));
+        return $earthRadius * $angle;
+    }
+
 
     public function getLowonganDetail(Request $request)
     {

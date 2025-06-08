@@ -66,19 +66,56 @@
         <div class="bg-transparent mb-3">
             {{-- Tombol Ajukan langsung ke store --}}
             @if (Auth::user()->role === 'mahasiswa')
+                @php
+                    // Cek apakah sudah pernah mengajukan atau sudah ada magang disetujui/selesai
+                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::id())->first();
+                    $sudahAjukan = false;
+                    $sudahMagang = false;
+                    $isBookmarked = false;
+                    if ($mahasiswa) {
+                        $sudahAjukan = \App\Models\PengajuanMagangModel::where([
+                            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                            'lowongan_id' => $lowongan->lowongan_id
+                        ])->exists();
+                        $sudahMagang = \App\Models\PengajuanMagangModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
+                            ->whereIn('status', ['disetujui', 'selesai'])
+                            ->exists();
+                        $isBookmarked = \App\Models\BookmarkModel::where([
+                            'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                            'lowongan_id' => $lowongan->lowongan_id
+                        ])->exists();
+                    }
+                @endphp
                 <form action="{{ route('mahasiswa.pengajuan-magang.store') }}" method="POST"
                     class="d-inline bg-transparent">
                     @csrf
                     <input type="hidden" name="lowongan_id" value="{{ $lowongan->lowongan_id }}">
-                    <button type="submit" class="mt-2 btn btn-primary text-white me-2 mb-1 w-100">Ajukan</button>
+                    <button type="submit" class="mt-2 btn btn-primary text-white me-2 mb-1 w-100"
+                        @if ($sudahAjukan || $sudahMagang) disabled @endif>
+                        @if ($sudahAjukan)
+                            Sudah Diajukan
+                        @elseif ($sudahMagang)
+                            Tidak Bisa Ajukan
+                        @else
+                            Ajukan
+                        @endif
+                    </button>
                 </form>
             @else
                 <div class="alert alert-warning me-2 mt-2 bg-transparent">
                     Lengkapi profil mahasiswa terlebih dahulu sebelum mengajukan magang
                 </div>
             @endif
-            <button type="submit" class="mt-2 btn btn-outline-primary me-2 mb-4 w-100"><i
-                    class="fa-solid fa-bookmark bg-transparent me-2"></i>Bookmark</button>
+
+            {{-- Bookmark Button --}}
+            <button type="button"
+                class="mt-2 btn btn-outline-primary me-2 mb-4 w-100 d-flex align-items-center justify-content-center"
+                style="gap: 0.5rem;">
+                <i class="fa{{ $isBookmarked ? '-solid' : '-regular' }} fa-bookmark bookmark-icon bg-transparent"
+                   data-id="{{ $lowongan->lowongan_id }}"
+                   style="color:{{ $isBookmarked ? '#ffc107' : '' }}; font-size:1.2rem;"></i>
+                <span class="bg-transparent">Bookmark</span>
+            </button>
             <div class="mb-3" style="border-bottom: 1px solid #e0e0e0;margin-left: -1.7rem; margin-right:-1.8rem;">
             </div>
             <div class="d-flex align-items-center mb-4 bg-transparent">

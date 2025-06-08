@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\KompetensiModel;
 use App\Models\PengajuanMagangModel;
+use App\Models\PerusahaanModel;
 use App\Models\UsersModel;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +16,7 @@ class DashboardController extends Controller
         $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
         $jumlah_mahasiswa = UsersModel::where('role', 'mahasiswa')->count();
         $jumlah_magang = PengajuanMagangModel::where('status', 'diterima')->distinct('mahasiswa_id')->count('mahasiswa_id');
+        $jumlah_perusahaan = PerusahaanModel::count();
 
         // Grafik Penyebaran Penerimaan Magang
         $kompetensi = KompetensiModel::all();
@@ -59,8 +61,9 @@ class DashboardController extends Controller
             'jumlah_dosen',
             'jumlah_mahasiswa',
             'jumlah_magang',
-            'data_kompetensi_diterima',  
-            'data_kompetensi_pengajuan',   
+            'jumlah_perusahaan',
+            'data_kompetensi_diterima',
+            'data_kompetensi_pengajuan',
             'total_pengajuan',
             'total_diterima',
             'total_ditolak',

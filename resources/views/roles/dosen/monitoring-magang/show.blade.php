@@ -1,41 +1,51 @@
 @extends('layouts.template')
 
 @section('content')
-<h3>Detail Mahasiswa: {{ $pengajuan->mahasiswa->user->nama }}</h3>
+<h3>Detail Mahasiswa: {{ $pengajuan->mahasiswa->user->name }}</h3>
 <p>NIM: {{ $pengajuan->mahasiswa->nim }}</p>
 <p>Lowongan: {{ $pengajuan->lowongan->judul }}</p>
-<p>Periode: {{ $pengajuan->periode->nama }}</p>
+<p>Periode: {{ $pengajuan->periode->nama_periode }}</p>
 <p>Status: {{ $pengajuan->status }}</p>
 
 <h4>Log Aktivitas</h4>
 @foreach($logs as $log)
     <div class="card mb-3 p-3">
-        <p><strong>Tanggal:</strong> {{ $log->created_at->format('d M Y') }}</p>
+        <p><strong>Tanggal:</strong> {{ $log->feedback ? $log->feedback->created_at->format('d M Y') : '-' }}</p>
         <p>{{ $log->aktivitas }}</p>
 
         <h5>Feedback</h5>
-        @foreach($log->feedbacks as $feedback)
-            <div class="border-left pl-3 mb-2">
-                <p><strong>{{ $feedback->dosen->user->nama ?? 'Dosen' }}:</strong> {{ $feedback->komentar }}</p>
-                @if($feedback->nilai)
-                    <p>Nilai: {{ $feedback->nilai }}</p>
+        @if($log->feedback)
+            <div class="border-start ps-3 mb-2">
+                <p><strong>{{ $log->feedback->dosen->user->name ?? 'Dosen' }}:</strong> {{ $log->feedback->komentar }}</p>
+                @if($log->feedback->nilai)
+                    <p>Nilai: {{ $log->feedback->nilai }}</p>
                 @endif
-                <small><i>{{ $feedback->created_at->format('d M Y H:i') }}</i></small>
+                <small><i>{{ $log->feedback->created_at->format('d M Y H:i') }}</i></small>
             </div>
-        @endforeach
+        @else
+            <p>Belum ada feedback.</p>
+        @endif
 
-        <form action="{{ route('dosen.monitoring.feedback.store', $log->id) }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="komentar">Tambah Feedback</label>
-                <textarea name="komentar" class="form-control" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="nilai">Nilai (opsional)</label>
-                <input type="number" name="nilai" min="0" max="100" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success btn-sm mt-2">Simpan Feedback</button>
-        </form>
+        @if(!$log->feedback)
+            <form action="{{ route('dosen.monitoring.feedback.store', $log->id) }}" method="POST">
+                @csrf
+                <div class="form-group mb-3">
+                    <label for="komentar">Tambah Feedback</label>
+                    <textarea name="komentar" class="form-control" required></textarea>
+                    @error('komentar')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group mb-3">
+                    <label for="nilai">Nilai (opsional, 0-100)</label>
+                    <input type="number" name="nilai" min="0" max="100" class="form-control" value="{{ old('nilai') }}">
+                    @error('nilai')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-success btn-sm mt-2">Simpan Feedback</button>
+            </form>
+        @endif
     </div>
 @endforeach
 @endsection

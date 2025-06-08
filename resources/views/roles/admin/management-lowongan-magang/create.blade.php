@@ -84,11 +84,27 @@
             @enderror
         </div>
 
-        {{-- Tunjangan --}}
+        {{-- Tunjangan (Radio Button) --}}
         <div class="mb-3">
-            <label for="tunjangan" class="form-label">Tunjangan (Rp) <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="tunjangan" name="tunjangan" value="{{ old('tunjangan') }}" required>
+            <label class="form-label">Tunjangan <span class="text-danger">*</span></label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tunjangan" value="1" id="tunjangan_berbayar" {{ old('tunjangan', 1) == 1 ? 'checked' : '' }} required>
+                <label class="form-check-label" for="tunjangan_berbayar">Berbayar</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="tunjangan" value="0" id="tunjangan_tidak_berbayar" {{ old('tunjangan', 1) == 0 ? 'checked' : '' }} required>
+                <label class="form-check-label" for="tunjangan_tidak_berbayar">Tidak Berbayar</label>
+            </div>
             @error('tunjangan')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Kuota --}}
+        <div class="mb-3">
+            <label for="kuota" class="form-label">Kuota <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="kuota" name="kuota" value="{{ old('kuota') }}" min="1" required>
+            @error('kuota')
                 <div class="text-danger mt-1">{{ $message }}</div>
             @enderror
         </div>

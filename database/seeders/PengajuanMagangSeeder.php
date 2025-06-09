@@ -37,7 +37,7 @@ class PengajuanMagangSeeder extends Seeder
         PengajuanMagangModel::create([
             'mahasiswa_id' => 2,
             'lowongan_id' => 3,
-            'status' => 'selesai',
+            'status' => 'diajukan',
             'dosen_id' => 1234567890,
             'feedback_rating' => 4,
             'feedback_deskripsi' => 'Selama magang di sini, saya banyak belajar tentang alur kerja profesional dan bagaimana berkolaborasi dalam tim. Mentor sangat suportif dan terbuka terhadap pertanyaan, jadi saya merasa nyaman untuk terus belajar. Meskipun awalnya cukup menantang, tapi lingkungan kerjanya sangat membantu saya berkembang. Terima kasih atas kesempatan dan bimbingannya.',

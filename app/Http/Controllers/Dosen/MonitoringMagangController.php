@@ -17,27 +17,32 @@ class MonitoringMagangController extends Controller
     public function index(Request $request)
     {
         $dosenId = Auth::user()->dosen->dosen_id;
-        $query = PengajuanMagangModel::with('mahasiswa', 'periode')
+        $query = PengajuanMagangModel::with(['mahasiswa.user', 'periode', 'lowongan']) // Eager load semua relasi
             ->where('dosen_id', $dosenId)
             ->whereNotNull('dosen_id')
             ->whereIn('status', ['diterima', 'ongoing']);
 
+        // Filter status
         if ($status = $request->query('status')) {
             $query->where('status', $status);
         }
 
+        // Filter periode
         if ($periodeId = $request->query('periode_id')) {
             $query->where('periode_id', $periodeId);
         }
 
-        $sort = $request->query('sort', 'nim'); // Ganti ke nim sebagai alternatif sementara
+        // Sorting berdasarkan nama mahasiswa dari relasi
+        $sort = $request->query('sort', 'nama');
         $order = $request->query('order', 'asc');
-        $query->orderBy('m_mahasiswa.nim', $order); // Urutkan berdasarkan nim
+        $query->join('m_mahasiswa', 't_pengajuan_magang.mahasiswa_id', '=', 'm_mahasiswa.mahasiswa_id')
+              ->orderBy('m_mahasiswa.nim', $order); // Gunakan nim sebagai alternatif sementara
 
         $pengajuan = $query->paginate(10);
         $periodeMagang = PeriodeMagangModel::all();
+        $dosen = Auth::user()->dosen;
 
-        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang'));
+        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang', 'dosen'));
     }
 
     public function show($pengajuanId)
@@ -73,7 +78,6 @@ class MonitoringMagangController extends Controller
                 ->whereIn('status', ['diterima', 'ongoing']);
         })->findOrFail($logId);
 
-        // Cek apakah sudah ada feedback
         if (FeedbackLogAktivitasModel::where('log_aktivitas_id', $logId)->exists()) {
             return back()->with('error', 'Feedback sudah diberikan untuk log ini.');
         }

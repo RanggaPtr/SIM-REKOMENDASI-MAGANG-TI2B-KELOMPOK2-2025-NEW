@@ -60,11 +60,11 @@
             @if($reviews->count() > 0)
                 @foreach($reviews as $review)
                     <div class="d-flex align-items-start mb-4 bg-transparent" style="gap:1.5rem;">
-                        <div style="min-width:60px;">
+                        <div style="min-width:60px;" class="bg-transparent">
                             <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
-                                 alt="Foto" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+                                 alt="Foto" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" class="bg-transparent">
                         </div>
-                        <div class="d-flex flex-row w-100 bg-transparent">
+                        <div class="d-flex flex-row w-100 bg-transparent bg-transparent">
                             <div class="bg-transparent" style="min-width:180px;max-width:220px;">
                                 <div class="fw-bold bg-transparent" style="font-size:1.1rem; margin-bottom:0.1; line-height:1rem;">
                                     {{ $review->mahasiswa->user->nama }}
@@ -139,8 +139,9 @@
 
             {{-- Bookmark Button --}}
             <button type="button"
-                class="mt-2 btn btn-outline-primary me-2 mb-4 w-100 d-flex align-items-center justify-content-center"
-                style="gap: 0.5rem;">
+                class="mt-2 btn btn-outline-primary me-2 mb-4 w-100 d-flex align-items-center justify-content-center bookmark-btn"
+                style="gap: 0.5rem;"
+                data-id="{{ $lowongan->lowongan_id }}">
                 <i class="fa{{ $isBookmarked ? '-solid' : '-regular' }} fa-bookmark bookmark-icon bg-transparent"
                    data-id="{{ $lowongan->lowongan_id }}"
                    style="color:{{ $isBookmarked ? '#ffc107' : '' }}; font-size:1.2rem;"></i>

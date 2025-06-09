@@ -20,6 +20,8 @@
                     <th>Perusahaan</th>
                     <th>Periode</th>
                     <th>Skema</th>
+                    <th>Kuota</th> <!-- Ditambahkan -->
+                    <th>Tunjangan</th> <!-- Diubah -->
                     <th>Tanggal Buka</th>
                     <th>Tanggal Tutup</th>
                     <th style="width: 150px;">Aksi</th>
@@ -32,6 +34,8 @@
                         <td>{{ $lowongan->perusahaan->nama }}</td>
                         <td>{{ $lowongan->periode->nama }}</td>
                         <td>{{ $lowongan->skema->nama }}</td>
+                        <td>{{ $lowongan->kuota }}</td> <!-- Ditambahkan -->
+                        <td>{{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}</td> <!-- Diubah -->
                         <td>{{ $lowongan->tanggal_buka->format('d M Y') }}</td>
                         <td>{{ $lowongan->tanggal_tutup->format('d M Y') }}</td>
                         <td>
@@ -56,7 +60,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">Belum ada lowongan magang.</td>
+                        <td colspan="9" class="text-center">Belum ada lowongan magang.</td> <!-- Diubah dari colspan="7" ke "9" -->
                     </tr>
                 @endforelse
             </tbody>

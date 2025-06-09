@@ -20,7 +20,8 @@ class LowonganMagangModel extends Model
         'persyaratan',
         'tanggal_buka',
         'tanggal_tutup',
-        'tunjangan'
+        'tunjangan',
+        'kuota',
     ];
 
     protected $casts = [

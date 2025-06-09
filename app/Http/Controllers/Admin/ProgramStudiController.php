@@ -42,7 +42,7 @@ class ProgramStudiController extends Controller
         }
 
         return DataTables::of($programstudi)
-            ->addIndexColumn() 
+            ->addIndexColumn()
             ->addColumn('aksi', function ($programstudi) {
                 $showUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/show_ajax');
                 $editUrl = url('/admin/management-prodi/' . $programstudi->prodi_id . '/edit_ajax');
@@ -72,7 +72,7 @@ class ProgramStudiController extends Controller
     public function store_ajax(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|min:3|max:100',
+            'nama' => 'required|min:3|max:100|unique:m_program_studi,nama',
         ]);
 
         if ($validator->fails()) {
@@ -197,24 +197,35 @@ class ProgramStudiController extends Controller
             $sheet = $spreadsheet->getActiveSheet();
             $data = $sheet->toArray(null, false, true, true);
             $insert = [];
+            $duplikat = [];
 
             if (count($data) > 1) {
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) {
-                        $insert[] = [
-                            'nama' => $value['A'],
-                            'created_at' => now(),
-                        ];
+                        $nama = trim($value['A']);
+                        if (!empty($nama)) {
+                            // Cek apakah nama sudah ada di database
+                            $exists = ProgramStudiModel::where('nama', $nama)->exists();
+                            if (!$exists) {
+                                $insert[] = [
+                                    'nama' => $nama,
+                                    'created_at' => now(),
+                                ];
+                            } else {
+                                $duplikat[] = $nama;
+                            }
+                        }
                     }
                 }
 
                 if (count($insert) > 0) {
-                    ProgramStudiModel::insertOrIgnore($insert);
+                    ProgramStudiModel::insert($insert);
                 }
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil diimport'
+                    'message' => 'Data berhasil diimport: ' . count($insert) . ' data. Duplikat: ' . count($duplikat) . ' data.',
+                    'duplikat' => $duplikat
                 ]);
             } else {
                 return response()->json([
@@ -230,7 +241,7 @@ class ProgramStudiController extends Controller
     public function export_excel(Request $request)
     {
         $programStudi = ProgramStudiModel::select('prodi_id', 'nama')
-            ->orderBy('prodi_id', 'asc') 
+            ->orderBy('prodi_id', 'asc')
             ->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

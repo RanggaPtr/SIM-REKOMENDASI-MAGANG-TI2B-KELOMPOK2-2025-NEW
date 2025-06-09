@@ -61,4 +61,14 @@ class PengajuanMagangModel extends Model
     {
         return $this->hasMany(EvaluasiMagangModel::class, 'pengajuan_id', 'pengajuan_id');
     }
+
+    public function logAktivitas()
+{
+    return $this->hasMany(LogAktivitasModel::class, 'pengajuan_id', 'pengajuan_id');
+}
+
+    public function feedbackLogAktivitas()
+    {
+        return $this->hasMany(FeedbackLogAktivitasModel::class, 'pengajuan_id', 'pengajuan_id');
+    }
 }

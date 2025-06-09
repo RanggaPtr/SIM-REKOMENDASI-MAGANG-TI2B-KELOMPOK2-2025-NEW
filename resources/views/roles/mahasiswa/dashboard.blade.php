@@ -72,8 +72,8 @@
                     <input type="text" class="form-control me-3 rounded-3" placeholder="Search" style="flex: 12"
                         id="keywordLowongan">
                     <select id="sortLowongan" class="form-select w-auto me-3 rounded-3" style="flex: 2; cursor: pointer;">
-                        <option value="asc">Sort: Ascending</option>
                         <option value="desc">Sort: Descending</option>
+                        <option value="asc">Sort: Ascending</option>
                     </select>
                     <button id="toggleBookmarkView" class="rounded-3"
                         style="flex: 1; border: 1px solid #DEE2E6; background-color: #212529; color: #fff; padding: 0.375rem 0.75rem;">
@@ -488,18 +488,25 @@
     </script>
     <script>
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('bookmark-icon')) {
+            // Handle click on bookmark button (including overlay)
+            if (e.target.classList.contains('bookmark-btn') || e.target.closest('.bookmark-btn')) {
                 e.stopPropagation();
-                const icon = e.target;
-                const lowonganId = icon.dataset.id;
+                const btn = e.target.classList.contains('bookmark-btn') ? e.target : e.target.closest('.bookmark-btn');
+                const lowonganId = btn.dataset.id;
+                // Cari icon di dalam button
+                const icon = btn.querySelector('.bookmark-icon');
+                if (!icon) return;
                 const isBookmarked = icon.classList.contains('fa-solid');
+                // Optimistic UI update
+                icon.classList.toggle('fa-solid');
+                icon.classList.toggle('fa-regular');
+                icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
                 const url = '/mahasiswa/bookmark';
                 const method = isBookmarked ? 'DELETE' : 'POST';
                 fetch(url, {
                         method: method,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                'content'),
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
@@ -508,12 +515,75 @@
                     })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.success) {
+                        if (!data.success) {
+                            // Revert if failed
                             icon.classList.toggle('fa-solid');
                             icon.classList.toggle('fa-regular');
                             icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
+                        } else {
+                            // Update all icons with same id (card & overlay)
+                            document.querySelectorAll('.bookmark-icon[data-id="' + lowonganId + '"]').forEach(function(otherIcon) {
+                                if (otherIcon !== icon) {
+                                    otherIcon.classList.toggle('fa-solid');
+                                    otherIcon.classList.toggle('fa-regular');
+                                    otherIcon.style.color = otherIcon.classList.contains('fa-solid') ? '#ffc107' : '';
+                                }
+                            });
                         }
+                    })
+                    .catch(() => {
+                        // Revert if error
+                        icon.classList.toggle('fa-solid');
+                        icon.classList.toggle('fa-regular');
+                        icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
                     });
+            }
+            // Handle click on bookmark icon (card & overlay) - tetap ada jika ada icon di luar button
+            else if (e.target.classList.contains('bookmark-icon')) {
+                e.stopPropagation();
+                const icon = e.target;
+                const lowonganId = icon.dataset.id;
+                const isBookmarked = icon.classList.contains('fa-solid');
+                // Optimistic UI update
+                icon.classList.toggle('fa-solid');
+                icon.classList.toggle('fa-regular');
+                icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
+                const url = '/mahasiswa/bookmark';
+                const method = isBookmarked ? 'DELETE' : 'POST';
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lowongan_id: lowonganId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        // Revert if failed
+                        icon.classList.toggle('fa-solid');
+                        icon.classList.toggle('fa-regular');
+                        icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
+                    } else {
+                        // Jika di overlay, update juga icon di card (atau sebaliknya)
+                        document.querySelectorAll('.bookmark-icon[data-id="' + lowonganId + '"]').forEach(function(otherIcon) {
+                            if (otherIcon !== icon) {
+                                otherIcon.classList.toggle('fa-solid');
+                                otherIcon.classList.toggle('fa-regular');
+                                otherIcon.style.color = otherIcon.classList.contains('fa-solid') ? '#ffc107' : '';
+                            }
+                        });
+                    }
+                })
+                .catch(() => {
+                    // Revert if error
+                    icon.classList.toggle('fa-solid');
+                    icon.classList.toggle('fa-regular');
+                    icon.style.color = icon.classList.contains('fa-solid') ? '#ffc107' : '';
+                });
             }
         });
     </script>

@@ -23,17 +23,17 @@ class LowonganMagangController extends Controller
     }
 
     public function show($id)
-{
-    $lowongan = LowonganMagangModel::with([
-        'perusahaan',
-        'periode', 
-        'skema',
-        'lowonganKeahlian.keahlian',
-        'lowonganKompetensi.kompetensi'
-    ])->findOrFail($id);
+    {
+        $lowongan = LowonganMagangModel::with([
+            'perusahaan',
+            'periode', 
+            'skema',
+            'lowonganKeahlian.keahlian',
+            'lowonganKompetensi.kompetensi'
+        ])->findOrFail($id);
 
         return view('roles.admin.management-lowongan-magang.show', compact('lowongan'));
-}
+    }
 
     public function create()
     {
@@ -55,7 +55,8 @@ class LowonganMagangController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'persyaratan' => 'required|string',
-            'tunjangan' => 'required|numeric|min:0',
+            'tunjangan' => 'required|boolean', // Diubah menjadi boolean
+            'kuota' => 'required|integer|min:1', // Ditambahkan untuk kuota
             'keahlian' => 'required|array|min:1',
             'keahlian.*' => 'exists:m_keahlian,keahlian_id',
             'kompetensi' => 'required|array|size:1',
@@ -75,7 +76,8 @@ class LowonganMagangController extends Controller
                 'judul' => $request->judul,
                 'deskripsi' => $request->deskripsi,
                 'persyaratan' => $request->persyaratan,
-                'tunjangan' => $request->tunjangan,
+                'tunjangan' => $request->tunjangan, // Boolean (0 atau 1)
+                'kuota' => $request->kuota, // Ditambahkan
                 'tanggal_buka' => $request->tanggal_buka,
                 'tanggal_tutup' => $request->tanggal_tutup,
             ]);
@@ -117,6 +119,7 @@ class LowonganMagangController extends Controller
 
         return view('roles.admin.management-lowongan-magang.edit', compact('lowongan', 'periodes', 'skemas', 'perusahaans', 'keahlians', 'kompetensis'));
     }
+
     public function update(Request $request, $id)
     {
         $lowongan = LowonganMagangModel::findOrFail($id);
@@ -128,7 +131,8 @@ class LowonganMagangController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'persyaratan' => 'required|string',
-            'tunjangan' => 'required|numeric|min:0',
+            'tunjangan' => 'required|boolean', // Diubah menjadi boolean
+            'kuota' => 'required|integer|min:1', // Ditambahkan untuk kuota
             'keahlian' => 'required|array|min:1',
             'keahlian.*' => 'exists:m_keahlian,keahlian_id',
             'kompetensi' => 'required|array|size:1',
@@ -148,7 +152,8 @@ class LowonganMagangController extends Controller
                 'judul' => $request->judul,
                 'deskripsi' => $request->deskripsi,
                 'persyaratan' => $request->persyaratan,
-                'tunjangan' => $request->tunjangan,
+                'tunjangan' => $request->tunjangan, // Boolean (0 atau 1)
+                'kuota' => $request->kuota, // Ditambahkan
                 'tanggal_buka' => $request->tanggal_buka,
                 'tanggal_tutup' => $request->tanggal_tutup,
             ]);

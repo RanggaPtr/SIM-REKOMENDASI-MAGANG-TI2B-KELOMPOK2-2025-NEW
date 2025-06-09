@@ -65,6 +65,6 @@ class PerusahaanModel extends Model
         $combined = ($adminRating * $adminWeight) + (($feedbackAvg ?? 0) * $feedbackWeight);
 
         // Ubah ke persentase
-        return round(($combined / 5) * 100, 2);
+        return round($combined, 1); // atau 2 jika ingin 2 angka desimal
     }
 }

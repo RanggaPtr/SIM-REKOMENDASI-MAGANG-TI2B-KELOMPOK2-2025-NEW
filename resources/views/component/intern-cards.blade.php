@@ -34,7 +34,7 @@
                             {{ $lowongan->judul }}</h5>
                         <h9 class="mb-auto bg-transparent" style="font-size: 0.8rem">
                             <i class="fa-solid fa-star text-warning bg-transparent"></i>
-                            {{ number_format(($lowongan->perusahaan->calculated_rating ?? 0) / 20, 1) }}
+                            {{ number_format(($lowongan->perusahaan->calculated_rating ?? 0), 1) }}
                         </h9>
                         <div class="bg-transparent skills-container mb-3">
                             @foreach ($lowongan->lowonganKompetensi as $lk)

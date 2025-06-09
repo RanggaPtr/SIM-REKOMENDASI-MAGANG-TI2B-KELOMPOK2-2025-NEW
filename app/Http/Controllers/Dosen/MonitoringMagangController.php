@@ -17,27 +17,44 @@ class MonitoringMagangController extends Controller
     public function index(Request $request)
     {
         $dosenId = Auth::user()->dosen->dosen_id;
-        $query = PengajuanMagangModel::with('mahasiswa', 'periode')
+        $query = PengajuanMagangModel::with(['mahasiswa.user', 'periode', 'lowongan'])
             ->where('dosen_id', $dosenId)
             ->whereNotNull('dosen_id')
             ->whereIn('status', ['diterima', 'ongoing']);
 
+        // Filter status
         if ($status = $request->query('status')) {
             $query->where('status', $status);
         }
 
+        // Filter periode
         if ($periodeId = $request->query('periode_id')) {
             $query->where('periode_id', $periodeId);
         }
 
-        $sort = $request->query('sort', 'nim'); // Ganti ke nim sebagai alternatif sementara
+        // Sorting berdasarkan nama mahasiswa dari relasi
+        $sort = $request->query('sort', 'nama');
         $order = $request->query('order', 'asc');
-        $query->orderBy('m_mahasiswa.nim', $order); // Urutkan berdasarkan nim
+        $query->join('m_mahasiswa', 't_pengajuan_magang.mahasiswa_id', '=', 'm_mahasiswa.mahasiswa_id')
+              ->orderBy('m_mahasiswa.nim', $order);
 
         $pengajuan = $query->paginate(10);
         $periodeMagang = PeriodeMagangModel::all();
+        $dosen = Auth::user()->dosen;
 
-        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang'));
+        // Pengecekan data untuk mencegah error
+        foreach ($pengajuan as $p) {
+            if (!$p->mahasiswa || !$p->mahasiswa->user) {
+                $p->mahasiswa->user = new \stdClass();
+                $p->mahasiswa->user->name = 'Nama Tidak Tersedia';
+            }
+            if (!$p->periode || !isset($p->periode->nama_periode)) {
+                $p->periode = new \stdClass();
+                $p->periode->nama_periode = 'Tidak Tersedia';
+            }
+        }
+
+        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang', 'dosen'));
     }
 
     public function show($pengajuanId)
@@ -46,18 +63,17 @@ class MonitoringMagangController extends Controller
         $pengajuan = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan',
-            'periode',
-            'logAktivitas'
+            'periode'
         ])->where('dosen_id', $dosenId)
             ->whereIn('status', ['diterima', 'ongoing'])
             ->findOrFail($pengajuanId);
 
         $logs = LogAktivitasModel::where('pengajuan_id', $pengajuanId)
-            ->orderBy('id', 'desc')
+            ->orderBy('log_id', 'desc') // Gunakan log_id sebagai primary key
             ->get();
 
         foreach ($logs as $log) {
-            $log->feedback = FeedbackLogAktivitasModel::where('log_aktivitas_id', $log->id)
+            $log->feedback = FeedbackLogAktivitasModel::where('log_id', $log->log_id) // Gunakan log_id
                 ->with('dosen.user')
                 ->first();
         }
@@ -68,13 +84,13 @@ class MonitoringMagangController extends Controller
     public function storeFeedback(Request $request, $logId)
     {
         $dosenId = Auth::user()->dosen->dosen_id;
-        $log = LogAktivitasModel::whereHas('pengajuan', function ($query) use ($dosenId) {
-            $query->where('dosen_id', $dosenId)
-                ->whereIn('status', ['diterima', 'ongoing']);
-        })->findOrFail($logId);
+        $log = LogAktivitasModel::where('log_id', $logId) // Gunakan log_id
+            ->whereHas('pengajuan', function ($query) use ($dosenId) {
+                $query->where('dosen_id', $dosenId)
+                    ->whereIn('status', ['diterima', 'ongoing']);
+            })->firstOrFail();
 
-        // Cek apakah sudah ada feedback
-        if (FeedbackLogAktivitasModel::where('log_aktivitas_id', $logId)->exists()) {
+        if (FeedbackLogAktivitasModel::where('log_id', $log->log_id)->exists()) {
             return back()->with('error', 'Feedback sudah diberikan untuk log ini.');
         }
 
@@ -84,7 +100,7 @@ class MonitoringMagangController extends Controller
         ]);
 
         $feedback = FeedbackLogAktivitasModel::create([
-            'log_aktivitas_id' => $logId,
+            'log_id' => $log->log_id, // Gunakan log_id
             'dosen_id' => $dosenId,
             'komentar' => $request->komentar,
             'nilai' => $request->nilai,

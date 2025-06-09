@@ -57,7 +57,7 @@ class PengajuanMagangController extends Controller
                     </button>
                 ';
 
-                // Hanya bisa edit jika status belum disetujui
+                // Hanya bisa edit jika status belum diterima
                 if ($pengajuan->status == 'diajukan') {
                     $btn .= '
                         <button onclick="modalAction(\'' . url('/mahasiswa/pengajuan-magang/' . $pengajuan->pengajuan_id . '/confirm_ajax') . '\')" class="btn btn-danger btn-sm">
@@ -71,8 +71,8 @@ class PengajuanMagangController extends Controller
             ->addColumn('status', function ($pengajuan) {
                 $badge = '';
                 switch ($pengajuan->status) {
-                    case 'disetujui':
-                        $badge = '<span class="badge bg-success">Disetujui</span>';
+                    case 'diterima':
+                        $badge = '<span class="badge bg-success">Diterima</span>';
                         break;
                     case 'ditolak':
                         $badge = '<span class="badge bg-danger">Ditolak</span>';
@@ -116,14 +116,14 @@ class PengajuanMagangController extends Controller
                     ->with('error', 'Anda sudah mengajukan magang ini sebelumnya.');
             }
 
-            // Cek apakah sudah ada magang yang disetujui atau selesai
+            // Cek apakah sudah ada magang yang diterima atau selesai
             $sudahMagang = PengajuanMagangModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
-                ->whereIn('status', ['disetujui', 'selesai'])
+                ->whereIn('status', ['diterima', 'selesai'])
                 ->exists();
 
             if ($sudahMagang) {
                 return redirect()->route('mahasiswa.dashboard')
-                    ->with('error', 'Anda tidak dapat mengajukan magang karena sudah memiliki magang yang disetujui atau selesai.');
+                    ->with('error', 'Anda tidak dapat mengajukan magang karena sudah memiliki magang yang diterima atau selesai.');
             }
 
             // Jika lolos semua validasi, simpan pengajuan

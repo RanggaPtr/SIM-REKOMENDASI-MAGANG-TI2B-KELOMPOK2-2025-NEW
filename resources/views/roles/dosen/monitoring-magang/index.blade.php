@@ -52,18 +52,21 @@
             <th>NIM</th>
             <th>Status Magang</th>
             <th>Periode</th>
-            <th>Nama Lowongan</th> <!-- Kolom baru -->
+            <th>Nama Lowongan</th>
+            <th>Perusahaan</th> <!-- Kolom baru untuk perusahaan -->
             <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
     @foreach($pengajuan as $p)
         <tr>
-            <td>{{ $p->mahasiswa->user->name ?? '-' }}</td>
+            <td>{{ $p->mahasiswa->user->nama ?? $p->mahasiswa->nim ?? 'Nama Tidak Tersedia' }}</td> <!-- Perbaiki ke name -->
             <td>{{ $p->mahasiswa->nim ?? '-' }}</td>
             <td>{{ $p->status ?? '-' }}</td>
-            <td>{{ $p->periode->nama_periode ?? '-' }}</td>
-            <td>{{ $p->lowongan->judul ?? '-' }}</td> <!-- Tambahkan nama lowongan -->
+            <td>{{ $p->lowongan->periode->nama ?? ($p->periode ? 'Data Periode Tidak Lengkap' : 'Tidak Tersedia') }}</td> <!-- Perbaiki periode -->
+            <td>{{ $p->lowongan->judul ?? '-' }}</td>
+            <!-- kolom baru perusahaan -->
+            <td>{{ $p->lowongan->perusahaan->nama ?? '-' }}</td>
             <td>
                 <a href="{{ route('dosen.monitoring.show', $p->pengajuan_id) }}" class="btn btn-primary btn-sm">Detail</a>
             </td>

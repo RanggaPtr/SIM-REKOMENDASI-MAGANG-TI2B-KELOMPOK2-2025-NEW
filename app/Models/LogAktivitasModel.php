@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LogAktivitasModel extends Model
 {
     protected $table = 't_log_aktivitas';
+    protected $primaryKey = 'log_id'; // Primary key yang benar
     public $timestamps = false;
 
     protected $fillable = ['pengajuan_id', 'aktivitas'];
@@ -14,5 +15,10 @@ class LogAktivitasModel extends Model
     public function pengajuan()
     {
         return $this->belongsTo(PengajuanMagangModel::class, 'pengajuan_id', 'pengajuan_id');
+    }
+
+    public function feedback()
+    {
+        return $this->hasOne(FeedbackLogAktivitasModel::class, 'log_id', 'log_id'); // Sesuaikan kunci asing dengan primary key
     }
 }

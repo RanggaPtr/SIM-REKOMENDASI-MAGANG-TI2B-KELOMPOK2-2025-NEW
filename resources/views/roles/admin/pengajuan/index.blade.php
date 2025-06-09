@@ -5,12 +5,6 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Manajemen Pengajuan Magang</h3>
             <div>
-                <button onclick="modalAction('{{ url('/admin/management-pengajuan-magang/create_ajax') }}')" class="btn btn-success btn-sm">
-                    <i class="fa fa-plus"></i> Tambah Pengajuan
-                </button>
-                <button onclick="modalAction('{{ url('/admin/management-pengajuan-magang/import') }}')" class="btn btn-success btn-sm">
-                    <i class="fa fa-file-import"></i> Import Data
-                </button>
                 <a href="{{ url('/admin/management-pengajuan-magang/export_excel') }}" class="btn btn-warning btn-sm">
                     <i class="fa fa-file-excel"></i> Export Excel
                 </a>

@@ -99,6 +99,8 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('/{id}/update_ajax', [AdminPengajuanMagangController::class, 'update_ajax'])->name('update_ajax');
             Route::get('/{id}/delete_ajax', [AdminPengajuanMagangController::class, 'confirm_ajax'])->name('confirm_ajax');
             Route::delete('/{id}/delete_ajax', [AdminPengajuanMagangController::class, 'delete_ajax'])->name('delete_ajax');
+            Route::get('/export_excel', [AdminPengajuanMagangController::class, 'export_excel'])->name('export_excel');
+            Route::get('/export_pdf', [AdminPengajuanMagangController::class, 'export_pdf'])->name('export_pdf');
         });
         // Manajemen Pengguna
         Route::prefix('management-pengguna')->name('user.')->group(function () {

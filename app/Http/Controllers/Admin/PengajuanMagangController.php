@@ -9,6 +9,8 @@ use App\Models\KompetensiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengajuanMagangController extends Controller
 {
@@ -81,7 +83,9 @@ class PengajuanMagangController extends Controller
             'lowongan.perusahaan',
             'lowongan.kompetensis',
             'lowongan.periode',
-            'dosen.user'
+            'dosen.user',
+            'dosen.kompentesi'
+            
         ])->findOrFail($id);
 
         $dosens = DosenModel::with(['user', 'kompetensi'])->get();
@@ -190,5 +194,83 @@ class PengajuanMagangController extends Controller
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function export_excel()
+    {
+        $pengajuans = PengajuanMagangModel::with([
+            'mahasiswa.user',
+            'lowongan.perusahaan',
+            'lowongan.periode',
+            'dosen.user'
+        ])->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Mahasiswa');
+        $sheet->setCellValue('C1', 'Judul Lowongan');
+        $sheet->setCellValue('D1', 'Perusahaan');
+        $sheet->setCellValue('E1', 'Periode');
+        $sheet->setCellValue('F1', 'Dosen Pembimbing');
+        $sheet->setCellValue('G1', 'Status');
+        $sheet->setCellValue('H1', 'Tanggal Pengajuan');
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        $no = 1;
+        $baris = 2;
+
+        foreach ($pengajuans as $pengajuan) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $pengajuan->mahasiswa && $pengajuan->mahasiswa->user ? $pengajuan->mahasiswa->user->nama : '-');
+            $sheet->setCellValue('C' . $baris, $pengajuan->lowongan ? $pengajuan->lowongan->judul : 'Belum ditentukan');
+            $sheet->setCellValue('D' . $baris, $pengajuan->lowongan && $pengajuan->lowongan->perusahaan ? $pengajuan->lowongan->perusahaan->nama : 'Belum ditentukan');
+            $sheet->setCellValue('E' . $baris, $pengajuan->lowongan && $pengajuan->lowongan->periode ? $pengajuan->lowongan->periode->nama : 'Belum ditentukan');
+            $sheet->setCellValue('F' . $baris, $pengajuan->dosen && $pengajuan->dosen->user ? $pengajuan->dosen->user->nama : 'Belum ditentukan');
+            $sheet->setCellValue('G' . $baris, ucfirst($pengajuan->status));
+            $sheet->setCellValue('H' . $baris, $pengajuan->created_at ? $pengajuan->created_at->format('d-m-Y H:i:s') : '-');
+            $baris++;
+            $no++;
+        }
+
+        // Auto-size columns
+        foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->setTitle('Data Pengajuan Magang');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Pengajuan Magang ' . date('Y-m-d H:i:s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $pengajuans = PengajuanMagangModel::with([
+            'mahasiswa.user',
+            'lowongan.perusahaan',
+            'lowongan.periode',
+            'dosen.user'
+        ])->get();
+
+        $pdf = Pdf::loadView('roles.admin.pengajuan.export_pdf', ['pengajuans' => $pengajuans]);
+        $pdf->setPaper('a4', 'landscape'); // Landscape karena banyak kolom
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Data Pengajuan Magang ' . date('Y-m-d H:i:s') . '.pdf');
     }
 }

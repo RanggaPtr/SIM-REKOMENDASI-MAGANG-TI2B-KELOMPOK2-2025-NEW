@@ -202,15 +202,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/bookmark', [MahasiswaDashboardController::class, 'removeBookmark'])->name('mahasiswa.bookmark.remove');
 
         // Log Harian
-        Route::prefix('log-harian')->name('log-harian.')->group(function () {
-            Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-            Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
-            Route::get('/create', [LogAktivitasController::class, 'create'])->name('create'); // Hapus _ajax
-            Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
-            Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit'); // Ganti {log} ke {id}
-            Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update'); // Ganti {log} ke {id}
-            Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy'); // Ganti {log} ke {id}
-        });
+
+    Route::prefix('log-harian')->name('log-harian.')->group(function () {
+        Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+        Route::get('/list', [LogAktivitasController::class, 'list'])->name('list'); // Ubah ke GET
+        Route::get('/create', [LogAktivitasController::class, 'create'])->name('create');
+        Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
+        Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
+        Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
+    });
+
 
         // Pengajuan Magang
         Route::prefix('/pengajuan-magang')->group(function () {

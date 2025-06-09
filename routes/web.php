@@ -145,6 +145,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('/{id}/update_ajax', [PeriodeMagangController::class, 'update_ajax'])->name('update_ajax');
             Route::get('/{id}/delete_ajax', [PeriodeMagangController::class, 'confirm_ajax'])->name('confirm_ajax');
             Route::delete('/{id}/delete_ajax', [PeriodeMagangController::class, 'delete_ajax'])->name('delete_ajax');
+             Route::get('/import', [PeriodeMagangController::class, 'import'])->name('import');
+            Route::post('/import_ajax', [PeriodeMagangController::class, 'import_ajax'])->name('import_ajax');
+            Route::get('/export_excel', [PeriodeMagangController::class, 'export_excel'])->name('export_excel');
+            Route::get('/export_pdf', [PeriodeMagangController::class, 'export_pdf'])->name('export_pdf');
         });
 
         // Manajemen Perusahaan Mitra

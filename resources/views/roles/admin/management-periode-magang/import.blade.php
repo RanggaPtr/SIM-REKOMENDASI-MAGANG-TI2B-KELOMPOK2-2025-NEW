@@ -40,7 +40,7 @@
                             <tr>
                                 <td>A</td>
                                 <td>Nama Periode</td>
-                                <td>Januari Juli 2030</td>
+                                <td>Semester Genap</td>
                                 <td><span class="badge bg-success">Ya</span></td>
                             </tr>
                             <tr>

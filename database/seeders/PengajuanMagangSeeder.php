@@ -15,7 +15,7 @@ class PengajuanMagangSeeder extends Seeder
     {
         $mahasiswa = MahasiswaModel::where('nim', '123456781')->first();
         $dosen = DosenModel::where('nik', '1234567890')->first();
-        $periode = PeriodeMagangModel::where('nama', 'Januari-Juni 2025')->first();
+        $periode = PeriodeMagangModel::where('nama', 'Semester Genap 2025')->first();
 
         if (!$mahasiswa) {
             $this->command->error('Mahasiswa dengan nim 123456789 tidak ditemukan. Pastikan MahasiswaSeeder membuat data ini.');

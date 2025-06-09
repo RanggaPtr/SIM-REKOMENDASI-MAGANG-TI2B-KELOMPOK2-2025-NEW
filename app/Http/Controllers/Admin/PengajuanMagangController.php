@@ -20,10 +20,10 @@ class PengajuanMagangController extends Controller
     public function list(Request $request)
     {
         $pengajuan = PengajuanMagangModel::with([
-            'mahasiswa.user',    // relasi mahasiswa -> user
+            'mahasiswa.user',
             'lowongan.perusahaan',
-            'dosen.user',        // relasi dosen -> user
-            'periode'
+            'lowongan.periode', // ✅ ambil periode dari lowongan
+            'dosen.user'
         ])->select('t_pengajuan_magang.*');
 
         return DataTables::eloquent($pengajuan)
@@ -48,8 +48,8 @@ class PengajuanMagangController extends Controller
                     : 'Belum ditentukan';
             })
             ->addColumn('periode_name', function ($row) {
-                return $row->periode
-                    ? $row->periode->nama
+                return $row->lowongan && $row->lowongan->periode
+                    ? $row->lowongan->periode->nama
                     : 'Belum ditentukan';
             })
             ->addColumn('status', function ($row) {
@@ -67,8 +67,8 @@ class PengajuanMagangController extends Controller
         $pengajuan = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan.perusahaan',
-            'dosen.user',
-            'periode'
+            'lowongan.periode',
+            'dosen.user'
         ])->findOrFail($id);
 
         return view('roles.admin.pengajuan.show_ajax', compact('pengajuan'));
@@ -79,8 +79,8 @@ class PengajuanMagangController extends Controller
         $pengajuan = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan.perusahaan',
-            'lowongan.kompetensis', // relasi kompetensi lowongan
-            'periode',
+            'lowongan.kompetensis',
+            'lowongan.periode',
             'dosen.user'
         ])->findOrFail($id);
 
@@ -126,10 +126,17 @@ class PengajuanMagangController extends Controller
                     $dosen->jumlah_bimbingan -= 1;
                     $dosen->save();
                 }
-                $pengajuan->dosen_id = null; // optional: hapus dosen_id saat selesai
+                $pengajuan->dosen_id = null;
             }
 
             $pengajuan->save();
+
+            if ($request->status === 'diterima') {
+                PengajuanMagangModel::where('mahasiswa_id', $pengajuan->mahasiswa_id)
+                    ->where('pengajuan_id', '!=', $pengajuan->pengajuan_id)
+                    ->whereIn('status', ['diajukan', 'diterima'])
+                    ->update(['status' => 'ditolak']);
+            }
 
             DB::commit();
 

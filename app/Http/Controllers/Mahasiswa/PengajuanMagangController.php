@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mahasiswa;
 
 use App\Http\Controllers\Controller;
+use App\Models\DosenModel;
 use App\Models\PengajuanMagangModel;
 use App\Models\LowonganMagangModel;
 use App\Models\MahasiswaModel;
@@ -39,7 +40,6 @@ class PengajuanMagangController extends Controller
 
         ]);
     }
-
     public function list(Request $request)
     {
         // Ambil data mahasiswa yang login
@@ -142,18 +142,27 @@ class PengajuanMagangController extends Controller
     }
 
 
-    public function show_ajax($pengajuan_id)
+    public function show_ajax($id)
     {
-        $pengajuan = PengajuanMagangModel::with(['lowongan', 'mahasiswa'])
-            ->find($pengajuan_id);
+        $pengajuan = PengajuanMagangModel::with([
+            'lowongan',
+            'lowongan.perusahaan',
+            'lowongan.periode',
+            'mahasiswa',
+            'mahasiswa.user',
+            'mahasiswa.mahasiswaKeahlian.keahlian', // Load keahlian
+            'mahasiswa.mahasiswaKompetensi.kompetensi', // Load kompetensi
+            'dosen',
+            'dosen.user'
+        ])->find($id);
 
         if (!$pengajuan) {
-            return view('roles.mahasiswa.pengajuan-magang.error_ajax', [
+            return view('roles.admin.pengajuan.error_ajax', [
                 'message' => 'Data pengajuan tidak ditemukan'
             ]);
         }
 
-        return view('roles.mahasiswa.pengajuan-magang.show_ajax', compact('pengajuan'));
+        return view('roles.admin.pengajuan.show_ajax', compact('pengajuan'));
     }
 
 

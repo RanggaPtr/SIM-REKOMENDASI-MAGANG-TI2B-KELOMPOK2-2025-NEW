@@ -1,7 +1,5 @@
 <div class="modal-dialog modal-lg">
     <div class="modal-content shadow-xl border-0 rounded-4 overflow-hidden">
-
-        {{-- ===== Header dengan Gradient ===== --}}
         <div class="modal-header position-relative" style="background: linear-gradient(135deg, #e7e8ec 0%, #edeaf0 100%); padding: 1.5rem;">
             <div class="d-flex align-items-center">
                 <div class="bg-bg-opacity-20 rounded-circle p-2 me-3">
@@ -16,7 +14,6 @@
                     data-bs-dismiss="modal" aria-label="Close" style="filter: brightness(0) invert(1);"></button>
         </div>
 
-        {{-- ===== Body ===== --}}
         <div class="modal-body p-0">
             <div class="px-4 pt-4 pb-2">
                 <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #06111b 0%, #030609 100%);">
@@ -46,10 +43,8 @@
                 </div>
             </div>
 
-            {{-- Detail Information Cards --}}
             <div class="px-4 pb-4">
                 <div class="row g-4">
-                    {{-- Informasi Perusahaan --}}
                     <div class="col-md-6">
                         <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
                             <div class="card-header bg-transparent border-0 pb-2">
@@ -77,12 +72,11 @@
                         </div>
                     </div>
 
-                    {{-- Informasi Akademik --}}
                     <div class="col-md-6">
                         <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
                             <div class="card-header bg-transparent border-0 pb-2">
                                 <h6 class="mb-0 text-success fw-semibold">
-                                    <i class="bi bi-mortarboard-fill me-2"></i>Informasi Akademik
+                                    <i class="bi bi-mortarboard-fill me-2"></i>Informasi Akademik & Kualifikasi
                                 </h6>
                             </div>
                             <div class="card-body pt-2">
@@ -98,16 +92,39 @@
                                         @endif
                                     </p>
                                 </div>
-                                <div>
-                                    <label class="small text-muted fw-medium">Rating Feedback</label>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-medium">Keahlian</label>
                                     <p class="mb-0">
-                                        @if($pengajuan->feedback_rating)
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <i class="bi bi-star{{ $i <= $pengajuan->feedback_rating ? '-fill text-warning' : ' text-muted' }}"></i>
-                                            @endfor
-                                            <span class="ms-2 fw-semibold">{{ $pengajuan->feedback_rating }}/5</span>
+                                        @if($pengajuan->mahasiswa->mahasiswaKeahlian->count() > 0)
+                                            @foreach($pengajuan->mahasiswa->mahasiswaKeahlian as $keahlian)
+                                                <span class="badge bg-info me-1 mb-1">{{ $keahlian->keahlian->nama ?? '-' }}</span>
+                                            @endforeach
                                         @else
-                                            <span class="text-muted">Belum ada rating</span>
+                                            <span class="text-muted">Tidak ada keahlian</span>
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-medium">Kompetensi</label>
+                                    <p class="mb-0">
+                                        @if($pengajuan->mahasiswa->mahasiswaKompetensi->count() > 0)
+                                            @foreach($pengajuan->mahasiswa->mahasiswaKompetensi as $kompetensi)
+                                                <span class="badge bg-primary me-1 mb-1">{{ $kompetensi->kompetensi->nama ?? '-' }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">Tidak ada kompetensi</span>
+                                        @endif
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="small text-muted fw-medium">File CV</label>
+                                    <p class="mb-0">
+                                        @if($pengajuan->mahasiswa->file_cv)
+                                            <a href="{{ Storage::url($pengajuan->mahasiswa->file_cv) }}" class="text-primary" target="_blank">
+                                                <i class="bi bi-file-earmark-pdf me-1"></i>Unduh CV
+                                            </a>
+                                        @else
+                                            <span class="text-muted">Tidak ada CV</span>
                                         @endif
                                     </p>
                                 </div>
@@ -116,7 +133,6 @@
                     </div>
                 </div>
 
-                {{-- Feedback Section --}}
                 @if ($pengajuan->feedback_deskripsi)
                     <div class="mt-4">
                         <div class="card border-0 shadow-sm">
@@ -145,7 +161,6 @@
             </div>
         </div>
 
-        {{-- ===== Footer ===== --}}
         <div class="modal-footer bg-light border-0 px-4 py-3">
             <div class="d-flex justify-content-between align-items-center w-100">
                 <small class="text-muted">

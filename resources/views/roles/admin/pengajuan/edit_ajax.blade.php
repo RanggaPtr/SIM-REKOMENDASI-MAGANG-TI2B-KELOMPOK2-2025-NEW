@@ -220,7 +220,9 @@
         $('#status').on('change', function() {
             var status = $(this).val();
             var dosenSelect = $('#dosen_id');
+            var initialStatus = '{{ $pengajuan->status }}';
 
+            // Hanya set required jika status BARU adalah 'diterima'
             if (status === 'diterima') {
                 dosenSelect.prop('required', true);
                 dosenSelect.closest('.mb-3').find('.form-label').append(' <span class="text-danger">*</span>');
@@ -230,6 +232,15 @@
             }
         });
 
-        $('#status').trigger('change');
+        // Atur validasi awal berdasarkan status dan nilai dosen_id
+        var initialStatus = '{{ $pengajuan->status }}';
+        var dosenSelect = $('#dosen_id');
+        if (initialStatus === 'diterima' && dosenSelect.val()) {
+            dosenSelect.prop('required', true);
+            dosenSelect.closest('.mb-3').find('.form-label').append(' <span class="text-danger">*</span>');
+        } else {
+            dosenSelect.prop('required', false);
+            dosenSelect.closest('.mb-3').find('.text-danger').remove();
+        }
     });
 </script>

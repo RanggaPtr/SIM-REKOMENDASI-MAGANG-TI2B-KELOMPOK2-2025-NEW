@@ -209,16 +209,17 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Log Harian
 
-    Route::prefix('log-harian')->name('log-harian.')->group(function () {
-        Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-        Route::get('/list', [LogAktivitasController::class, 'list'])->name('list'); // Ubah ke GET
-        Route::get('/create', [LogAktivitasController::class, 'create'])->name('create');
-        Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
-        Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
-        Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
-    });
+   Route::prefix('log-harian')->name('log-harian.')->group(function () {
+    Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+    Route::get('/list', [LogAktivitasController::class, 'list'])->name('list');
+    Route::get('/create', [LogAktivitasController::class, 'create'])->name('create'); // Tambahkan ini
+    Route::get('/create_ajax', [LogAktivitasController::class, 'create_ajax'])->name('create_ajax');
+    Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
+    Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
+    Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
+});
 
 
         // Pengajuan Magang

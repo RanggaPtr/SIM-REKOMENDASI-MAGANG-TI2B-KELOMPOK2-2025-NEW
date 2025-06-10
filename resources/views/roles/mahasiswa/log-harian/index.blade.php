@@ -1,265 +1,366 @@
 @extends('layouts.template')
 
-@section('title', 'Log Harian Mahasiswa')
+@section('title', 'Log Harian')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Log Harian Magang</h3>
-                </div>
-                <div class="card-body">
-                    {{-- Alert Messages --}}
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+<!-- Pastikan CSRF Token tersedia -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
-                    @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Log Aktivitas Harian</h4>
+        @if ($hasPengajuanDiterima)
+            <button class="btn btn-primary" id="btnTambahLog">
+                <i class="fas fa-plus"></i> Tambah Log
+            </button>
+        @else
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Anda belum memiliki pengajuan magang yang diterima. Silakan ajukan magang terlebih dahulu.
+            </div>
+        @endif
+    </div>
 
-                    {{-- Main Content --}}
-                    @if($hasPengajuanDiterima)
-                        <div class="mb-3">
-                            <a href="{{ route('mahasiswa.log-harian.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Tambah Log Aktivitas
-                            </a>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="logTable">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th width="5%">#</th>
-                                        <th width="20%">Tanggal</th>
-                                        <th width="55%">Aktivitas</th>
-                                        <th width="20%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- Data akan dimuat via AJAX --}}
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="alert alert-warning" role="alert">
-                            <h5 class="alert-heading">Pengajuan Magang Belum Diterima</h5>
-                            <p>Anda belum memiliki pengajuan magang yang diterima. Silakan tunggu persetujuan pengajuan magang Anda terlebih dahulu.</p>
-                            <hr>
-                            <p class="mb-0">
-                                <a href="{{ route('mahasiswa.pengajuan-magang.index') }}" class="btn btn-outline-primary">
-                                    Lihat Status Pengajuan
-                                </a>
-                            </p>
-                        </div>
-                    @endif
-                </div>
+    @if (!$hasPengajuanDiterima)
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                <h5>Belum Ada Pengajuan Magang yang Diterima</h5>
+                <p class="text-muted">Untuk dapat mengisi log aktivitas harian, Anda perlu memiliki pengajuan magang yang sudah diterima.</p>
+                <a href="{{ route('mahasiswa.pengajuan-magang.index') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajukan Magang
+                </a>
             </div>
         </div>
+    @else
+        <div class="table-responsive">
+            <table id="logTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Aktivitas</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    @endif
+</div>
+
+<!-- Modal tambah/edit -->
+<div class="modal fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="modalContent">
+            <!-- Content akan diisi oleh create_ajax -->
+        </div>
+    </div>
+</div>
+
+<!-- Debug Info (bisa dihapus setelah selesai debugging) -->
+<div class="mt-3" id="debugInfo" style="display: none;">
+    <div class="alert alert-info">
+        <h6>Debug Information:</h6>
+        <p>Has Pengajuan Diterima: <strong>{{ $hasPengajuanDiterima ? 'Ya' : 'Tidak' }}</strong></p>
+        <p>User ID: <strong>{{ Auth::id() }}</strong></p>
+        <p>Mahasiswa ID: <strong>{{ Auth::user()->mahasiswa->mahasiswa_id ?? 'Null' }}</strong></p>
     </div>
 </div>
 @endsection
 
-@push('styles')
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<style>
-    .table th {
-        vertical-align: middle;
-        text-align: center;
-    }
-    
-    .table td {
-        vertical-align: middle;
-    }
-    
-    .aktivitas-text {
-        max-width: 400px;
-        word-wrap: break-word;
-        white-space: pre-wrap;
-    }
-    
-    .btn-action {
-        margin: 2px;
-    }
-    
-    .alert-dismissible .btn-close {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 2;
-        padding: 1.25rem 1rem;
-    }
-</style>
-@endpush
-
 @push('scripts')
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
-
 <script>
-$(document).ready(function() {
-    console.log('Document ready');
-    console.log('Has pengajuan diterima: {{ $hasPengajuanDiterima ? "true" : "false" }}');
+$(document).ready(function () {
+    console.log('Document ready, hasPengajuanDiterima: {{ $hasPengajuanDiterima ? 'true' : 'false' }}');
     
-    @if($hasPengajuanDiterima)
-        console.log('Initializing DataTable...');
+    // Hanya inisialisasi DataTable jika ada pengajuan yang diterima
+    @if ($hasPengajuanDiterima)
+    let table = $('#logTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{{ route('mahasiswa.log-harian.list') }}",
+            error: function(xhr, error, thrown) {
+                console.error('DataTable Ajax Error:', xhr.responseText);
+                alert('Terjadi kesalahan saat memuat data: ' + (xhr.responseJSON?.message || 'Error tidak diketahui'));
+            }
+        },
+        columns: [
+            { 
+                data: 'DT_RowIndex', 
+                name: 'DT_RowIndex', 
+                orderable: false, 
+                searchable: false,
+                width: '5%'
+            },
+            { 
+                data: 'aktivitas', 
+                name: 'aktivitas',
+                width: '60%'
+            },
+            { 
+                data: 'created_at', 
+                name: 'created_at',
+                width: '20%'
+            },
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false,
+                width: '15%'
+            },
+        ],
+        order: [[2, 'desc']], // Order by created_at descending
+        pageLength: 10,
+        responsive: true,
+        language: {
+            processing: "Memuat data...",
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data per halaman",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            loadingRecords: "Memuat data...",
+            zeroRecords: "Tidak ada data yang ditemukan",
+            emptyTable: "Belum ada log aktivitas",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+    @endif
+
+    // Event handler untuk tombol tambah log - DEBUGGING
+    $(document).on('click', '#btnTambahLog', function(e) {
+        e.preventDefault();
+        console.log('Tombol Tambah Log diklik');
         
-        // Initialize DataTable
-        var table = $('#logTable').DataTable({
-            processing: true,
-            serverSide: true,
-            responsive: true,
-            ajax: {
-                url: "{{ route('mahasiswa.log-harian.list') }}",
-                type: "GET",
-                error: function(xhr, error, code) {
-                    console.error('AJAX Error:', xhr.responseText);
-                    alert('Error loading data: ' + xhr.responseText);
+        // Show loading state
+        $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+        
+        $.ajax({
+            url: "{{ route('mahasiswa.log-harian.create_ajax') }}",
+            type: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                console.log('Mengirim request ke create_ajax...');
+            },
+            success: function(response) {
+                console.log('Response dari create_ajax:', response);
+                
+                if (response.success) {
+                    $('#modalContent').html(response.data.form_html);
+                    $('#logModal').modal('show');
+                    
+                    // Setup form submit handler setelah modal terbuka
+                    setTimeout(function() {
+                        setupFormHandler();
+                    }, 500);
+                } else {
+                    console.error('Response error:', response.message);
+                    alert(response.message || 'Gagal memuat form');
                 }
             },
-            columns: [
-                { 
-                    data: 'DT_RowIndex', 
-                    name: 'DT_RowIndex', 
-                    orderable: false, 
-                    searchable: false,
-                    className: 'text-center'
-                },
-                { 
-                    data: 'tanggal', 
-                    name: 'tanggal',
-                    className: 'text-center'
-                },
-                { 
-                    data: 'aktivitas', 
-                    name: 'aktivitas',
-                    className: 'aktivitas-text'
-                },
-                { 
-                    data: 'aksi', 
-                    name: 'aksi', 
-                    orderable: false, 
-                    searchable: false,
-                    className: 'text-center'
+            error: function(xhr, status, error) {
+                console.error('Ajax Error Details:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error
+                });
+                
+                let message = 'Gagal memuat form tambah log';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                } else if (xhr.status === 404) {
+                    message = 'Route create_ajax tidak ditemukan (404)';
+                } else if (xhr.status === 500) {
+                    message = 'Server error (500)';
                 }
-            ],
-            order: [[1, 'desc']],
-            pageLength: 10,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            language: {
-                processing: "Memuat data...",
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data per halaman",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
-                infoFiltered: "(disaring dari _MAX_ total data)",
-                paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
-                },
-                emptyTable: "Tidak ada data log aktivitas",
-                zeroRecords: "Tidak ditemukan data yang sesuai"
+                alert(message);
+            },
+            complete: function() {
+                // Reset button state
+                $('#btnTambahLog').prop('disabled', false).html('Tambah Log');
             }
         });
+    });
 
-        console.log('DataTable initialized');
+    // Delegasi event untuk tombol edit
+    @if ($hasPengajuanDiterima)
+    $('#logTable').on('click', '.btn-edit', function (e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+        
+        $.ajax({
+            url: `/mahasiswa/log-harian/${id}/edit`,
+            type: 'GET',
+            success: function (res) {
+                if (res.success) {
+                    // Load form template
+                    $.get("{{ route('mahasiswa.log-harian.create_ajax') }}", function(viewRes) {
+                        if (viewRes.success) {
+                            $('#modalContent').html(viewRes.data.form_html);
+                            $('#logModal').modal('show');
+                            
+                            // Modify form for update
+                            $('#formLog').attr('data-method', 'PUT');
+                            $('#formLog').attr('data-url', `/mahasiswa/log-harian/${id}`);
+                            $('#logModalLabel').text('Edit Log Aktivitas');
+                            $('#formLog textarea[name="aktivitas"]').val(res.data.aktivitas);
+                            
+                            // Setup form submit handler
+                            setupFormHandler(true, id);
+                        }
+                    });
+                } else {
+                    alert(res.message);
+                }
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+                alert('Gagal memuat data log untuk edit');
+            }
+        });
+    });
 
-        // Event handler untuk tombol hapus
-        $('#logTable').on('click', '.btn-delete', function(e) {
-            e.preventDefault();
+    // Delegasi event untuk tombol hapus
+    $('#logTable').on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        if (!confirm("Yakin ingin menghapus log aktivitas ini?")) return;
+        
+        let id = $(this).data('id');
+        
+        $.ajax({
+            url: `/mahasiswa/log-harian/${id}`,
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            success: function (res) {
+                if (res.success) {
+                    alert(res.message);
+                    table.ajax.reload(null, false); // Reload tanpa reset paging
+                } else {
+                    alert(res.message || 'Gagal menghapus log');
+                }
+            },
+            error: function (xhr) {
+                console.error('Error:', xhr.responseText);
+                let message = xhr.responseJSON?.message || 'Gagal menghapus log aktivitas';
+                alert(message);
+            }
+        });
+    });
+    @endif
+
+    // Function untuk setup form handler - IMPROVED
+    function setupFormHandler(isEdit = false, logId = null) {
+        console.log('Setting up form handler, isEdit:', isEdit, 'logId:', logId);
+        
+        // Wait for modal to be fully shown
+        $('#logModal').off('shown.bs.modal').on('shown.bs.modal', function() {
+            console.log('Modal fully shown, setting up form handler');
             
-            console.log('Delete button clicked');
-
-            if (!confirm('Apakah Anda yakin ingin menghapus log aktivitas ini?')) {
+            let form = $('#formLog');
+            if (form.length === 0) {
+                console.error('Form #formLog tidak ditemukan!');
                 return;
             }
-
-            var url = $(this).data('url');
-            var button = $(this);
             
-            console.log('Delete URL:', url);
-
-            // Disable button
-            button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
-
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                headers: { 
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    console.log('Delete success:', response);
-                    
-                    if (response.success) {
-                        // Show success message
-                        showAlert('success', response.message || 'Log aktivitas berhasil dihapus');
-                        
-                        // Reload table
-                        table.ajax.reload(null, false);
-                    } else {
-                        showAlert('danger', response.message || 'Gagal menghapus log aktivitas');
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Delete error:', xhr.responseText);
-                    
-                    let message = 'Gagal menghapus log aktivitas';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        message = xhr.responseJSON.message;
-                    }
-                    
-                    showAlert('danger', message);
-                },
-                complete: function() {
-                    // Re-enable button
-                    button.prop('disabled', false).html('<i class="fas fa-trash"></i>');
+            console.log('Form ditemukan:', form);
+            
+            // Remove existing handlers to prevent multiple bindings
+            form.off('submit.logHandler');
+            
+            // Add new submit handler
+            form.on('submit.logHandler', function(e) {
+                e.preventDefault();
+                console.log('Form submitted');
+                
+                let submitBtn = form.find('button[type="submit"]');
+                let originalText = submitBtn.html();
+                
+                // Disable submit button
+                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+                
+                let formData = new FormData(this);
+                let url = isEdit ? `/mahasiswa/log-harian/${logId}` : "{{ route('mahasiswa.log-harian.store') }}";
+                
+                // Add method override for PUT
+                if (isEdit) {
+                    formData.append('_method', 'PUT');
                 }
+                
+                console.log('Submitting to URL:', url);
+                console.log('Form data:', Object.fromEntries(formData));
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    beforeSend: function() {
+                        console.log('Sending form data...');
+                    },
+                    success: function(response) {
+                        console.log('Form submit success:', response);
+                        
+                        if (response.success) {
+                            $('#logModal').modal('hide');
+                            alert(response.message);
+                            @if ($hasPengajuanDiterima)
+                            if (typeof table !== 'undefined') {
+                                table.ajax.reload(null, false);
+                            }
+                            @endif
+                        } else {
+                            alert(response.message || 'Gagal menyimpan data');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Form submit error:', {
+                            status: xhr.status,
+                            responseText: xhr.responseText,
+                            error: error
+                        });
+                        
+                        let errors = xhr.responseJSON?.errors;
+                        
+                        if (errors) {
+                            let errorMessages = [];
+                            Object.keys(errors).forEach(function(key) {
+                                errorMessages.push(errors[key].join(', '));
+                            });
+                            alert('Validation Error:\n' + errorMessages.join('\n'));
+                        } else {
+                            alert(xhr.responseJSON?.message || 'Gagal menyimpan data');
+                        }
+                    },
+                    complete: function() {
+                        // Re-enable submit button
+                        submitBtn.prop('disabled', false).html(originalText);
+                    }
+                });
             });
         });
+    }
 
-        // Function to show alert messages
-        function showAlert(type, message) {
-            var alertHtml = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            $('.card-body').prepend(alertHtml);
-            
-            // Auto hide after 5 seconds
-            setTimeout(function() {
-                $('.alert').fadeOut();
-            }, 5000);
-        }
-
-    @else
-        console.log('No pengajuan diterima, skipping DataTable initialization');
-    @endif
+    // Clear modal when hidden
+    $('#logModal').on('hidden.bs.modal', function () {
+        $('#modalContent').empty();
+    });
 });
 </script>
 @endpush

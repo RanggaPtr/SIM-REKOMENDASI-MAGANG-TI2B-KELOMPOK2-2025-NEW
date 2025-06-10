@@ -97,7 +97,7 @@
             {{-- Tombol Ajukan langsung ke store --}}
             @if (Auth::user()->role === 'mahasiswa')
                 @php
-                    // Cek apakah sudah pernah mengajukan atau sudah ada magang disetujui/selesai
+                    // Cek apakah sudah pernah mengajukan atau sudah ada magang diterima/selesai
                     $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::id())->first();
                     $sudahAjukan = false;
                     $sudahMagang = false;
@@ -108,7 +108,7 @@
                             'lowongan_id' => $lowongan->lowongan_id
                         ])->exists();
                         $sudahMagang = \App\Models\PengajuanMagangModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)
-                            ->whereIn('status', ['disetujui', 'selesai'])
+                            ->whereIn('status', ['diterima', 'selesai'])
                             ->exists();
                         $isBookmarked = \App\Models\BookmarkModel::where([
                             'mahasiswa_id' => $mahasiswa->mahasiswa_id,

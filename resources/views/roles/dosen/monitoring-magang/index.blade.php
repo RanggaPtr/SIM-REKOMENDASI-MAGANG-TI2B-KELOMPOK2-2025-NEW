@@ -3,6 +3,14 @@
 @section('content')
 <h3>Daftar Mahasiswa Bimbingan</h3>
 
+<!-- Card Jumlah Bimbingan (Disesuaikan Pewarnaan) -->
+<div class="card mb-3" style="max-width: 18rem; background: linear-gradient(135deg, #ADD8E6, #B0E0E6); border: 1px solid #ADD8E6; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <p class="card-text" style="color: #333333; font-size: 1.5rem; font-weight: bold;">{{ $dosen->jumlah_bimbingan ?? $pengajuan->count() }}</p>
+        <p class="card-text" style="color: #4A4A4A;">Mahasiswa Dibimbing</p>
+    </div>
+</div>
+
 <form method="GET" class="mb-4">
     <div class="row">
         <div class="col-md-3">
@@ -44,16 +52,21 @@
             <th>NIM</th>
             <th>Status Magang</th>
             <th>Periode</th>
+            <th>Nama Lowongan</th>
+            <th>Perusahaan</th> <!-- Kolom baru untuk perusahaan -->
             <th>Aksi</th>
         </tr>
     </thead>
     <tbody>
     @foreach($pengajuan as $p)
         <tr>
-            <td>{{ $p->mahasiswa->user->name }}</td>
-            <td>{{ $p->mahasiswa->nim }}</td>
-            <td>{{ $p->status }}</td>
-            <td>{{ $p->periode->nama_periode ?? '-' }}</td>
+            <td>{{ $p->mahasiswa->user->nama ?? $p->mahasiswa->nim ?? 'Nama Tidak Tersedia' }}</td> <!-- Perbaiki ke name -->
+            <td>{{ $p->mahasiswa->nim ?? '-' }}</td>
+            <td>{{ $p->status ?? '-' }}</td>
+            <td>{{ $p->lowongan->periode->nama ?? ($p->periode ? 'Data Periode Tidak Lengkap' : 'Tidak Tersedia') }}</td> <!-- Perbaiki periode -->
+            <td>{{ $p->lowongan->judul ?? '-' }}</td>
+            <!-- kolom baru perusahaan -->
+            <td>{{ $p->lowongan->perusahaan->nama ?? '-' }}</td>
             <td>
                 <a href="{{ route('dosen.monitoring.show', $p->pengajuan_id) }}" class="btn btn-primary btn-sm">Detail</a>
             </td>
@@ -78,7 +91,9 @@
     <script>
         $(document).ready(function () {
             $('#mahasiswaTable').DataTable({
-                // opsi tambahan bisa ditambahkan di sini
+                "pageLength": 10,
+                "lengthMenu": [5, 10, 25, 50],
+                "order": [[0, 'asc']] // Default sort by Nama Mahasiswa
             });
         });
     </script>

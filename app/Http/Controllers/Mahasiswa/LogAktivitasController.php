@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Mahasiswa;
 use App\Http\Controllers\Controller;
 use App\Models\LogAktivitasModel;
 use App\Models\PengajuanMagangModel;
-use App\Models\FeedbackLogAktivitasModel; // Impor model feedback
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -84,8 +83,7 @@ class LogAktivitasController extends Controller
             }
 
             $query = LogAktivitasModel::where('pengajuan_id', $pengajuan->pengajuan_id)
-                ->select(['log_id', 'aktivitas', 'created_at'])
-                ->with('feedback'); // Memuat relasi feedback dari dosen
+                ->select(['log_id', 'aktivitas', 'created_at']);
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -96,9 +94,6 @@ class LogAktivitasController extends Controller
                         </button>
                         <button class="btn btn-sm btn-danger btn-delete" data-id="'.$row->log_id.'" title="Hapus">
                             <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="btn btn-sm btn-info btn-feedback" data-id="'.$row->log_id.'" title="Lihat Feedback">
-                            <i class="fas fa-comment"></i>
                         </button>';
                 })
                 ->editColumn('created_at', function($row) {
@@ -114,11 +109,7 @@ class LogAktivitasController extends Controller
                     // Jika berupa objek Carbon/DateTime, format
                     return $row->created_at->format('d/m/Y H:i');
                 })
-                ->addColumn('feedback', function($row) {
-                    // Tampilkan feedback dari dosen jika ada
-                    return $row->feedback ? $row->feedback->feedback : 'Belum ada feedback dari dosen';
-                })
-                ->rawColumns(['action', 'feedback'])
+                ->rawColumns(['action'])
                 ->make(true);
         } catch (\Exception $e) {
             Log::error('Log Activity List Error: ' . $e->getMessage());
@@ -136,31 +127,38 @@ class LogAktivitasController extends Controller
      * Menghasilkan form tambah log via AJAX
      */
     public function create_ajax()
-    {
-        try {
-            $pengajuan = $this->getPengajuanDiterima();
+{
+    try {
+        $pengajuan = $this->getPengajuanDiterima();
 
-            if (!$pengajuan) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Anda belum memiliki pengajuan magang yang diterima.'
-                ], 403);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'pengajuan_id' => $pengajuan->pengajuan_id
-                ]
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Create AJAX Error: ' . $e->getMessage());
+        if (!$pengajuan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memuat form tambah log'
-            ], 500);
+                'message' => 'Anda belum memiliki pengajuan magang yang diterima.'
+            ], 403);
         }
+
+        // Generate HTML form
+        $formHtml = view('roles.mahasiswa.log-harian.form', [
+            'pengajuan_id' => $pengajuan->pengajuan_id,
+            'isEdit' => false
+        ])->render();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'form_html' => $formHtml,
+                'pengajuan_id' => $pengajuan->pengajuan_id
+            ]
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Create AJAX Error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal memuat form tambah log'
+        ], 500);
     }
+}
 
     /**
      * Menyimpan log aktivitas baru
@@ -218,49 +216,54 @@ class LogAktivitasController extends Controller
     /**
      * Mengambil data log untuk edit via AJAX
      */
-    public function edit($id)
-    {
-        try {
-            $mahasiswa = Auth::user()->mahasiswa;
-            $mahasiswaId = $mahasiswa ? $mahasiswa->mahasiswa_id : null;
+/**
+ * Mengambil data log untuk edit via AJAX dengan form HTML
+ */
+public function edit_ajax($id)
+{
+    try {
+        $mahasiswa = Auth::user()->mahasiswa;
+        $mahasiswaId = $mahasiswa ? $mahasiswa->mahasiswa_id : null;
 
-            if (!$mahasiswaId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data mahasiswa tidak ditemukan'
-                ], 403);
-            }
-
-            $log = LogAktivitasModel::where('log_id', $id)
-                ->whereHas('pengajuan', function($query) use ($mahasiswaId) {
-                    $query->where('mahasiswa_id', $mahasiswaId)
-                          ->where('status', 'diterima');
-                })
-                ->with('feedback') // Memuat feedback dari dosen
-                ->firstOrFail();
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'log_id' => $log->log_id,
-                    'aktivitas' => $log->aktivitas,
-                    'created_at' => $this->formatDate($log->created_at),
-                    'feedback' => $log->feedback ? [
-                        'feedback_id' => $log->feedback->id, // Primary key dari FeedbackLogAktivitasModel
-                        'feedback' => $log->feedback->feedback,
-                        'feedback_created_at' => $this->formatDate($log->feedback->created_at)
-                    ] : null
-                ]
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error editing log: ' . $e->getMessage());
+        if (!$mahasiswaId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Log aktivitas tidak ditemukan atau tidak dapat diakses'
-            ], 404);
+                'message' => 'Data mahasiswa tidak ditemukan'
+            ], 403);
         }
-    }
 
+        $log = LogAktivitasModel::where('log_id', $id)
+            ->whereHas('pengajuan', function($query) use ($mahasiswaId) {
+                $query->where('mahasiswa_id', $mahasiswaId)
+                      ->where('status', 'diterima');
+            })
+            ->firstOrFail();
+
+        // Generate HTML form untuk edit
+        $formHtml = view('roles.mahasiswa.log-harian.form', [
+            'pengajuan_id' => $log->pengajuan_id,
+            'aktivitas' => $log->aktivitas,
+            'isEdit' => true,
+            'log_id' => $log->log_id
+        ])->render();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'form_html' => $formHtml,
+                'log_id' => $log->log_id,
+                'aktivitas' => $log->aktivitas,
+                'created_at' => $this->formatDate($log->created_at)
+            ]
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error editing log: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Log aktivitas tidak ditemukan atau tidak dapat diakses'
+        ], 404);
+    }
+}
     /**
      * Memperbarui log aktivitas
      */
@@ -355,55 +358,6 @@ class LogAktivitasController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus log aktivitas'
-            ], 500);
-        }
-    }
-
-    /**
-     * Menampilkan feedback dari dosen untuk log aktivitas tertentu via AJAX
-     */
-    public function showFeedback($id)
-    {
-        try {
-            $mahasiswa = Auth::user()->mahasiswa;
-            $mahasiswaId = $mahasiswa ? $mahasiswa->mahasiswa_id : null;
-
-            if (!$mahasiswaId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data mahasiswa tidak ditemukan'
-                ], 403);
-            }
-
-            $log = LogAktivitasModel::where('log_id', $id)
-                ->whereHas('pengajuan', function($query) use ($mahasiswaId) {
-                    $query->where('mahasiswa_id', $mahasiswaId)
-                          ->where('status', 'diterima');
-                })
-                ->with('feedback')
-                ->firstOrFail();
-
-            if (!$log->feedback) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Belum ada feedback dari dosen untuk log aktivitas ini'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'log_id' => $log->log_id,
-                    'aktivitas' => $log->aktivitas,
-                    'feedback' => $log->feedback->feedback,
-                    'feedback_created_at' => $this->formatDate($log->feedback->created_at)
-                ]
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error showing feedback: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memuat feedback dari dosen'
             ], 500);
         }
     }

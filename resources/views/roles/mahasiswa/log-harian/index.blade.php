@@ -12,6 +12,7 @@
             Swal.fire({
                 title: 'Berhasil',
                 text: '{{ session('success') }}',
+                icon: 'success',
                 confirmButtonColor: '#3085d6',
                 background: '#f0fff0',
                 timer: 5000,
@@ -23,7 +24,7 @@
     @endif
 
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title">Log Aktivitas Harian</h3>
+        <h3 class="card-title">{{ $page->title ?? 'Log Aktivitas Harian' }}</h3>
         @if ($hasPengajuanDiterima)
             <button class="btn btn-primary" id="btnTambahLog">
                 <i class="fas fa-plus"></i> Tambah Log
@@ -66,11 +67,9 @@
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
             </table>
         @endif
     </div>
-    
     <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
 </div>
 
@@ -94,15 +93,21 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label fw-bold">Aktivitas:</label>
-                    <p id="feedbackAktivitas" class="form-control-static"></p>
+                    <div class="p-2 bg-light rounded">
+                        <p id="feedbackAktivitas" class="mb-0"></p>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Feedback:</label>
-                    <p id="feedbackContent" class="form-control-static"></p>
+                    <div class="p-2 bg-light rounded">
+                        <p id="feedbackContent" class="mb-0"></p>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tanggal Feedback:</label>
-                    <p id="feedbackDate" class="form-control-static"></p>
+                    <div class="p-2 bg-light rounded">
+                        <p id="feedbackDate" class="mb-0"></p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -113,14 +118,17 @@
 </div>
 
 <!-- Debug Info (bisa dihapus setelah selesai debugging) -->
+@if(config('app.debug'))
 <div class="mt-3" id="debugInfo" style="display: none;">
-    <div class="alert alert info">
+    <div class="alert alert-info">
         <h6>Debug Information:</h6>
         <p>Has Pengajuan Diterima: <strong>{{ $hasPengajuanDiterima ? 'Ya' : 'Tidak' }}</strong></p>
         <p>User ID: <strong>{{ Auth::id() }}</strong></p>
         <p>Mahasiswa ID: <strong>{{ Auth::user()->mahasiswa->mahasiswa_id ?? 'Null' }}</strong></p>
     </div>
 </div>
+@endif
+
 @endsection
 
 @push('css')
@@ -129,90 +137,109 @@
 @endpush
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 $(document).ready(function () {
     console.log('Document ready, hasPengajuanDiterima: {{ $hasPengajuanDiterima ? 'true' : 'false' }}');
     
+    // Global variable untuk table
+    var table;
+    
     // Hanya inisialisasi DataTable jika ada pengajuan yang diterima
     @if ($hasPengajuanDiterima)
-    let table = $('#logTable').DataTable({
+    table = $('#logTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: "{{ route('mahasiswa.log-harian.list') }}",
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
             error: function(xhr, error, thrown) {
                 console.error('DataTable Ajax Error:', xhr.responseText);
-                alert('Terjadi kesalahan saat memuat data: ' + (xhr.responseJSON?.message || 'Error tidak diketahui'));
+                
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat memuat data: ' + (xhr.responseJSON?.message || 'Error tidak diketahui'),
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
             }
         },
         columns: [
             { 
                 data: 'DT_RowIndex', 
-                name: 'DT_RowIndex', 
+                className: "text-center",
                 orderable: false, 
-                searchable: false,
-                width: '5%'
+                searchable: false
             },
             { 
                 data: 'aktivitas', 
-                name: 'aktivitas',
-                width: '40%'
+                render: function(data, type, row) {
+                    if (type === 'display' && data && data.length > 100) {
+                        return data.substr(0, 100) + '...';
+                    }
+                    return data ? data : '-';
+                }
             },
             { 
-                data: 'created_at', 
-                name: 'created_at',
-                width: '15%'
+                data: 'created_at',
+                render: function(data, type, row) {
+                    return data ? data : '-';
+                }
             },
             { 
-                data: 'feedback', 
-                name: 'feedback', 
+                data: null,
                 orderable: false, 
                 searchable: false,
-                width: '25%'
+                className: 'text-center',
+                render: function(data, type, row) {
+                    // Cek apakah ada feedback dari dosen
+                    if (row.feedback && row.feedback.trim() !== '') {
+                        return '<button class="btn btn-sm btn-info btn-feedback" data-id="' + row.log_id + '" title="Lihat Feedback">' +
+                               '<i class="fas fa-comment"></i> Lihat Feedback</button>';
+                    } else {
+                        return '<span class="badge bg-secondary">Belum ada feedback</span>';
+                    }
+                }
             },
             { 
-                data: 'action', 
-                name: 'action', 
+                data: 'action',
+                className: 'text-center',
                 orderable: false, 
-                searchable: false,
-                width: '15%'
+                searchable: false
             },
-        ],
-        order: [[2, 'desc']], // Order by created_at descending
-        pageLength: 10,
-        responsive: true,
-        language: {
-            processing: "Memuat data...",
-            search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data per halaman",
-            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-            infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
-            infoFiltered: "(difilter dari _MAX_ total data)",
-            loadingRecords: "Memuat data...",
-            zeroRecords: "Tidak ada data yang ditemukan",
-            emptyTable: "Belum ada log aktivitas",
-            paginate: {
-                first: "Pertama",
-                last: "Terakhir",
-                next: "Selanjutnya",
-                previous: "Sebelumnya"
-            }
-        }
+        ]
     });
     @endif
 
-    // Event handler untuk tombol tambah log - DEBUGGING
+    // Function untuk modal action (mengikuti pola pengajuan-magang)
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                keyboard: false,
+                backdrop: 'static'
+            });
+            myModal.show();
+        });
+    }
+
+    // Event handler untuk tombol tambah log
     $(document).on('click', '#btnTambahLog', function(e) {
         e.preventDefault();
         console.log('Tombol Tambah Log diklik');
         
+        var $btn = $(this);
+        var originalText = $btn.html();
+        
         // Show loading state
-        $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
         
         $.ajax({
             url: "{{ route('mahasiswa.log-harian.create_ajax') }}",
@@ -231,12 +258,15 @@ $(document).ready(function () {
                     $('#logModal').modal('show');
                     
                     // Setup form submit handler setelah modal terbuka
-                    setTimeout(function() {
-                        setupFormHandler();
-                    }, 500);
+                    setupFormHandler(false);
                 } else {
                     console.error('Response error:', response.message);
-                    alert(response.message || 'Gagal memuat form');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message || 'Gagal memuat form',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -254,12 +284,20 @@ $(document).ready(function () {
                     message = 'Route create_ajax tidak ditemukan (404)';
                 } else if (xhr.status === 500) {
                     message = 'Server error (500)';
+                } else if (xhr.status === 403) {
+                    message = 'Tidak memiliki akses (403)';
                 }
-                alert(message);
+                
+                Swal.fire({
+                    title: 'Error!',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
             },
             complete: function() {
                 // Reset button state
-                $('#btnTambahLog').prop('disabled', false).html('Tambah Log');
+                $btn.prop('disabled', false).html(originalText);
             }
         });
     });
@@ -270,34 +308,46 @@ $(document).ready(function () {
         e.preventDefault();
         let id = $(this).data('id');
         
+        var $btn = $(this);
+        var originalText = $btn.html();
+        
+        // Show loading state
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+        
         $.ajax({
-            url: `/mahasiswa/log-harian/${id}/edit`,
+            url: `/mahasiswa/log-harian/${id}/edit_ajax`,
             type: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function (res) {
                 if (res.success) {
-                    // Load form template
-                    $.get("{{ route('mahasiswa.log-harian.create_ajax') }}", function(viewRes) {
-                        if (viewRes.success) {
-                            $('#modalContent').html(viewRes.data.form_html);
-                            $('#logModal').modal('show');
-                            
-                            // Modify form for update
-                            $('#formLog').attr('data-method', 'PUT');
-                            $('#formLog').attr('data-url', `/mahasiswa/log-harian/${id}`);
-                            $('#logModalLabel').text('Edit Log Aktivitas');
-                            $('#formLog textarea[name="aktivitas"]').val(res.data.aktivitas);
-                            
-                            // Setup form submit handler
-                            setupFormHandler(true, id);
-                        }
-                    });
+                    $('#modalContent').html(res.data.form_html);
+                    $('#logModal').modal('show');
+                    
+                    // Setup form submit handler untuk edit
+                    setupFormHandler(true, id);
                 } else {
-                    alert(res.message);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: res.message,
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             },
             error: function(xhr) {
                 console.error('Error:', xhr.responseText);
-                alert('Gagal memuat data log untuk edit');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Gagal memuat data log untuk edit',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            },
+            complete: function() {
+                // Reset button state
+                $btn.prop('disabled', false).html(originalText);
             }
         });
     });
@@ -305,28 +355,70 @@ $(document).ready(function () {
     // Delegasi event untuk tombol hapus
     $('#logTable').on('click', '.btn-delete', function (e) {
         e.preventDefault();
-        if (!confirm("Yakin ingin menghapus log aktivitas ini?")) return;
-        
         let id = $(this).data('id');
         
-        $.ajax({
-            url: `/mahasiswa/log-harian/${id}`,
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            success: function (res) {
-                if (res.success) {
-                    alert(res.message);
-                    table.ajax.reload(null, false); // Reload tanpa reset paging
-                } else {
-                    alert(res.message || 'Gagal menghapus log');
-                }
-            },
-            error: function (xhr) {
-                console.error('Error:', xhr.responseText);
-                let message = xhr.responseJSON?.message || 'Gagal menghapus log aktivitas';
-                alert(message);
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Yakin ingin menghapus log aktivitas ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var $btn = $(this);
+                var originalText = $btn.html();
+                
+                // Show loading state
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    url: `/mahasiswa/log-harian/${id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: res.message,
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                timer: 3000
+                            });
+                            
+                            // Reload table
+                            if (typeof table !== 'undefined') {
+                                table.ajax.reload(null, false);
+                            }
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: res.message || 'Gagal menghapus log',
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error:', xhr.responseText);
+                        let message = xhr.responseJSON?.message || 'Gagal menghapus log aktivitas';
+                        
+                        Swal.fire({
+                            title: 'Error!',
+                            text: message,
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $btn.prop('disabled', false).html(originalText);
+                    }
+                });
             }
         });
     });
@@ -335,6 +427,12 @@ $(document).ready(function () {
     $('#logTable').on('click', '.btn-feedback', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
+        
+        var $btn = $(this);
+        var originalText = $btn.html();
+        
+        // Show loading state
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
         
         $.ajax({
             url: `/mahasiswa/log-harian/${id}/feedback`,
@@ -347,38 +445,41 @@ $(document).ready(function () {
             },
             success: function (res) {
                 console.log('Response feedback:', res);
-                if (res.success) {
+                if (res.success && res.data) {
                     // Isi modal dengan data feedback
-                    $('#feedbackAktivitas').text(res.data.aktivitas);
-                    $('#feedbackContent').text(res.data.feedback);
-                    $('#feedbackDate').text(res.data.feedback_created_at);
+                    $('#feedbackAktivitas').text(res.data.aktivitas || 'Tidak ada aktivitas');
+                    $('#feedbackContent').text(res.data.feedback || 'Tidak ada feedback');
+                    $('#feedbackDate').text(res.data.feedback_created_at || 'Tidak diketahui');
                     $('#feedbackModal').modal('show');
                 } else {
                     Swal.fire({
                         title: 'Informasi',
                         text: res.message || 'Belum ada feedback dari dosen',
                         icon: 'info',
-                        confirmButtonColor: '#3085d6',
-                        background: '#f0fff0'
+                        confirmButtonColor: '#3085d6'
                     });
                 }
             },
             error: function (xhr) {
                 console.error('Error:', xhr.responseText);
                 let message = xhr.responseJSON?.message || 'Gagal memuat feedback dari dosen';
+                
                 Swal.fire({
                     title: 'Error',
                     text: message,
                     icon: 'error',
-                    confirmButtonColor: '#d33',
-                    background: '#fff0f0'
+                    confirmButtonColor: '#d33'
                 });
+            },
+            complete: function() {
+                // Reset button state
+                $btn.prop('disabled', false).html(originalText);
             }
         });
     });
     @endif
 
-    // Function untuk setup form handler - IMPROVED
+    // Function untuk setup form handler
     function setupFormHandler(isEdit = false, logId = null) {
         console.log('Setting up form handler, isEdit:', isEdit, 'logId:', logId);
         
@@ -430,20 +531,39 @@ $(document).ready(function () {
                     },
                     beforeSend: function() {
                         console.log('Sending form data...');
+                        // Clear previous validation errors
+                        $('.is-invalid').removeClass('is-invalid');
+                        $('.invalid-feedback').text('');
                     },
                     success: function(response) {
                         console.log('Form submit success:', response);
                         
                         if (response.success) {
                             $('#logModal').modal('hide');
-                            alert(response.message);
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                            
+                            // Reload table
                             @if ($hasPengajuanDiterima)
                             if (typeof table !== 'undefined') {
                                 table.ajax.reload(null, false);
                             }
                             @endif
                         } else {
-                            alert(response.message || 'Gagal menyimpan data');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Gagal menyimpan data',
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
                         }
                     },
                     error: function(xhr, status, error) {
@@ -456,13 +576,34 @@ $(document).ready(function () {
                         let errors = xhr.responseJSON?.errors;
                         
                         if (errors) {
+                            // Show validation errors
+                            Object.keys(errors).forEach(function(key) {
+                                let field = form.find(`[name="${key}"]`);
+                                let errorDiv = form.find(`#${key}-error`);
+                                
+                                field.addClass('is-invalid');
+                                errorDiv.text(errors[key].join(', '));
+                            });
+                            
+                            // Also show in alert
                             let errorMessages = [];
                             Object.keys(errors).forEach(function(key) {
                                 errorMessages.push(errors[key].join(', '));
                             });
-                            alert('Validation Error:\n' + errorMessages.join('\n'));
+                            
+                            Swal.fire({
+                                title: 'Validation Error!',
+                                text: errorMessages.join('\n'),
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
                         } else {
-                            alert(xhr.responseJSON?.message || 'Gagal menyimpan data');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: xhr.responseJSON?.message || 'Gagal menyimpan data',
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
                         }
                     },
                     complete: function() {
@@ -477,6 +618,7 @@ $(document).ready(function () {
     // Clear modal when hidden
     $('#logModal').on('hidden.bs.modal', function () {
         $('#modalContent').empty();
+        $(this).off('shown.bs.modal'); // Remove event handler
     });
 
     // Clear feedback modal when hidden
@@ -485,6 +627,16 @@ $(document).ready(function () {
         $('#feedbackContent').text('');
         $('#feedbackDate').text('');
     });
+
+    // Debug toggle (jika dalam mode debug)
+    @if(config('app.debug'))
+    $(document).on('dblclick', '.card-title', function() {
+        $('#debugInfo').toggle();
+    });
+    @endif
+
+    // Initialize tooltips
+    $('[title]').tooltip();
 });
 </script>
 @endpush

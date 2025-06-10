@@ -20,6 +20,7 @@ class DosenSeeder extends Seeder
                 'user_id' => $user->user_id,
                 'nik' => '12345678' . ($idx + 1), 
                 'prodi_id' => mt_rand(1, count(ProgramStudiModel::all())),
+                'kompetensi_id' => ($idx + 1), 
                 'jumlah_bimbingan' => PengajuanMagangModel::where('dosen_id', $user->user_id)->count(),
             ]);
         }

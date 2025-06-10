@@ -218,6 +218,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
     Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
     Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
+    Route::get('/mahasiswa/log-harian/{id}/feedback', [LogAktivitasController::class, 'showFeedback'])->name('mahasiswa.log-harian.feedback');
 });
 
 

@@ -20,8 +20,9 @@
                     <th>Perusahaan</th>
                     <th>Periode</th>
                     <th>Skema</th>
-                    <th>Kuota</th> <!-- Ditambahkan -->
-                    <th>Tunjangan</th> <!-- Diubah -->
+                    <th>Kuota</th>
+                    <th>Tunjangan</th>
+                    <th>Silabus</th>
                     <th>Tanggal Buka</th>
                     <th>Tanggal Tutup</th>
                     <th style="width: 150px;">Aksi</th>
@@ -34,8 +35,15 @@
                         <td>{{ $lowongan->perusahaan->nama }}</td>
                         <td>{{ $lowongan->periode->nama }}</td>
                         <td>{{ $lowongan->skema->nama }}</td>
-                        <td>{{ $lowongan->kuota }}</td> <!-- Ditambahkan -->
-                        <td>{{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}</td> <!-- Diubah -->
+                        <td>{{ $lowongan->kuota }}</td>
+                        <td>{{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}</td>
+                        <td>
+                            @if($lowongan->silabus_path)
+                                <a href="{{ Storage::url($lowongan->silabus_path) }}" target="_blank">Lihat Silabus</a>
+                            @else
+                                Belum Tersedia
+                            @endif
+                        </td>
                         <td>{{ $lowongan->tanggal_buka->format('d M Y') }}</td>
                         <td>{{ $lowongan->tanggal_tutup->format('d M Y') }}</td>
                         <td>
@@ -60,7 +68,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center">Belum ada lowongan magang.</td> <!-- Diubah dari colspan="7" ke "9" -->
+                        <td colspan="10" class="text-center">Belum ada lowongan magang.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -68,7 +76,6 @@
     </div>
 </div>
 
-<!-- Modal placeholder -->
 <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
 
 @endsection
@@ -88,7 +95,6 @@
     <script>
         $(document).ready(function() {
             $('#table_lowongan').DataTable({
-                // Opsi tambahan bisa ditambahkan jika perlu
                 "ordering": true,
                 "paging": true,
                 "searching": true,
@@ -96,7 +102,6 @@
             });
         });
 
-        // Fungsi modal jika ingin implementasi modal ajax
         function modalAction(url = '') {
             $('#myModal').load(url, function () {
                 var myModal = new bootstrap.Modal(document.getElementById('myModal'), {

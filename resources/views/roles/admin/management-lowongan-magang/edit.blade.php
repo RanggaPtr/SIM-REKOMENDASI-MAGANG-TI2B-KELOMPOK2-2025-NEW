@@ -6,11 +6,10 @@
 <div class="container mt-4">
     <h2>Edit Lowongan Magang</h2>
 
-    <form action="{{ route('admin.lowongan.update', $lowongan->lowongan_id) }}" method="POST" id="editLowonganForm">
+    <form action="{{ route('admin.lowongan.update', $lowongan->lowongan_id) }}" method="POST" id="editLowonganForm" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        {{-- Perusahaan --}}
         <div class="mb-3">
             <label for="perusahaan_id" class="form-label">Perusahaan <span class="text-danger">*</span></label>
             <select class="form-control" id="perusahaan_id" name="perusahaan_id" required>
@@ -26,7 +25,6 @@
             @enderror
         </div>
 
-        {{-- Judul --}}
         <div class="mb-3">
             <label for="judul" class="form-label">Judul <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="judul" name="judul" value="{{ old('judul', $lowongan->judul) }}" required>
@@ -35,7 +33,6 @@
             @enderror
         </div>
 
-        {{-- Periode --}}
         <div class="mb-3">
             <label for="periode_id" class="form-label">Periode Magang <span class="text-danger">*</span></label>
             <select class="form-control" id="periode_id" name="periode_id" required>
@@ -51,7 +48,6 @@
             @enderror
         </div>
 
-        {{-- Skema --}}
         <div class="mb-3">
             <label for="skema_id" class="form-label">Skema Magang <span class="text-danger">*</span></label>
             <select class="form-control" id="skema_id" name="skema_id" required>
@@ -67,7 +63,6 @@
             @enderror
         </div>
 
-        {{-- Deskripsi --}}
         <div class="mb-3">
             <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" required>{{ old('deskripsi', $lowongan->deskripsi) }}</textarea>
@@ -76,7 +71,6 @@
             @enderror
         </div>
 
-        {{-- Persyaratan --}}
         <div class="mb-3">
             <label for="persyaratan" class="form-label">Persyaratan <span class="text-danger">*</span></label>
             <textarea class="form-control" id="persyaratan" name="persyaratan" rows="5" required>{{ old('persyaratan', $lowongan->persyaratan) }}</textarea>
@@ -85,7 +79,6 @@
             @enderror
         </div>
 
-        {{-- Tunjangan (Radio Button) --}}
         <div class="mb-3">
             <label class="form-label">Tunjangan <span class="text-danger">*</span></label>
             <div class="form-check">
@@ -101,7 +94,6 @@
             @enderror
         </div>
 
-        {{-- Kuota --}}
         <div class="mb-3">
             <label for="kuota" class="form-label">Kuota <span class="text-danger">*</span></label>
             <input type="number" class="form-control" id="kuota" name="kuota" value="{{ old('kuota', $lowongan->kuota) }}" min="1" required>
@@ -110,7 +102,19 @@
             @enderror
         </div>
 
-        {{-- Keahlian (Multiple Select) --}}
+        <div class="mb-3">
+            <label for="silabus_path" class="form-label">Silabus (PDF, max 2MB)</label>
+            <input type="file" class="form-control" id="silabus_path" name="silabus_path" accept=".pdf">
+            @if($lowongan->silabus_path)
+                <small class="form-text text-muted">File saat ini: <a href="{{ Storage::url($lowongan->silabus_path) }}" target="_blank">Lihat Silabus</a></small>
+            @else
+                <small class="form-text text-muted">Belum ada silabus diunggah</small>
+            @endif
+            @error('silabus_path')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="mb-3">
             <label class="form-label">Keahlian <span class="text-danger">*</span></label>
             <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
@@ -134,7 +138,6 @@
             @enderror
         </div>
 
-        {{-- Kompetensi (Single Select) --}}
         <div class="mb-3">
             <label class="form-label">Kompetensi <span class="text-danger">*</span></label>
             <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
@@ -158,7 +161,6 @@
             @enderror
         </div>
 
-        {{-- Tanggal Buka --}}
         <div class="mb-3">
             <label for="tanggal_buka" class="form-label">Tanggal Buka <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="tanggal_buka" name="tanggal_buka" value="{{ old('tanggal_buka', $lowongan->tanggal_buka->format('Y-m-d')) }}" required>
@@ -167,7 +169,6 @@
             @enderror
         </div>
 
-        {{-- Tanggal Tutup --}}
         <div class="mb-3">
             <label for="tanggal_tutup" class="form-label">Tanggal Tutup <span class="text-danger">*</span></label>
             <input type="date" class="form-control" id="tanggal_tutup" name="tanggal_tutup" value="{{ old('tanggal_tutup', $lowongan->tanggal_tutup->format('Y-m-d')) }}" required>
@@ -176,7 +177,6 @@
             @enderror
         </div>
 
-        {{-- Submit --}}
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="{{ route('admin.lowongan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
@@ -188,12 +188,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const tanggalBuka = document.getElementById('tanggal_buka');
     const tanggalTutup = document.getElementById('tanggal_tutup');
     
-    // Set minimum tanggal tutup berdasarkan tanggal buka
     tanggalBuka.addEventListener('change', function() {
         tanggalTutup.min = this.value;
     });
 
-    // Validasi form sebelum submit
     form.addEventListener('submit', function(e) {
         const keahlianChecked = document.querySelectorAll('input[name="keahlian[]"]:checked').length;
         const kompetensiChecked = document.querySelectorAll('input[name="kompetensi[]"]:checked').length;

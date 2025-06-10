@@ -16,20 +16,15 @@ class MahasiswaSeeder extends Seeder
         // Ambil semua user dengan role mahasiswa
         $mahasiswaUsers = UsersModel::where('role', 'mahasiswa')->get();
 
-        // Data default
-        $programStudi = ProgramStudiModel::first();
-        $wilayah = WilayahModel::first();
-        $skema = SkemaModel::first();
-
         foreach ($mahasiswaUsers as $idx => $user) {
             MahasiswaModel::create([
                 'user_id' => $user->user_id,
                 'nim' => '12345678' . ($idx + 1),
-                'program_studi_id' => $programStudi ? $programStudi->prodi_id : 1,
-                'wilayah_id' => $wilayah ? $wilayah->wilayah_id : 1,
-                'skema_id' => $skema ? $skema->skema_id : 1,
+                'program_studi_id' => mt_rand(1, count(ProgramStudiModel::all())),
+                'wilayah_id' => mt_rand(150, 200),
+                'skema_id' => mt_rand(1, count(SkemaModel::all())),
                 'periode_id' => 1,
-                'ipk' => 3.5 + ($idx * 0.1)
+                'ipk' => 3.2 + ($idx * 0.01)
             ]);
         }
 

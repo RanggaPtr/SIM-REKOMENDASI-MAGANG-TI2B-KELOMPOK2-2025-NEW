@@ -15,7 +15,7 @@
 
 <div class="row g-4 bg-transparent" style="width: 100%; height: 100%;">
     <!-- Kiri: Detail Lowongan -->
-    <div class="col-md-9 bg-transparent pt-4 pe-0 ps-0">
+    <div class="col-md-9 bg-transparent pt-4 pe-0 ps-0" style="border-right: 1px solid #e0e0e0;">
         <div class="d-flex justify-content-between align-items-center bg-transparent padding-left">
             <h2 class="fw-bold mb-0 flex-grow-1 bg-transparent" style="font-size:2rem;">{{ $lowongan->judul }}</h2>
             <span class="text-dark bg-transparent fw-bold pe-4" style="font-size:1.3rem"><i
@@ -31,9 +31,9 @@
             <span class="bg-transparent"><i class="fa-solid fa-location-dot"></i>
                 {{ ucwords(strtolower($lowongan->perusahaan->lokasi->nama)) ?? '-' }}</span>
         </div>
-        <div class="mb-3 bg-transparent text-dark padding-left">
+        <div class="mb-3 bg-transparent text-dark padding-left" style="padding-right: 2rem">
             <p class="bg-transparent mb-0 pb-0">Deskripsi</p>
-            <p class="bg-transparent ">{{ $lowongan->deskripsi }}</p>
+            <p class="bg-transparent">{{ $lowongan->deskripsi }}</p>
         </div>
         <div class="bg-transparent skills-container-overlay pb-3 padding-left">
             @foreach ($lowongan->lowonganKompetensi as $lk)
@@ -92,7 +92,7 @@
 
     <!-- Kanan: Info Perusahaan & Review -->
     <div class="col-md-3 bg-transparent pt-4"
-        style="padding-left: 1.7rem; padding-right:1.2rem; height:100%; border-left: 1px solid #e0e0e0;">
+        style="padding-left: 1.7rem; padding-right:1.2rem; height:100%;">
         <div class="bg-transparent mb-3">
             {{-- Tombol Ajukan langsung ke store --}}
             @if (Auth::user()->role === 'mahasiswa')

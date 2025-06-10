@@ -18,6 +18,7 @@ public function up()
             $table->text('persyaratan');
             $table->boolean('tunjangan');
             $table->unsignedInteger('kuota')->default(0);
+            $table->text('silabus_path')->nullable();
             $table->date('tanggal_buka');
             $table->date('tanggal_tutup');
             $table->timestamps();

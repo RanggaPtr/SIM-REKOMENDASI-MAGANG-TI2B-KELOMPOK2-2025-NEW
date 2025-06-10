@@ -10,12 +10,7 @@ class SertifikatDosenSeeder extends Seeder
 {
    public function run()
     {
-        $dosen = DosenModel::where('nik', '1234567890')->first();
-
-        if (!$dosen) {
-            $this->command->error('Dosen dengan nik 1234567890 tidak ditemukan. Pastikan DosenSeeder membuat data ini.');
-            return;
-        }
+        $dosen = DosenModel::where('nik', '123456781')->first();
 
         SertifikatDosenModel::create([
             'dosen_id' => $dosen->dosen_id, // Ganti id menjadi dosen_id

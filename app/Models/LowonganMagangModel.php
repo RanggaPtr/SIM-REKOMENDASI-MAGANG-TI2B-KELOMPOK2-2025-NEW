@@ -21,6 +21,7 @@ class LowonganMagangModel extends Model
         'tanggal_buka',
         'tanggal_tutup',
         'tunjangan',
+        'silabus_path',
         'kuota',
     ];
 

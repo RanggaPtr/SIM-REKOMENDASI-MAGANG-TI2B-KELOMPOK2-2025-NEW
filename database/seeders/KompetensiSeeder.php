@@ -98,6 +98,156 @@ class KompetensiSeeder extends Seeder
                 'deskripsi' => 'Kemampuan membangun solusi perangkat terhubung',
                 'program_studi_id' => $prodiIds[2]
             ],
+            [
+                'nama' => 'Game Development',
+                'deskripsi' => 'Kemampuan membangun game menggunakan Unity, Unreal Engine, atau semacamnya',
+                'program_studi_id' => $prodiIds[1]
+            ],
+            [
+                'nama' => 'Digital Content Creation',
+                'deskripsi' => 'Kemampuan membuat konten digital kreatif untuk berbagai platform.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Quality Assurance',
+                'deskripsi' => 'Kemampuan melakukan pengujian perangkat lunak dan memastikan kualitas produk.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'Network Engineering',
+                'deskripsi' => 'Kemampuan merancang dan mengelola jaringan komputer.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'IT Support',
+                'deskripsi' => 'Kemampuan memberikan dukungan teknis dan troubleshooting.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Digital Marketing',
+                'deskripsi' => 'Kemampuan menjalankan kampanye pemasaran digital.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'System Analysis',
+                'deskripsi' => 'Kemampuan menganalisis kebutuhan sistem dan bisnis.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Audit',
+                'deskripsi' => 'Kemampuan melakukan audit sistem informasi.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'SEO Specialist',
+                'deskripsi' => 'Kemampuan mengoptimasi website untuk mesin pencari.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Social Media Management',
+                'deskripsi' => 'Kemampuan mengelola akun dan kampanye media sosial.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Project Management',
+                'deskripsi' => 'Kemampuan mengelola proyek IT dari awal hingga akhir.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Full Stack Development',
+                'deskripsi' => 'Kemampuan membangun aplikasi dari sisi frontend dan backend.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'IT Consulting',
+                'deskripsi' => 'Kemampuan memberikan konsultasi solusi IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Technical Writing',
+                'deskripsi' => 'Kemampuan menulis dokumentasi teknis.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Training',
+                'deskripsi' => 'Kemampuan memberikan pelatihan IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Video Editing',
+                'deskripsi' => 'Kemampuan mengedit dan memproduksi video.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Research',
+                'deskripsi' => 'Kemampuan melakukan riset di bidang teknologi informasi.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'Technical Documentation',
+                'deskripsi' => 'Kemampuan membuat dokumentasi teknis.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Procurement',
+                'deskripsi' => 'Kemampuan pengadaan barang dan jasa IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Business Analysis',
+                'deskripsi' => 'Kemampuan menganalisis proses bisnis dan kebutuhan IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Infrastructure',
+                'deskripsi' => 'Kemampuan membangun dan memelihara infrastruktur IT.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'Product Management',
+                'deskripsi' => 'Kemampuan mengelola siklus hidup produk digital.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'System Engineering',
+                'deskripsi' => 'Kemampuan merancang dan mengelola sistem IT.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'Data Entry',
+                'deskripsi' => 'Kemampuan input dan validasi data.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Asset Management',
+                'deskripsi' => 'Kemampuan mengelola aset IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Compliance',
+                'deskripsi' => 'Kemampuan memastikan kepatuhan sistem IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'IT Operations',
+                'deskripsi' => 'Kemampuan menjalankan operasional harian IT.',
+                'program_studi_id' => 1
+            ],
+            [
+                'nama' => 'Event Management',
+                'deskripsi' => 'Kemampuan mengelola acara dan event IT.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Customer Support',
+                'deskripsi' => 'Kemampuan memberikan dukungan kepada pelanggan.',
+                'program_studi_id' => 2
+            ],
+            [
+                'nama' => 'Product Design',
+                'deskripsi' => 'Kemampuan mendesain produk digital.',
+                'program_studi_id' => 3
+            ],
         ];
 
         // Insert competencies into the database

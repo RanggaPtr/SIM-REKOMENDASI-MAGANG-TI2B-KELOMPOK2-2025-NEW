@@ -11,30 +11,23 @@ class MahasiswaKompetensiSeeder extends Seeder
 {
     public function run()
     {
-        // Ambil semua mahasiswa
+        // Ambil semua mahasiswa dan kompetensi
         $mahasiswas = MahasiswaModel::all();
+        $kompetensis = KompetensiModel::all()->shuffle();
 
-        // Daftar kompetensi untuk dummy (bisa disesuaikan)
-        $kompetensiSets = [
-            ['Web Development', 'Back End Development'],
-            ['Data Science', 'Business Intelligence'],
-            ['Front End Development', 'UI/UX Design'],
-            ['Machine Learning', 'Cyber Security'],
-            ['Mobile App Development', 'DevOps'],
-        ];
+        // Pastikan jumlah kompetensi cukup
+        if ($kompetensis->count() < $mahasiswas->count()) {
+            $this->command->error('Jumlah kompetensi kurang dari jumlah mahasiswa!');
+            return;
+        }
 
-        foreach ($mahasiswas as $idx => $mahasiswa) {
-            // Pilih kompetensi set berdasarkan urutan mahasiswa
-            $set = $kompetensiSets[$idx % count($kompetensiSets)];
-            foreach ($set as $namaKompetensi) {
-                $kompetensi = KompetensiModel::where('nama', $namaKompetensi)->first();
-                if ($kompetensi) {
-                    MahasiswaKompetensiModel::create([
-                        'mahasiswa_id' => $mahasiswa->mahasiswa_id,
-                        'kompetensi_id' => $kompetensi->kompetensi_id
-                    ]);
-                }
-            }
+        // Kaitkan satu kompetensi acak ke setiap mahasiswa (tanpa duplikat)
+        foreach ($mahasiswas as $index => $mahasiswa) {
+            $kompetensi = $kompetensis[$index];
+            MahasiswaKompetensiModel::create([
+                'mahasiswa_id' => $mahasiswa->mahasiswa_id,
+                'kompetensi_id' => $kompetensi->kompetensi_id,
+            ]);
         }
 
         $this->command->info('Data mahasiswa kompetensi berhasil diimpor.');

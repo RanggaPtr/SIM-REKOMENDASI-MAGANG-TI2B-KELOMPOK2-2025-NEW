@@ -5,31 +5,24 @@ namespace Database\Seeders;
 use App\Models\DosenModel;
 use App\Models\UsersModel;
 use App\Models\ProgramStudiModel;
+use App\Models\PengajuanMagangModel;
 use Illuminate\Database\Seeder;
 
 class DosenSeeder extends Seeder
 {
     public function run()
     {
-        $user = UsersModel::where('email', 'dosen1@simmagang.com')->first();
-        $programStudi = ProgramStudiModel::where('nama', 'D-IV Teknik Informatika')->first();
+        // Ambil semua user dengan role dosen
+        $dosenUsers = UsersModel::where('role', 'dosen')->get();
 
-        if (!$user) {
-            $this->command->error('Pengguna dengan email dosen1@simmagang.com tidak ditemukan.');
-            return;
+        foreach ($dosenUsers as $idx => $user) {
+            DosenModel::create([
+                'user_id' => $user->user_id,
+                'nik' => '12345678' . ($idx + 1), 
+                'prodi_id' => mt_rand(1, count(ProgramStudiModel::all())),
+                'jumlah_bimbingan' => PengajuanMagangModel::where('dosen_id', $user->user_id)->count(),
+            ]);
         }
-
-        if (!$programStudi) {
-            $this->command->error('Program studi D-IV Teknik Informatika tidak ditemukan.');
-            return;
-        }
-
-        DosenModel::create([
-            'user_id' => $user->user_id,
-            'nik' => '1234567890',
-            'prodi_id' => $programStudi->prodi_id,
-            'jumlah_bimbingan' => 0
-        ]);
 
         $this->command->info('Data dosen berhasil diimpor.');
     }

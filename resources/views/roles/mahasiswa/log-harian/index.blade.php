@@ -6,47 +6,72 @@
 <!-- Pastikan CSRF Token tersedia -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Log Aktivitas Harian</h4>
+<div class="card card-outline card-primary">
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+                background: '#f0fff0',
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+            });
+        </script>
+    @endif
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Log Aktivitas Harian</h3>
         @if ($hasPengajuanDiterima)
             <button class="btn btn-primary" id="btnTambahLog">
                 <i class="fas fa-plus"></i> Tambah Log
             </button>
-        @else
+        @endif
+    </div>
+
+    <div class="card-body">
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if (!$hasPengajuanDiterima)
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle"></i>
                 Anda belum memiliki pengajuan magang yang diterima. Silakan ajukan magang terlebih dahulu.
             </div>
-        @endif
-    </div>
-
-    @if (!$hasPengajuanDiterima)
-        <div class="card">
-            <div class="card-body text-center">
-                <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
-                <h5>Belum Ada Pengajuan Magang yang Diterima</h5>
-                <p class="text-muted">Untuk dapat mengisi log aktivitas harian, Anda perlu memiliki pengajuan magang yang sudah diterima.</p>
-                <a href="{{ route('mahasiswa.pengajuan-magang.index') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Ajukan Magang
-                </a>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <h5>Belum Ada Pengajuan Magang yang Diterima</h5>
+                    <p class="text-muted">Untuk dapat mengisi log aktivitas harian, Anda perlu memiliki pengajuan magang yang sudah diterima.</p>
+                    <a href="{{ route('mahasiswa.pengajuan-magang.index') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajukan Magang
+                    </a>
+                </div>
             </div>
-        </div>
-    @else
-        <div class="table-responsive">
-            <table id="logTable" class="table table-bordered table-striped">
+        @else
+            <table class="table table-bordered table-striped table-hover table-sm" id="logTable">
                 <thead>
                     <tr>
                         <th>No</th>
                         <th>Aktivitas</th>
                         <th>Tanggal</th>
+                        <th>Feedback Dosen</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
-        </div>
-    @endif
+        @endif
+    </div>
+    
+    <div id="myModal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
 </div>
 
 <!-- Modal tambah/edit -->
@@ -58,9 +83,38 @@
     </div>
 </div>
 
+<!-- Modal untuk menampilkan feedback -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feedbackModalLabel">Feedback dari Dosen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Aktivitas:</label>
+                    <p id="feedbackAktivitas" class="form-control-static"></p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Feedback:</label>
+                    <p id="feedbackContent" class="form-control-static"></p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tanggal Feedback:</label>
+                    <p id="feedbackDate" class="form-control-static"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Debug Info (bisa dihapus setelah selesai debugging) -->
 <div class="mt-3" id="debugInfo" style="display: none;">
-    <div class="alert alert-info">
+    <div class="alert alert info">
         <h6>Debug Information:</h6>
         <p>Has Pengajuan Diterima: <strong>{{ $hasPengajuanDiterima ? 'Ya' : 'Tidak' }}</strong></p>
         <p>User ID: <strong>{{ Auth::id() }}</strong></p>
@@ -69,7 +123,17 @@
 </div>
 @endsection
 
+@push('css')
+    <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet">
+@endpush
+
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function () {
     console.log('Document ready, hasPengajuanDiterima: {{ $hasPengajuanDiterima ? 'true' : 'false' }}');
@@ -97,12 +161,19 @@ $(document).ready(function () {
             { 
                 data: 'aktivitas', 
                 name: 'aktivitas',
-                width: '60%'
+                width: '40%'
             },
             { 
                 data: 'created_at', 
                 name: 'created_at',
-                width: '20%'
+                width: '15%'
+            },
+            { 
+                data: 'feedback', 
+                name: 'feedback', 
+                orderable: false, 
+                searchable: false,
+                width: '25%'
             },
             { 
                 data: 'action', 
@@ -259,6 +330,52 @@ $(document).ready(function () {
             }
         });
     });
+
+    // Delegasi event untuk tombol feedback
+    $('#logTable').on('click', '.btn-feedback', function (e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+        
+        $.ajax({
+            url: `/mahasiswa/log-harian/${id}/feedback`,
+            type: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                console.log('Mengirim request untuk feedback log ID:', id);
+            },
+            success: function (res) {
+                console.log('Response feedback:', res);
+                if (res.success) {
+                    // Isi modal dengan data feedback
+                    $('#feedbackAktivitas').text(res.data.aktivitas);
+                    $('#feedbackContent').text(res.data.feedback);
+                    $('#feedbackDate').text(res.data.feedback_created_at);
+                    $('#feedbackModal').modal('show');
+                } else {
+                    Swal.fire({
+                        title: 'Informasi',
+                        text: res.message || 'Belum ada feedback dari dosen',
+                        icon: 'info',
+                        confirmButtonColor: '#3085d6',
+                        background: '#f0fff0'
+                    });
+                }
+            },
+            error: function (xhr) {
+                console.error('Error:', xhr.responseText);
+                let message = xhr.responseJSON?.message || 'Gagal memuat feedback dari dosen';
+                Swal.fire({
+                    title: 'Error',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    background: '#fff0f0'
+                });
+            }
+        });
+    });
     @endif
 
     // Function untuk setup form handler - IMPROVED
@@ -360,6 +477,13 @@ $(document).ready(function () {
     // Clear modal when hidden
     $('#logModal').on('hidden.bs.modal', function () {
         $('#modalContent').empty();
+    });
+
+    // Clear feedback modal when hidden
+    $('#feedbackModal').on('hidden.bs.modal', function () {
+        $('#feedbackAktivitas').text('');
+        $('#feedbackContent').text('');
+        $('#feedbackDate').text('');
     });
 });
 </script>

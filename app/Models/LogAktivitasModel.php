@@ -21,4 +21,6 @@ class LogAktivitasModel extends Model
     {
         return $this->hasOne(FeedbackLogAktivitasModel::class, 'log_id', 'log_id'); // Sesuaikan kunci asing dengan primary key
     }
+
+    
 }

@@ -24,7 +24,7 @@ class PerusahaanController extends Controller
             'title' => 'Daftar perusahaan mitra yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'perusahaan-mitra';
+        $activeMenu = 'Manajemen Perusahaan Mitra';
         $wilayah = WilayahModel::all();
 
         return view('roles.admin.management-mitra.index', compact(

@@ -13,6 +13,7 @@ class FeedbackController extends Controller
     public function index()
     {
         $mahasiswa_id = Auth::user()->mahasiswa->mahasiswa_id;
+        $activeMenu = 'Feedback';
         
         $pengajuan = PengajuanMagangModel::where('mahasiswa_id', $mahasiswa_id)
             ->where('status', 'selesai')
@@ -23,7 +24,7 @@ class FeedbackController extends Controller
         }
         
         return view('roles.mahasiswa.feedback', [
-       
+            'activeMenu' => $activeMenu,
             'pengajuan' => $pengajuan
         ]);
     }

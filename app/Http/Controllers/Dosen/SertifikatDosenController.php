@@ -12,11 +12,13 @@ class SertifikatDosenController extends Controller
 {
     public function index()
     {
+        $activeMenu = 'Sertifikat';
+
         $dosenId = Auth::user()->dosen->dosen_id;
 
         $sertifikats = SertifikatDosenModel::where('dosen_id', $dosenId)->get();
 
-        return view('roles.dosen.sertifikat.index', compact('sertifikats'));
+        return view('roles.dosen.sertifikat.index', compact('sertifikats', 'activeMenu'));
     }
 
     public function create()

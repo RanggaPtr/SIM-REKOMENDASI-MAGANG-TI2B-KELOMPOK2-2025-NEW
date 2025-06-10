@@ -16,6 +16,8 @@ class MonitoringMagangController extends Controller
 {
     public function index(Request $request)
     {
+        $activeMenu = 'Monitoring Magang';
+
         $dosenId = Auth::user()->dosen->dosen_id;
         $query = PengajuanMagangModel::with(['mahasiswa.user', 'periode', 'lowongan'])
             ->where('dosen_id', $dosenId)
@@ -54,7 +56,7 @@ class MonitoringMagangController extends Controller
             }
         }
 
-        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang', 'dosen'));
+        return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang', 'dosen', 'activeMenu'));
     }
 
     public function show($pengajuanId)

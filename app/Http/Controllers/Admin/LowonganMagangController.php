@@ -19,7 +19,8 @@ class LowonganMagangController extends Controller
     public function index()
     {
         $lowongans = LowonganMagangModel::with(['perusahaan', 'periode', 'skema'])->get();
-        return view('roles.admin.management-lowongan-magang.index', compact('lowongans'));
+        $activeMenu = 'Lowongan Magang';
+        return view('roles.admin.management-lowongan-magang.index', compact('lowongans', 'activeMenu'));
     }
 
     public function show($id)

@@ -119,30 +119,22 @@ class DashboardController extends Controller
                     }
                 });
             })
-            ->when(!empty($params['rating']), function ($query) use ($params) {
-                $query->whereHas('perusahaan', function ($q) use ($params) {
-                    $q->where(function ($subQ) use ($params) {
-                        foreach ($params['rating'] as $rating) {
-                            if ($rating == 1) {
-                                $subQ->orWhere('rating', '>=', 0);
-                            } elseif ($rating == 2) {
-                                $subQ->orWhere('rating', '>=', 2);
-                            } elseif ($rating == 3) {
-                                $subQ->orWhere('rating', '>=', 3);
-                            } elseif ($rating == 4) {
-                                $subQ->orWhere('rating', '>=', 4);
-                            } elseif ($rating == 5) {
-                                $subQ->orWhere('rating', '>=', 5);
-                            }
-                        }
-                    });
-                });
+            ->when(!empty($params['rating']), function ($query) {
+                // Biarkan kosong, filter di collection
             });
 
-        // Sorting by judul (or you can change to another field)
-        $query->orderBy('judul', $params['sort'] == 'desc' ? 'desc' : 'asc');
+        $lowongans = $query->get();
 
-        return $query->get();
+        // Filter rating calculated di collection jika ada filter rating
+        if (!empty($params['rating'])) {
+            $selectedRatings = array_map('intval', $params['rating']);
+            $lowongans = $lowongans->filter(function ($lowongan) use ($selectedRatings) {
+                $rating = floor($lowongan->perusahaan->calculated_rating ?? 0);
+                return in_array($rating, $selectedRatings);
+            })->values();
+        }
+
+        return $lowongans;
     }
 
     /**
@@ -190,8 +182,14 @@ class DashboardController extends Controller
         }
 
         // Normalisasi jarak: semakin dekat semakin tinggi similarity
-        $maxDistance = max(array_filter($allDistances, fn($d) => $d !== null)) ?: 1;
-        $minDistance = min(array_filter($allDistances, fn($d) => $d !== null)) ?: 0;
+        $filteredDistances = array_filter($allDistances, fn($d) => $d !== null);
+        if (count($filteredDistances) > 0) {
+            $maxDistance = max($filteredDistances);
+            $minDistance = min($filteredDistances);
+        } else {
+            $maxDistance = 1;
+            $minDistance = 0;
+        }
 
         $result = [];
         $i = 0;

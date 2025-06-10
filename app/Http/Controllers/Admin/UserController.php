@@ -24,7 +24,7 @@ class UserController extends Controller
             'title' => 'Daftar user yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'user';
+        $activeMenu = 'Manajemen Pengguna';
 
         return view('roles.admin.management-pengguna.index', [
             'breadcrumb' => $breadcrumb,

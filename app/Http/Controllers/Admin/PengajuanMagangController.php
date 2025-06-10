@@ -16,7 +16,7 @@ class PengajuanMagangController extends Controller
 {
     public function index()
     {
-        return view('roles.admin.pengajuan.index', ['activeMenu' => 'pengajuan']);
+        return view('roles.admin.pengajuan.index', ['activeMenu' => 'Pengajuan Magang']);
     }
 
     public function list(Request $request)

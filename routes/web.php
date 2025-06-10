@@ -89,8 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::delete('/{id}', [LowonganMagangController::class, 'destroy'])->name('lowongan.destroy');
         });
 
-        // Manajemen Pengajuan Magang (Placeholder)
-        // Manajemen Pengajuan Magang - Gunakan alias AdminPengajuanMagangController
+        // Manajemen Pengajuan Magang 
         Route::prefix('management-pengajuan-magang')->name('pengajuan.')->group(function () {
             Route::get('/', [AdminPengajuanMagangController::class, 'index'])->name('index');
             Route::post('/list', [AdminPengajuanMagangController::class, 'list'])->name('list');
@@ -102,6 +101,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [AdminPengajuanMagangController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [AdminPengajuanMagangController::class, 'export_pdf'])->name('export_pdf');
         });
+        
         // Manajemen Pengguna
         Route::prefix('management-pengguna')->name('user.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
@@ -147,7 +147,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('/{id}/update_ajax', [PeriodeMagangController::class, 'update_ajax'])->name('update_ajax');
             Route::get('/{id}/delete_ajax', [PeriodeMagangController::class, 'confirm_ajax'])->name('confirm_ajax');
             Route::delete('/{id}/delete_ajax', [PeriodeMagangController::class, 'delete_ajax'])->name('delete_ajax');
-             Route::get('/import', [PeriodeMagangController::class, 'import'])->name('import');
+            Route::get('/import', [PeriodeMagangController::class, 'import'])->name('import');
             Route::post('/import_ajax', [PeriodeMagangController::class, 'import_ajax'])->name('import_ajax');
             Route::get('/export_excel', [PeriodeMagangController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [PeriodeMagangController::class, 'export_pdf'])->name('export_pdf');
@@ -172,10 +172,9 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Dosen Routes
-    // Dosen Routes
     Route::prefix('dosen')->name('dosen.')->middleware('authorize:dosen')->group(function () {
         // Dashboard dosen
-        Route::get('/dashboard', fn() => view('roles.dosen.dashboard', ['activeMenu' => 'dashboard']))->name('dashboard');
+        Route::get('/dashboard', fn() => view('roles.dosen.dashboard', ['activeMenu' => 'Dashboard']))->name('dashboard');
 
         // route index monitoring mahasiswa
         Route::get('/monitoring-mahasiswa', [MonitoringMagangController::class, 'index'])->name('monitoring.mahasiswa');
@@ -208,17 +207,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/bookmark', [MahasiswaDashboardController::class, 'removeBookmark'])->name('mahasiswa.bookmark.remove');
 
         // Log Harian
-
-    Route::prefix('log-harian')->name('log-harian.')->group(function () {
-        Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-        Route::get('/list', [LogAktivitasController::class, 'list'])->name('list'); // Ubah ke GET
-        Route::get('/create', [LogAktivitasController::class, 'create'])->name('create');
-        Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
-        Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
-        Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
-    });
+        Route::prefix('log-harian')->name('log-harian.')->group(function () {
+            Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+            Route::get('/list', [LogAktivitasController::class, 'list'])->name('list'); // Ubah ke GET
+            Route::get('/create', [LogAktivitasController::class, 'create'])->name('create');
+            Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
+            Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
+            Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
+        });
 
 
         // Pengajuan Magang

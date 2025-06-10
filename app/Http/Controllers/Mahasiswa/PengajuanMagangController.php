@@ -24,7 +24,7 @@ class PengajuanMagangController extends Controller
             'title' => 'Daftar Pengajuan Magang'
         ];
 
-        $activeMenu = 'pengajuan-magang';
+        $activeMenu = 'Pengajuan Magang';
 
         $mahasiswa = MahasiswaModel::where('user_id', Auth::id())->first();
         $pengajuan = PengajuanMagangModel::with(['lowongan', 'lowongan.perusahaan'])

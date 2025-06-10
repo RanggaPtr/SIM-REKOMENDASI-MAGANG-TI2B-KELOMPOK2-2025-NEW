@@ -1,6 +1,12 @@
+<style>
+    .active-menu {
+        color: #092C6B !important;
+    }
+</style>
+
 <div class="container-fluid py-2 px-0 d-flex justify-content-between align-items-center text-dark">
     <!-- Kiri: Beranda -->
-    <div class="fs-4 text-secondary"><b>activeMenu</b></div>
+    <div class="fs-4 text-secondary active-menu"><b>{{$activeMenu}}</b></div>
 
     <!-- Kanan: Bell, Profile, dan Edit Profile -->
     <div class="d-flex align-items-center gap-2 me-2">

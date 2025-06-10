@@ -23,7 +23,7 @@ class ProgramStudiController extends Controller
             'title' => 'Daftar program studi yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'program_studi';
+        $activeMenu = 'Manajemen Program Studi';
 
         return view('roles.admin.management-prodi.index', [
             'breadcrumb' => $breadcrumb,

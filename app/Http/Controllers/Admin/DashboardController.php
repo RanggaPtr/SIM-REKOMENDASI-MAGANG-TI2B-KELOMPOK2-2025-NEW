@@ -17,6 +17,8 @@ class DashboardController extends Controller
         $jumlah_mahasiswa = UsersModel::where('role', 'mahasiswa')->count();
         $jumlah_magang = PengajuanMagangModel::where('status', 'diterima')->distinct('mahasiswa_id')->count('mahasiswa_id');
         $jumlah_perusahaan = PerusahaanModel::count();
+        
+        $activeMenu = 'Dashboard';
 
         // Grafik Penyebaran Penerimaan Magang
         $kompetensi = KompetensiModel::all();
@@ -70,7 +72,8 @@ class DashboardController extends Controller
             'total_pending',
             'persen_diterima',
             'persen_ditolak',
-            'persen_pending'
+            'persen_pending',
+            'activeMenu'
         ));
     }
 }

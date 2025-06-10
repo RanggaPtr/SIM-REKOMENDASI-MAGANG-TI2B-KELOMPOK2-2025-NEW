@@ -23,7 +23,7 @@ class PeriodeMagangController extends Controller
             'title' => 'Daftar periode magang yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'periode-magang';
+        $activeMenu = 'Manajemen Periode Magang';
 
         return view('roles.admin.management-periode-magang.index', [
             'breadcrumb' => $breadcrumb,

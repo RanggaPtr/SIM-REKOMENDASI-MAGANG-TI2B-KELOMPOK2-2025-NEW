@@ -54,9 +54,14 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#sertifikatTable').DataTable({
-                // opsi bisa ditambah sesuai kebutuhan, misal paging, searching, dll
-            });
+            // Initialize DataTable only if there are rows
+            if ($('#sertifikatTable tbody tr').length > 1) { // > 1 to exclude the empty row
+                $('#sertifikatTable').DataTable({
+                    "language": {
+                        "emptyTable": "Belum ada sertifikat."
+                    }
+                });
+            }
         });
     </script>
 @endpush

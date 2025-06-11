@@ -15,7 +15,7 @@ class DashboardController extends Controller
         // Card Data
         $jumlah_dosen = UsersModel::where('role', 'dosen')->count();
         $jumlah_mahasiswa = UsersModel::where('role', 'mahasiswa')->count();
-        $jumlah_magang = PengajuanMagangModel::where('status', 'diterima')->distinct('mahasiswa_id')->count('mahasiswa_id');
+        $jumlah_magang = PengajuanMagangModel::where('status', 'selesai')->distinct('pengajuan_id')->count('pengajuan_id');
         $jumlah_perusahaan = PerusahaanModel::count();
         
         $activeMenu = 'Dashboard';
@@ -28,7 +28,7 @@ class DashboardController extends Controller
                 ->join('m_lowongan_magang', 't_pengajuan_magang.lowongan_id', '=', 'm_lowongan_magang.lowongan_id')
                 ->join('m_lowongan_kompetensi', 'm_lowongan_magang.lowongan_id', '=', 'm_lowongan_kompetensi.lowongan_id')
                 ->where('m_lowongan_kompetensi.kompetensi_id', $k->kompetensi_id)
-                ->where('t_pengajuan_magang.status', 'diterima')
+                ->where('t_pengajuan_magang.status', 'selesai')
                 ->count();
             $data_kompetensi_diterima[] = [
                 'nama' => $k->nama,
@@ -51,7 +51,7 @@ class DashboardController extends Controller
         }
 
         $total_pengajuan = PengajuanMagangModel::count();
-        $total_diterima = PengajuanMagangModel::where('status', 'diterima')->count();
+        $total_diterima = PengajuanMagangModel::where('status', 'selesai')->count();
         $total_ditolak = PengajuanMagangModel::where('status', 'ditolak')->count();
         $total_pending = $total_pengajuan - $total_diterima - $total_ditolak;
 

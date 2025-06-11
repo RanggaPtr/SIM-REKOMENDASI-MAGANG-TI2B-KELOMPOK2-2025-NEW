@@ -22,7 +22,7 @@ use App\Models\EvaluasiMagangModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Dosen\DashboardController as DosenDashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -98,7 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/export_excel', [AdminPengajuanMagangController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [AdminPengajuanMagangController::class, 'export_pdf'])->name('export_pdf');
         });
-        
+
         // Manajemen Pengguna
         Route::prefix('management-pengguna')->name('user.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
@@ -171,8 +171,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Dosen Routes
     Route::prefix('dosen')->name('dosen.')->middleware('authorize:dosen')->group(function () {
         // Dashboard dosen
-        Route::get('/dashboard', fn() => view('roles.dosen.dashboard', ['activeMenu' => 'Dashboard']))->name('dashboard');
-
+        Route::get('/dashboard', [DosenDashboardController::class, 'index'])->name('dashboard');
         // route index monitoring mahasiswa
         Route::get('/monitoring-mahasiswa', [MonitoringMagangController::class, 'index'])->name('monitoring.mahasiswa');
 
@@ -206,35 +205,32 @@ Route::group(['middleware' => 'auth'], function () {
         Route::prefix('log-harian')->name('log-harian.')->group(function () {
             // Index - menampilkan halaman utama log harian
             Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-            
+
             // List untuk DataTables AJAX
             Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
-            
+
             // Create - form tambah log baru
             Route::get('/create_ajax', [LogAktivitasController::class, 'create_ajax'])->name('create_ajax');
             Route::post('/store_ajax', [LogAktivitasController::class, 'store_ajax'])->name('store_ajax');
             Route::post('/', [LogAktivitasController::class, 'store'])->name('store'); // Tambahan untuk kompatibilitas
-            
+
             // Show - lihat detail log
             Route::get('/{id}/show_ajax', [LogAktivitasController::class, 'show_ajax'])->name('show_ajax');
-            
+
             // Edit - form edit log
             Route::get('/{id}/edit_ajax', [LogAktivitasController::class, 'edit_ajax'])->name('edit_ajax');
             Route::put('/{id}/update_ajax', [LogAktivitasController::class, 'update_ajax'])->name('update_ajax');
             Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit'); // Tambahan untuk kompatibilitas
             Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update'); // Tambahan untuk kompatibilitas
-            
+
             // Delete - hapus log
             Route::get('/{id}/confirm_ajax', [LogAktivitasController::class, 'confirm_ajax'])->name('confirm_ajax');
             Route::delete('/{id}/delete_ajax', [LogAktivitasController::class, 'delete_ajax'])->name('delete_ajax');
             Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy'); // Tambahan untuk kompatibilitas
-            
+
             // Export (opsional)
             Route::get('/export_excel', [LogAktivitasController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [LogAktivitasController::class, 'export_pdf'])->name('export_pdf');
-
-            Route::get('log-harian/{id}/feedback', [LogAktivitasController::class, 'getFeedback'])->name('feedback');
-
         });
 
         // Pengajuan Magang

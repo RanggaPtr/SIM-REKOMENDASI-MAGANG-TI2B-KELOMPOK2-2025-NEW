@@ -19,7 +19,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $activeMenu = 'dashboard';
+        $activeMenu = 'Dashboard';
 
         $kompetensis = KompetensiModel::all();
         $keahlians = KeahlianModel::all();
@@ -36,10 +36,26 @@ class DashboardController extends Controller
      */
     public function getLowongan(Request $request)
     {
+        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
+
+        // Cek data wajib, misal: program_studi_id, skema_id, periode_id, nim, dll
+        $isIncomplete = !$mahasiswa
+            || !$mahasiswa->program_studi_id
+            || !$mahasiswa->skema_id
+            || !$mahasiswa->periode_id
+            || !$mahasiswa->nim;    
+
+        if ($isIncomplete) {
+            // Return card khusus
+            $card = view('component.card-isi-data-mahasiswa')->render();
+            return response()->json([
+                'lowongans' => $card
+            ]);
+        }
+
         $lowongans = $this->getFilteredLowongan($request);
 
-        $mahasiswa = MahasiswaModel::where('user_id', auth()->id())->first();
-        $bookmarks = $mahasiswa ? $mahasiswa->bookmark()->pluck('lowongan_id')->toArray() : [];
+        $bookmarks = $mahasiswa->bookmark()->pluck('lowongan_id')->toArray();
 
         if ($request->input('only_bookmarked')) {
             $lowongans = $lowongans->whereIn('lowongan_id', $bookmarks);
@@ -54,11 +70,23 @@ class DashboardController extends Controller
             return $lowongan->judul;
         }, SORT_REGULAR, $sort === 'desc')->values();
 
+        $perPage = 15;
+        $page = $request->input('page', 1);
+
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sortedLowongans->forPage($page, $perPage),
+            $sortedLowongans->count(),
+            $perPage,
+            $page,
+            ['path' => url()->current()]
+        );
+
         return response()->json([
             'lowongans' => view('component.intern-cards', [
-                'lowongans' => $sortedLowongans,
+                'lowongans' => $paginator,
                 'bookmarks' => $bookmarks
-            ])->render()
+            ])->render(),
+            'pagination' => $paginator->links('pagination::bootstrap-5')
         ]);
     }
 

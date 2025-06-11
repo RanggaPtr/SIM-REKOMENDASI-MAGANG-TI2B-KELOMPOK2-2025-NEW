@@ -79,6 +79,12 @@
     @endforeach
 </div>
 
+@if ($lowongans instanceof \Illuminate\Pagination\LengthAwarePaginator)
+    <div class="d-flex justify-content-center mt-4">
+        {!! $lowongans->links('pagination::bootstrap-5') !!}
+    </div>
+@endif
+
 @push('scripts')
     <script>
         window.addEventListener("load", function() {

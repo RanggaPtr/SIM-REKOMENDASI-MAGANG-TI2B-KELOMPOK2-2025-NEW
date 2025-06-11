@@ -607,7 +607,7 @@
             fetchLowongans();
         });
 
-        function fetchLowongans() {
+        function fetchLowongans(page = 1) {
             const keyword = document.querySelector('#keywordLowongan').value;
             const kompetensi = Array.from(document.querySelectorAll('input[name="kompetensi"]:checked')).map(cb => cb
                 .value);
@@ -635,6 +635,7 @@
                         tunjangan,
                         rating,
                         sort,
+                        page: page,
                         only_bookmarked: bookmarkViewOn ? 1 : 0
                     })
                 })
@@ -672,31 +673,19 @@
     </script>
     <script>
         document.addEventListener('click', function(e) {
-            // AJAX paginasi untuk review di overlay
             if (e.target.closest('.pagination a')) {
                 const a = e.target.closest('.pagination a');
-                if (a.closest('#detailSlideContent')) {
+                if (a.closest('#internCards')) {
                     e.preventDefault();
                     const url = new URL(a.href);
                     const page = url.searchParams.get('page') || 1;
-                    // Ambil lowongan_id dari hidden input atau JS state
-                    const lowonganId = document.querySelector('#detailSlideContent [name="lowongan_id"]')?.value
-                        || window.currentLowonganId;
-                    fetch('/mahasiswa/getLowonganDetail', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            lowongan_id: lowonganId,
-                            page: page
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('detailSlideContent').innerHTML = data.html;
-                    });
+                    fetchLowongans(page);
+
+                    // Scroll ke atas daftar lowongan
+                    const cards = document.getElementById('internCards');
+                    if (cards) {
+                        cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             }
         });

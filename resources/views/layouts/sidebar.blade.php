@@ -9,7 +9,7 @@
         <!-- Dashboard (Tampil untuk semua role) -->
         <li class="nav-item bg-light-softer">
             <a href="{{ route(strtolower(Auth::user()->role) . '.dashboard') }}"
-                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'dashboard' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
+                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Dashboard' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
                 style="padding: 10px 15px;">
                 <i class="fas fa-tachometer-alt me-4"></i><b>Dashboard</b>
             </a>
@@ -20,7 +20,7 @@
             <!-- Manajemen Magang -->
             <li class="nav-item bg-light-softer">
                 <div
-                    class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'manajemenMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                    class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && ($activeMenu == 'Lowongan Magang' || $activeMenu == 'Pengajuan Magang') ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
                     <i class="fas fa-briefcase me-4"></i><b>Manajemen Magang</b>
                     <i class="fas fa-caret-right ms-auto pe-2"></i>
                 </div>
@@ -36,80 +36,79 @@
                 </ul>
             </li>
 
-        <!-- Manajemen Data -->
-        <li class="nav-item bg-light-softer">
-            <div
-                class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'manajemenData' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
-                <i class="fas fa-database me-4"></i><b>Manajemen Data</b>
-                <i class="fas fa-caret-right ms-auto pe-2"></i>
-            </div>
-            <ul class="nav-submenu ps-5 bg-light-softer">
-                <li>
-                    <a href="{{ route('admin.perusahaan.index') }}"
-                        class="nav-link text-muted bg-light-softer">Mitra</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.user.index') }}"
-                        class="nav-link text-muted bg-light-softer">Pengguna</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.periode.index') }}"
-                        class="nav-link text-muted bg-light-softer">Periode</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.programstudi.index') }}"
-                        class="nav-link text-muted bg-light-softer">Program Studi</a>
-                </li>
-            </ul>
-        </li>
-
+            <!-- Manajemen Data -->
+            <li class="nav-item bg-light-softer">
+                <div
+                    class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && ($activeMenu == 'Manajemen Perusahaan Mitra' || $activeMenu == 'Manajemen Program Studi' || $activeMenu == 'Manajemen Pengguna' || $activeMenu == 'Manajemen Periode Magang') ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                    <i class="fas fa-database me-4"></i><b>Manajemen Data</b>
+                    <i class="fas fa-caret-right ms-auto pe-2"></i>
+                </div>
+                <ul class="nav-submenu ps-5 bg-light-softer">
+                    <li>
+                        <a href="{{ route('admin.perusahaan.index') }}"
+                            class="nav-link text-muted bg-light-softer">Mitra</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.user.index') }}"
+                            class="nav-link text-muted bg-light-softer">Pengguna</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.periode.index') }}"
+                            class="nav-link text-muted bg-light-softer">Periode</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.programstudi.index') }}"
+                            class="nav-link text-muted bg-light-softer">Program Studi</a>
+                    </li>
+                </ul>
+            </li>
         @endif
 
         <!-- Dosen Menu -->
         @if (Auth::user()->role === 'dosen')
-        <li class="nav-item bg-light-softer">
-            <a href="{{ route('dosen.monitoring.mahasiswa') }}"
-                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'monitoringMahasiswa' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
-                <i class="fas fa-clipboard-check me-4"></i><b>Monitoring & Evaluasi </b>
-            </a>
-        </li>
-        <li class="nav-item bg-light-softer">
-            <a href="{{ route('dosen.sertifikat.index') }}"
-                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'monitoringMahasiswa' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
-                <i class="fas fa-upload me-4"></i><b>Upload Sertifikat</b>
-            </a>
-        </li>
+            <li class="nav-item bg-light-softer">
+                <a href="{{ route('dosen.monitoring.mahasiswa') }}"
+                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Monitoring Magang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                    <i class="fas fa-clipboard-check me-4"></i><b>Monitoring & Evaluasi </b>
+                </a>
+            </li>
+            <li class="nav-item bg-light-softer">
+                <a href="{{ route('dosen.sertifikat.index') }}"
+                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Sertifikat' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}">
+                    <i class="fas fa-upload me-4"></i><b>Upload Sertifikat</b>
+                </a>
+            </li>
         @endif
 
         <!-- Mahasiswa Menu -->
         @if (Auth::user()->role === 'mahasiswa')
-        <li class="nav-item bg-light-softer">
-            <a href="{{ Route::has('mahasiswa.pengajuan-magang.index') ? route('mahasiswa.pengajuan-magang.index') : '#' }}"
-                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'pengajuanMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
-                style="padding: 10px 15px;">
-                <i class="fas fa-user me-4"></i><b>Pengajuan Magang</b>
-            </a>
-        </li>
-        <li class="nav-item bg-light-softer">
-            <div class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'aktivitasMagang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
-                style="padding: 10px 15px;">
-                <i class="fas fa-building me-4"></i><b>Aktivitas Magang</b>
-                <i class="fas fa-caret-right ms-auto pe-2"></i>
-            </div>
-            <ul class="nav-submenu ps-5 bg-light-softer">
-                <li>
-                    <a href="{{ route('mahasiswa.log-harian.index') }}"
-                        class="nav-link text-muted bg-light-softer">Log Harian</a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav-item bg-light-softer">
-            <a href="{{ Route::has('mahasiswa.feedback') ? route('mahasiswa.feedback') : '#' }}"
-                class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'sertifikasiFeedback' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
-                style="padding: 10px 15px;">
-                <i class="fas fa-file-alt me-4"></i><b>Feedback</b>
-            </a>
-        </li>
+            <li class="nav-item bg-light-softer">
+                <a href="{{ Route::has('mahasiswa.pengajuan-magang.index') ? route('mahasiswa.pengajuan-magang.index') : '#' }}"
+                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Pengajuan Magang' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
+                    style="padding: 10px 15px;">
+                    <i class="fas fa-user me-4"></i><b>Pengajuan Magang</b>
+                </a>
+            </li>
+            <li class="nav-item bg-light-softer">
+                <div class="nav-link toggle-submenu d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Log Harian' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
+                    style="padding: 10px 15px;">
+                    <i class="fas fa-building me-4"></i><b>Aktivitas Magang</b>
+                    <i class="fas fa-caret-right ms-auto pe-2"></i>
+                </div>
+                <ul class="nav-submenu ps-5 bg-light-softer">
+                    <li>
+                        <a href="{{ route('mahasiswa.log-harian.index') }}"
+                            class="nav-link text-muted bg-light-softer">Log Harian</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item bg-light-softer">
+                <a href="{{ Route::has('mahasiswa.feedback') ? route('mahasiswa.feedback') : '#' }}"
+                    class="nav-link d-flex align-items-center {{ isset($activeMenu) && $activeMenu == 'Feedback' ? 'active bg-primary text-light-softer rounded' : 'text-muted' }}"
+                    style="padding: 10px 15px;">
+                    <i class="fas fa-file-alt me-4"></i><b>Feedback</b>
+                </a>
+            </li>
         @endif
 
         <!-- Logout (Tampil untuk semua role) -->

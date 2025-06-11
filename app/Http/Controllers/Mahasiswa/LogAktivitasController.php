@@ -60,7 +60,7 @@ class LogAktivitasController extends Controller
         $pengajuan = $this->getPengajuanDiterima();
 
         return view('roles.mahasiswa.log-harian.index', [
-            'activeMenu' => 'logHarian',
+            'activeMenu' => 'Log Harian',
             'hasPengajuanDiterima' => $pengajuan !== null,
         ]);
     }

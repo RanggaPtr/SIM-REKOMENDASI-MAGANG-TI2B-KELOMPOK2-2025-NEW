@@ -12,8 +12,32 @@
     <div class="d-flex align-items-center gap-2 me-2">
         <!-- Bell Icon: Only show for mahasiswa -->
         @if (Auth::user()->role === 'mahasiswa')
+        @php
+            // Hitung jumlah notifikasi belum dibaca (atau total notifikasi, jika tidak ada kolom 'read')
+            $notifCount = \App\Models\MahasiswaNotifikasiModel::where('mahasiswa_id', optional(\App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first())->mahasiswa_id)->count();
+        @endphp
         <div style="position: relative;">
-            <i class="fas fa-bell me-5" id="notifBell" style="cursor:pointer;"></i>
+            <i class="fas fa-bell me-5" id="notifBell" style="cursor:pointer; position:relative;">
+                @if($notifCount > 0)
+                    <span id="notifBadge" style="
+                        position: absolute;
+                        top: -6px;
+                        right: -10px;
+                        background: #dc3545;
+                        color: #fff;
+                        border-radius: 50%;
+                        width: 16px;
+                        height: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 11px;
+                        font-weight: bold;
+                        z-index: 10;
+                        border: 2px solid #fff;
+                    ">{{ $notifCount > 9 ? '9+' : $notifCount }}</span>
+                @endif
+            </i>
             <div id="notifDropdown" class="shadow rounded-4"
                 style="display:none; position:absolute; top:40px; right:0; width:320px; z-index:2000;">
                 <div class="p-3 border-bottom fw-bold d-flex justify-content-between align-items-center bg-white rounded-top-4">
@@ -435,7 +459,7 @@
                             icon = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>`;
                         }
                         notifList.innerHTML += `
-                            <div class="p-3 border-bottom bg-white d-flex justify-content-between bg-white align-items-center" data-id="${notif.mhs_notifikasi_id}">
+                            <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center" data-id="${notif.mhs_notifikasi_id}">
                                 <div class="d-flex align-items-center w-100 bg-white">
                                     <span class="d-flex align-items-center justify-content-center mx-2" style="font-size:1.7rem; min-width:2.2rem;">
                                         ${
@@ -464,37 +488,86 @@
             });
     }
 
-    function deleteNotifikasi(id, btn) {
-        btn.disabled = true;
-        fetch(`/profile/notifikasi/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
+    // Fungsi untuk update badge notifikasi
+function updateNotifBadge(count) {
+    let badge = document.getElementById('notifBadge');
+    const bell = document.getElementById('notifBell');
+    if (count > 0) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.id = 'notifBadge';
+            badge.style.position = 'absolute';
+            badge.style.top = '-6px';
+            badge.style.right = '-10px';
+            badge.style.background = '#dc3545';
+            badge.style.color = '#fff';
+            badge.style.borderRadius = '50%';
+            badge.style.width = '16px';
+            badge.style.height = '16px';
+            badge.style.display = 'flex';
+            badge.style.alignItems = 'center';
+            badge.style.justifyContent = 'center';
+            badge.style.fontSize = '11px';
+            badge.style.fontWeight = 'bold';
+            badge.style.zIndex = '10';
+            badge.style.border = '2px solid #fff';
+            bell.appendChild(badge);
+        }
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.style.display = 'flex';
+    } else if (badge) {
+        badge.style.display = 'none';
+    }
+}
+
+// Fungsi untuk fetch jumlah notifikasi
+function fetchNotifCount() {
+    fetch("{{ route('profile.notifikasi.count') }}")
         .then(res => res.json())
         .then(res => {
-            if (res.success) {
-                // Remove the notification from the list
-                const notifDiv = btn.closest('[data-id]');
-                if (notifDiv) notifDiv.remove();
-                // If no more notifications, show empty state
-                if (document.querySelectorAll('#notifList [data-id]').length === 0) {
-                    document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
-                }
-            } else {
-                alert(res.error || 'Gagal menghapus notifikasi.');
-                btn.disabled = false;
-            }
-        })
-        .catch(() => {
-            alert('Gagal menghapus notifikasi.');
-            btn.disabled = false;
+            updateNotifBadge(res.count || 0);
         });
-    }
+}
 
-    document.getElementById('markAllRead').addEventListener('click', function(e) {
+// Panggil setiap 1 menit
+setInterval(fetchNotifCount, 60000);
+// Panggil saat halaman pertama kali load
+fetchNotifCount();
+
+// Update badge setelah hapus notifikasi
+function deleteNotifikasi(id, btn) {
+    btn.disabled = true;
+    fetch(`/profile/notifikasi/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.success) {
+            // Remove the notification from the list
+            const notifDiv = btn.closest('[data-id]');
+            if (notifDiv) notifDiv.remove();
+            // If no more notifications, show empty state
+            if (document.querySelectorAll('#notifList [data-id]').length === 0) {
+                document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+            }
+            fetchNotifCount(); // <-- update badge
+        } else {
+            alert(res.error || 'Gagal menghapus notifikasi.');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        alert('Gagal menghapus notifikasi.');
+        btn.disabled = false;
+    });
+}
+
+// Update badge setelah hapus semua notifikasi
+document.getElementById('markAllRead').addEventListener('click', function(e) {
     e.preventDefault();
     fetch("{{ route('profile.notifikasi.deleteAll') }}", {
         method: 'DELETE',
@@ -507,6 +580,7 @@
     .then(res => {
         if (res.success) {
             document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+            fetchNotifCount(); // <-- update badge
         } else {
             alert(res.error || 'Gagal menghapus semua notifikasi.');
         }
@@ -592,36 +666,6 @@
             .catch(() => {
                 notifList.innerHTML = `<div class="text-center py-3 text-danger">Gagal memuat notifikasi.</div>`;
             });
-    }
-
-    function deleteNotifikasi(id, btn) {
-        btn.disabled = true;
-        fetch(`/profile/notifikasi/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.success) {
-                // Remove the notification from the list
-                const notifDiv = btn.closest('[data-id]');
-                if (notifDiv) notifDiv.remove();
-                // If no more notifications, show empty state
-                if (document.querySelectorAll('#notifList [data-id]').length === 0) {
-                    document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
-                }
-            } else {
-                alert(res.error || 'Gagal menghapus notifikasi.');
-                btn.disabled = false;
-            }
-        })
-        .catch(() => {
-            alert('Gagal menghapus notifikasi.');
-            btn.disabled = false;
-        });
     }
 
     // Format date (simple, you can improve as needed)

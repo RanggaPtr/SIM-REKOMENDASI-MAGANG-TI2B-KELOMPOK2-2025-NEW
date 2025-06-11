@@ -6,11 +6,11 @@
     <div class="card shadow-lg mb-4 border-0 overflow-hidden" style="border-left: 5px solid #FFC107;">
         <div class="card-header bg-gradient-warning text-white d-flex align-items-center position-relative">
             <div class="header-overlay"></div>
-            <div class="d-flex align-items-center w-100 position-relative z-index-2">
+            <div class="d-flex align-items-center w-100 position-relative z-index-2 bg-transparent">
                 <div class="header-icon me-3" style="background-color: rgba(255,193,7,0.3);">
                     <i class="fas fa-user-graduate fs-4 text-white"></i>
                 </div>
-                <h4 class="mb-0 fw-bold">Detail Mahasiswa</h4>
+                <h4 class="mb-0 fw-bold bg-transparent">Detail Mahasiswa</h4>
                 <a href="{{ route('dosen.monitoring.mahasiswa') }}" class="btn btn-light btn-sm ms-auto rounded-pill shadow-sm hover-lift" style="background-color: white; color: #FFC107;">
                     <i class="fas fa-arrow-left me-1"></i> Kembali
                 </a>

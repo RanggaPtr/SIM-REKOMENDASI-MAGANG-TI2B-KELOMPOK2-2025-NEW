@@ -17,7 +17,7 @@
                         <li>Pastikan format file adalah .xlsx</li>
                         <li>Maksimal ukuran file: 1MB</li>
                     </ol>
-                    <a href="#" class="btn btn-sm btn-outline-primary">Download Template</a>
+                  <a href="{{ asset('template_periode.xlsx') }}" class="btn btn-sm btn-outline-primary" download>Download Template</a>
                 </div>
 
                 <div class="form-group mb-3">

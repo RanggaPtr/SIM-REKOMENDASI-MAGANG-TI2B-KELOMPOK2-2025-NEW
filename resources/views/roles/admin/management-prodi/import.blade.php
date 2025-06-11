@@ -16,7 +16,7 @@
                         <li>Pastikan format file adalah .xlsx</li>
                         <li>Maksimal ukuran file: 1MB</li>
                     </ol>
-                    <a href="{{ asset('template/template_import_program_studi.xlsx') }}"
+                    <a href="{{ asset('template_program_studi.xlsx') }}"
                         class="btn btn-sm btn-outline-primary">Download Template</a>
                 </div>
 

@@ -1,25 +1,35 @@
-<div class="modal-header">
-    <h5 class="modal-title" id="logModalLabel">{{ $isEdit ?? false ? 'Edit' : 'Tambah' }} Log Aktivitas</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+<div class="container px-3">
+    <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-gradient bg-primary text-black rounded-top-4">
+            <h5 class="mb-0 py-2">Catatan Log Harian</h5>
+        </div>
+        <div class="card-body p-4">
+            <form id="formLog" method="POST">
+                <input type="hidden" name="pengajuan_id" value="{{ $pengajuan_id }}">
 
-<form id="formLog" method="POST">
-    <div class="modal-body">
-        @csrf
-        <div class="form-group mb-3">
-            <label for="aktivitas" class="form-label">Aktivitas <span class="text-danger">*</span></label>
-            <textarea name="aktivitas" id="aktivitas" class="form-control" rows="5" 
-                      placeholder="Masukkan aktivitas yang dilakukan hari ini..." 
-                      required maxlength="1000">{{ $aktivitas ?? '' }}</textarea>
-            <small class="form-text text-muted">Maksimal 1000 karakter</small>
-            <div class="invalid-feedback" id="aktivitas-error"></div>
+                <div class="mb-4">
+                    <label for="aktivitas" class="form-label fw-bold text-secondary">Aktivitas</label>
+                    <textarea 
+                        class="form-control border border-2 rounded-3 shadow-sm p-3 {{ $errors->has('aktivitas') ? 'is-invalid' : '' }}" 
+                        id="aktivitas" 
+                        name="aktivitas" 
+                        rows="6"
+                        placeholder="Ceritakan aktivitas yang kamu lakukan hari ini..."
+                    >{{ $aktivitas ?? '' }}</textarea>
+                    <div id="aktivitas-error" class="invalid-feedback">
+                        {{ $errors->first('aktivitas') }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-secondary me-2 rounded-pill px-4" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        Simpan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> Simpan
-        </button>
-    </div>
-</form>
+</div>

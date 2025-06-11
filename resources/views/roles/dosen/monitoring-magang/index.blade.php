@@ -3,14 +3,6 @@
 @section('content')
 <h3>Daftar Mahasiswa Bimbingan</h3>
 
-<!-- Card Jumlah Bimbingan (Disesuaikan Pewarnaan)
-<div class="card mb-3" style="max-width: 18rem; background: linear-gradient(135deg, #ADD8E6, #B0E0E6); border: 1px solid #ADD8E6; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-    <div class="card-body">
-        <p class="card-text" style="color: #333333; font-size: 1.5rem; font-weight: bold;">{{ $dosen->jumlah_bimbingan ?? $pengajuan->count() }}</p>
-        <p class="card-text" style="color: #4A4A4A;">Mahasiswa Dibimbing</p>
-    </div>
-</div> -->
-
 <form method="GET" class="mb-4">
     <div class="row">
         <div class="col-md-3">

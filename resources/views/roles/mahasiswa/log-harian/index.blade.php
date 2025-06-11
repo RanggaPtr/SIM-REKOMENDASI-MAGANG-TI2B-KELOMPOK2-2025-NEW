@@ -85,33 +85,44 @@
 <!-- Modal untuk menampilkan feedback -->
 <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="feedbackModalLabel">Feedback dari Dosen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-black">
+                <h5 class="modal-title" id="feedbackModalLabel">
+                    <i class="fas fa-comment-alt me-2"></i>Feedback dari Dosen Pembimbing
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Aktivitas:</label>
-                    <div class="p-2 bg-light rounded">
-                        <p id="feedbackAktivitas" class="mb-0"></p>
+            <div class="modal-body p-4">
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted">
+                        <i class="fas fa-tasks me-1"></i>Aktivitas
+                    </label>
+                    <div class="p-3 bg-light rounded-3 border shadow-sm">
+                        <p id="feedbackAktivitas" class="mb-0 text-dark"></p>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Feedback:</label>
-                    <div class="p-2 bg-light rounded">
-                        <p id="feedbackContent" class="mb-0"></p>
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted">
+                        <i class="fas fa-comment-dots me-1"></i>Feedback
+                    </label>
+                    <div class="p-3 bg-light rounded-3 border shadow-sm">
+                        <p id="feedbackContent" class="mb-0 text-dark"></p>
+                        <span id="noFeedbackBadge" class="badge bg-warning text-dark mt-2 d-none">Belum ada feedback</span>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tanggal Feedback:</label>
-                    <div class="p-2 bg-light rounded">
-                        <p id="feedbackDate" class="mb-0"></p>
+                <div class="mb-0">
+                    <label class="form-label fw-bold text-muted">
+                        <i class="fas fa-calendar-alt me-1"></i>Tanggal Feedback
+                    </label>
+                    <div class="p-3 bg-light rounded-3 border shadow-sm">
+                        <p id="feedbackDate" class="mb-0 text-dark"></p>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Tutup
+                </button>
             </div>
         </div>
     </div>
@@ -134,6 +145,54 @@
 @push('css')
     <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet">
+    <style>
+        .modal-content {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .modal-header.bg-primary {
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+        
+        .modal-body {
+            background: #f8f9fa;
+        }
+        
+        .modal-footer.bg-light {
+            border-top: none;
+            padding: 1rem 1.5rem;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s ease;
+        }
+        
+        .form-label:hover {
+            color: #007bff !important;
+        }
+        
+        .bg-light.rounded-3 {
+            transition: all 0.3s ease;
+        }
+        
+        .bg-light.rounded-3:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        }
+        
+        .btn-close-white {
+            filter: invert(1);
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5em 0.8em;
+        }
+    </style>
 @endpush
 
 @push('scripts')
@@ -142,15 +201,14 @@
     <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
 <script>
 $(document).ready(function () {
     console.log('Document ready, hasPengajuanDiterima: {{ $hasPengajuanDiterima ? 'true' : 'false' }}');
     
-    // Global variable untuk table
     var table;
     
-    // Hanya inisialisasi DataTable jika ada pengajuan yang diterima
     @if ($hasPengajuanDiterima)
     table = $('#logTable').DataTable({
         processing: true,
@@ -163,7 +221,6 @@ $(document).ready(function () {
             },
             error: function(xhr, error, thrown) {
                 console.error('DataTable Ajax Error:', xhr.responseText);
-                
                 Swal.fire({
                     title: 'Error!',
                     text: 'Terjadi kesalahan saat memuat data: ' + (xhr.responseJSON?.message || 'Error tidak diketahui'),
@@ -200,8 +257,7 @@ $(document).ready(function () {
                 searchable: false,
                 className: 'text-center',
                 render: function(data, type, row) {
-                    // Cek apakah ada feedback dari dosen
-                    if (row.feedback && row.feedback.trim() !== '') {
+                    if (row.feedback && row.feedback !== 'Belum ada feedback dari dosen pembimbing') {
                         return '<button class="btn btn-sm btn-info btn-feedback" data-id="' + row.log_id + '" title="Lihat Feedback">' +
                                '<i class="fas fa-comment"></i> Lihat Feedback</button>';
                     } else {
@@ -219,26 +275,13 @@ $(document).ready(function () {
     });
     @endif
 
-    // Function untuk modal action (mengikuti pola pengajuan-magang)
-    function modalAction(url = '') {
-        $('#myModal').load(url, function() {
-            var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
-                keyboard: false,
-                backdrop: 'static'
-            });
-            myModal.show();
-        });
-    }
-
-    // Event handler untuk tombol tambah log
-    $(document).on('click', '#btnTambahLog', function(e) {
+    $(document).on('click', '#btnTambahLog', _.debounce(function(e) {
         e.preventDefault();
         console.log('Tombol Tambah Log diklik');
         
         var $btn = $(this);
         var originalText = $btn.html();
         
-        // Show loading state
         $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
         
         $.ajax({
@@ -256,8 +299,6 @@ $(document).ready(function () {
                 if (response.success) {
                     $('#modalContent').html(response.data.form_html);
                     $('#logModal').modal('show');
-                    
-                    // Setup form submit handler setelah modal terbuka
                     setupFormHandler(false);
                 } else {
                     console.error('Response error:', response.message);
@@ -296,13 +337,11 @@ $(document).ready(function () {
                 });
             },
             complete: function() {
-                // Reset button state
                 $btn.prop('disabled', false).html(originalText);
             }
         });
-    });
+    }, 300));
 
-    // Delegasi event untuk tombol edit
     @if ($hasPengajuanDiterima)
     $('#logTable').on('click', '.btn-edit', function (e) {
         e.preventDefault();
@@ -311,11 +350,10 @@ $(document).ready(function () {
         var $btn = $(this);
         var originalText = $btn.html();
         
-        // Show loading state
         $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
         
         $.ajax({
-            url: `/mahasiswa/log-harian/${id}/edit_ajax`,
+            url: "{{ route('mahasiswa.log-harian.edit_ajax', ':id') }}".replace(':id', id),
             type: 'GET',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -324,8 +362,6 @@ $(document).ready(function () {
                 if (res.success) {
                     $('#modalContent').html(res.data.form_html);
                     $('#logModal').modal('show');
-                    
-                    // Setup form submit handler untuk edit
                     setupFormHandler(true, id);
                 } else {
                     Swal.fire({
@@ -346,13 +382,11 @@ $(document).ready(function () {
                 });
             },
             complete: function() {
-                // Reset button state
                 $btn.prop('disabled', false).html(originalText);
             }
         });
     });
 
-    // Delegasi event untuk tombol hapus
     $('#logTable').on('click', '.btn-delete', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
@@ -371,11 +405,10 @@ $(document).ready(function () {
                 var $btn = $(this);
                 var originalText = $btn.html();
                 
-                // Show loading state
                 $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
                 
                 $.ajax({
-                    url: `/mahasiswa/log-harian/${id}`,
+                    url: "{{ route('mahasiswa.log-harian.destroy', ':id') }}".replace(':id', id),
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -389,11 +422,7 @@ $(document).ready(function () {
                                 confirmButtonColor: '#3085d6',
                                 timer: 3000
                             });
-                            
-                            // Reload table
-                            if (typeof table !== 'undefined') {
-                                table.ajax.reload(null, false);
-                            }
+                            table.ajax.reload(null, false);
                         } else {
                             Swal.fire({
                                 title: 'Error!',
@@ -406,7 +435,6 @@ $(document).ready(function () {
                     error: function (xhr) {
                         console.error('Error:', xhr.responseText);
                         let message = xhr.responseJSON?.message || 'Gagal menghapus log aktivitas';
-                        
                         Swal.fire({
                             title: 'Error!',
                             text: message,
@@ -415,7 +443,6 @@ $(document).ready(function () {
                         });
                     },
                     complete: function() {
-                        // Reset button state
                         $btn.prop('disabled', false).html(originalText);
                     }
                 });
@@ -423,7 +450,6 @@ $(document).ready(function () {
         });
     });
 
-    // Delegasi event untuk tombol feedback
     $('#logTable').on('click', '.btn-feedback', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
@@ -431,11 +457,10 @@ $(document).ready(function () {
         var $btn = $(this);
         var originalText = $btn.html();
         
-        // Show loading state
         $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
         
         $.ajax({
-            url: `/mahasiswa/log-harian/${id}/feedback`,
+            url: "{{ route('mahasiswa.log-harian.feedback', ':id') }}".replace(':id', id),
             type: 'GET',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -446,15 +471,15 @@ $(document).ready(function () {
             success: function (res) {
                 console.log('Response feedback:', res);
                 if (res.success && res.data) {
-                    // Isi modal dengan data feedback
                     $('#feedbackAktivitas').text(res.data.aktivitas || 'Tidak ada aktivitas');
                     $('#feedbackContent').text(res.data.feedback || 'Tidak ada feedback');
                     $('#feedbackDate').text(res.data.feedback_created_at || 'Tidak diketahui');
+                    $('#noFeedbackBadge').toggleClass('d-none', res.data.feedback && res.data.feedback !== 'Tidak ada feedback');
                     $('#feedbackModal').modal('show');
                 } else {
                     Swal.fire({
                         title: 'Informasi',
-                        text: res.message || 'Belum ada feedback dari dosen',
+                        text: res.message || 'Belum ada feedback dari dosen pembimbing',
                         icon: 'info',
                         confirmButtonColor: '#3085d6'
                     });
@@ -462,8 +487,7 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 console.error('Error:', xhr.responseText);
-                let message = xhr.responseJSON?.message || 'Gagal memuat feedback dari dosen';
-                
+                let message = xhr.responseJSON?.message || 'Gagal memuat feedback dari dosen pembimbing';
                 Swal.fire({
                     title: 'Error',
                     text: message,
@@ -472,18 +496,15 @@ $(document).ready(function () {
                 });
             },
             complete: function() {
-                // Reset button state
                 $btn.prop('disabled', false).html(originalText);
             }
         });
     });
     @endif
 
-    // Function untuk setup form handler
     function setupFormHandler(isEdit = false, logId = null) {
         console.log('Setting up form handler, isEdit:', isEdit, 'logId:', logId);
         
-        // Wait for modal to be fully shown
         $('#logModal').off('shown.bs.modal').on('shown.bs.modal', function() {
             console.log('Modal fully shown, setting up form handler');
             
@@ -495,10 +516,8 @@ $(document).ready(function () {
             
             console.log('Form ditemukan:', form);
             
-            // Remove existing handlers to prevent multiple bindings
             form.off('submit.logHandler');
             
-            // Add new submit handler
             form.on('submit.logHandler', function(e) {
                 e.preventDefault();
                 console.log('Form submitted');
@@ -506,13 +525,11 @@ $(document).ready(function () {
                 let submitBtn = form.find('button[type="submit"]');
                 let originalText = submitBtn.html();
                 
-                // Disable submit button
                 submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
                 
                 let formData = new FormData(this);
-                let url = isEdit ? `/mahasiswa/log-harian/${logId}` : "{{ route('mahasiswa.log-harian.store') }}";
+                let url = isEdit ? "{{ route('mahasiswa.log-harian.update', ':id') }}".replace(':id', logId) : "{{ route('mahasiswa.log-harian.store') }}";
                 
-                // Add method override for PUT
                 if (isEdit) {
                     formData.append('_method', 'PUT');
                 }
@@ -531,7 +548,6 @@ $(document).ready(function () {
                     },
                     beforeSend: function() {
                         console.log('Sending form data...');
-                        // Clear previous validation errors
                         $('.is-invalid').removeClass('is-invalid');
                         $('.invalid-feedback').text('');
                     },
@@ -540,8 +556,6 @@ $(document).ready(function () {
                         
                         if (response.success) {
                             $('#logModal').modal('hide');
-                            
-                            // Show success message
                             Swal.fire({
                                 title: 'Berhasil!',
                                 text: response.message,
@@ -550,8 +564,6 @@ $(document).ready(function () {
                                 timer: 3000,
                                 timerProgressBar: true
                             });
-                            
-                            // Reload table
                             @if ($hasPengajuanDiterima)
                             if (typeof table !== 'undefined') {
                                 table.ajax.reload(null, false);
@@ -576,7 +588,6 @@ $(document).ready(function () {
                         let errors = xhr.responseJSON?.errors;
                         
                         if (errors) {
-                            // Show validation errors
                             Object.keys(errors).forEach(function(key) {
                                 let field = form.find(`[name="${key}"]`);
                                 let errorDiv = form.find(`#${key}-error`);
@@ -585,7 +596,6 @@ $(document).ready(function () {
                                 errorDiv.text(errors[key].join(', '));
                             });
                             
-                            // Also show in alert
                             let errorMessages = [];
                             Object.keys(errors).forEach(function(key) {
                                 errorMessages.push(errors[key].join(', '));
@@ -607,7 +617,6 @@ $(document).ready(function () {
                         }
                     },
                     complete: function() {
-                        // Re-enable submit button
                         submitBtn.prop('disabled', false).html(originalText);
                     }
                 });
@@ -615,27 +624,24 @@ $(document).ready(function () {
         });
     }
 
-    // Clear modal when hidden
     $('#logModal').on('hidden.bs.modal', function () {
         $('#modalContent').empty();
-        $(this).off('shown.bs.modal'); // Remove event handler
+        $(this).off('shown.bs.modal');
     });
 
-    // Clear feedback modal when hidden
     $('#feedbackModal').on('hidden.bs.modal', function () {
         $('#feedbackAktivitas').text('');
         $('#feedbackContent').text('');
         $('#feedbackDate').text('');
+        $('#noFeedbackBadge').addClass('d-none');
     });
 
-    // Debug toggle (jika dalam mode debug)
     @if(config('app.debug'))
     $(document).on('dblclick', '.card-title', function() {
         $('#debugInfo').toggle();
     });
     @endif
 
-    // Initialize tooltips
     $('[title]').tooltip();
 });
 </script>

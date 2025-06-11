@@ -40,10 +40,10 @@ class MonitoringMagangController extends Controller
             // Sorting berdasarkan nama mahasiswa dari relasi
             $sort = $request->query('sort', 'nama');
             $order = $request->query('order', 'asc');
-            
+
             $query->join('m_mahasiswa', 't_pengajuan_magang.mahasiswa_id', '=', 'm_mahasiswa.mahasiswa_id')
-                  ->orderBy('m_mahasiswa.nim', $order)
-                  ->select('t_pengajuan_magang.*');
+                ->orderBy('m_mahasiswa.nim', $order)
+                ->select('t_pengajuan_magang.*');
 
             $pengajuan = $query->paginate(10);
             $periodeMagang = PeriodeMagangModel::all();
@@ -62,7 +62,6 @@ class MonitoringMagangController extends Controller
             }
 
             return view('roles.dosen.monitoring-magang.index', compact('pengajuan', 'periodeMagang', 'dosen', 'activeMenu'));
-            
         } catch (\Exception $e) {
             Log::error('Error in MonitoringMagangController@index: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat memuat data monitoring magang.');
@@ -73,7 +72,7 @@ class MonitoringMagangController extends Controller
     {
         try {
             $dosenId = Auth::user()->dosen->dosen_id;
-            
+
             // Ambil data pengajuan
             $pengajuan = PengajuanMagangModel::with([
                 'mahasiswa.user',
@@ -101,7 +100,6 @@ class MonitoringMagangController extends Controller
             }
 
             return view('roles.dosen.monitoring-magang.show', compact('pengajuan', 'logs'));
-            
         } catch (\Exception $e) {
             Log::error('Error in MonitoringMagangController@show: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat memuat detail monitoring magang.');
@@ -112,8 +110,7 @@ class MonitoringMagangController extends Controller
     {
         try {
             $dosenId = Auth::user()->dosen->dosen_id;
-            
-            // Cari log aktivitas
+
             $log = LogAktivitasModel::where('log_id', $logId)
                 ->whereHas('pengajuan', function ($query) use ($dosenId) {
                     $query->where('dosen_id', $dosenId)
@@ -124,20 +121,17 @@ class MonitoringMagangController extends Controller
                 return back()->with('error', 'Log aktivitas tidak ditemukan.');
             }
 
-            // Cek apakah feedback sudah ada
             $existingFeedback = FeedbackLogAktivitasModel::where('log_aktivitas_id', $log->log_id)->exists();
 
             if ($existingFeedback) {
                 return back()->with('error', 'Feedback sudah diberikan untuk log ini.');
             }
 
-            // Validasi input
             $request->validate([
                 'komentar' => 'required|string|max:1000',
                 'nilai' => 'nullable|integer|min:0|max:100',
             ]);
 
-            // Buat feedback baru
             $feedback = FeedbackLogAktivitasModel::create([
                 'log_aktivitas_id' => $log->log_id,
                 'dosen_id' => $dosenId,
@@ -147,18 +141,7 @@ class MonitoringMagangController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // Kirim notifikasi ke mahasiswa
-            try {
-                $mahasiswa = $log->pengajuan->mahasiswa->user ?? null;
-                if ($mahasiswa) {
-                    Notification::send($mahasiswa, new FeedbackGiven($feedback));
-                }
-            } catch (\Exception $e) {
-                Log::warning('Failed to send notification: ' . $e->getMessage());
-            }
-
             return back()->with('success', 'Feedback berhasil ditambahkan.');
-            
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
@@ -188,13 +171,13 @@ class MonitoringMagangController extends Controller
         if (app()->environment('local')) {
             $logTable = $this->getTableStructure('t_log_aktivitas');
             $feedbackTable = $this->getTableStructure('feedback_log_aktivitas');
-            
+
             return response()->json([
                 'log_aktivitas_structure' => $logTable,
                 'feedback_structure' => $feedbackTable
             ]);
         }
-        
+
         abort(404);
     }
 }

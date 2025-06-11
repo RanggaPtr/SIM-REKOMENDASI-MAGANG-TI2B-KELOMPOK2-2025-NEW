@@ -273,5 +273,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/profile/notifikasi', [\App\Http\Controllers\ProfileController::class, 'getMahasiswaNotifikasi'])->name('profile.notifikasi');
         Route::delete('/profile/notifikasi/{id}', [\App\Http\Controllers\ProfileController::class, 'deleteMahasiswaNotifikasi'])->name('profile.notifikasi.delete');
         Route::delete('/profile/notifikasi/all', [ProfileController::class, 'deleteAllMahasiswaNotifikasi'])->name('profile.notifikasi.deleteAll');
+        Route::get('/profile/notifikasi/count', [\App\Http\Controllers\ProfileController::class, 'countMahasiswaNotifikasi'])->name('profile.notifikasi.count');
     });
 });

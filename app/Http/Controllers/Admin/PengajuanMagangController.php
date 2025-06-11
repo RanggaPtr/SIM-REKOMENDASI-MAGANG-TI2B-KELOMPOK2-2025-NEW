@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanMagangModel;
 use App\Models\DosenModel;
 use App\Models\KompetensiModel;
+use App\Models\MahasiswaNotifikasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -95,66 +96,81 @@ class PengajuanMagangController extends Controller
     }
 
     public function update_ajax(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:diajukan,diterima,ditolak,selesai',
-        'dosen_id' => 'nullable|exists:m_dosen,dosen_id',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        $pengajuan = PengajuanMagangModel::findOrFail($id);
-        $oldDosenId = $pengajuan->dosen_id;
-
-        $pengajuan->status = $request->status;
-
-        if ($request->dosen_id) {
-            $pengajuan->dosen_id = $request->dosen_id;
-            $dosen = DosenModel::find($request->dosen_id);
-            if ($dosen) {
-                $dosen->jumlah_bimbingan += 1;
-                $dosen->save();
-            }
-            if ($oldDosenId && $oldDosenId != $request->dosen_id) {
-                $oldDosen = DosenModel::find($oldDosenId);
-                if ($oldDosen && $oldDosen->jumlah_bimbingan > 0) {
-                    $oldDosen->jumlah_bimbingan -= 1;
-                    $oldDosen->save();
-                }
-            }
-        } elseif ($request->status === 'selesai' && $pengajuan->dosen_id) {
-            $dosen = DosenModel::find($pengajuan->dosen_id);
-            if ($dosen && $dosen->jumlah_bimbingan > 0) {
-                $dosen->jumlah_bimbingan -= 1;
-                $dosen->save();
-            }
-            $pengajuan->dosen_id = null;
-        }
-
-        $pengajuan->save();
-
-        if ($request->status === 'diterima') {
-            PengajuanMagangModel::where('mahasiswa_id', $pengajuan->mahasiswa_id)
-                ->where('pengajuan_id', '!=', $pengajuan->pengajuan_id)
-                ->whereIn('status', ['diajukan', 'diterima'])
-                ->update(['status' => 'ditolak']);
-        }
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pengajuan berhasil diperbarui'
+    {
+        $request->validate([
+            'status' => 'required|in:diajukan,diterima,ditolak,selesai',
+            'dosen_id' => 'nullable|exists:m_dosen,dosen_id',
         ]);
-    } catch (\Exception $e) {
-        DB::rollBack();
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
+        DB::beginTransaction();
+        try {
+            $pengajuan = PengajuanMagangModel::findOrFail($id);
+            $oldDosenId = $pengajuan->dosen_id;
+
+            $pengajuan->status = $request->status;
+
+            if ($request->dosen_id) {
+                $pengajuan->dosen_id = $request->dosen_id;
+                $dosen = DosenModel::find($request->dosen_id);
+                if ($dosen) {
+                    $dosen->jumlah_bimbingan += 1;
+                    $dosen->save();
+                }
+                if ($oldDosenId && $oldDosenId != $request->dosen_id) {
+                    $oldDosen = DosenModel::find($oldDosenId);
+                    if ($oldDosen && $oldDosen->jumlah_bimbingan > 0) {
+                        $oldDosen->jumlah_bimbingan -= 1;
+                        $oldDosen->save();
+                    }
+                }
+            } elseif ($request->status === 'selesai' && $pengajuan->dosen_id) {
+                $dosen = DosenModel::find($pengajuan->dosen_id);
+                if ($dosen && $dosen->jumlah_bimbingan > 0) {
+                    $dosen->jumlah_bimbingan -= 1;
+                    $dosen->save();
+                }
+                $pengajuan->dosen_id = null;
+            }
+
+            $pengajuan->save();
+
+            // Tambahkan notifikasi jika diterima atau ditolak
+            if (in_array($request->status, ['diterima', 'ditolak'])) {
+                $judulLowongan = $pengajuan->lowongan && $pengajuan->lowongan->judul
+                    ? $pengajuan->lowongan->judul
+                    : '(Lowongan tidak ditemukan)';
+                $deskripsi = $request->status === 'diterima'
+                    ? 'Selamat! Pengajuan terhadap "' . $judulLowongan . '" telah diterima.'
+                    : 'Pengajuan terhadap "' . $judulLowongan . '" Anda ditolak.';
+                MahasiswaNotifikasiModel::create([
+                    'mahasiswa_id' => $pengajuan->mahasiswa_id,
+                    'status' => $request->status,
+                    'deskripsi' => $deskripsi,
+                ]);
+            }
+
+            if ($request->status === 'diterima') {
+                PengajuanMagangModel::where('mahasiswa_id', $pengajuan->mahasiswa_id)
+                    ->where('pengajuan_id', '!=', $pengajuan->pengajuan_id)
+                    ->whereIn('status', ['diajukan', 'diterima'])
+                    ->update(['status' => 'ditolak']);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
     public function confirm_ajax($id)
     {
         $pengajuan = PengajuanMagangModel::findOrFail($id);

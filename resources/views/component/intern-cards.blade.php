@@ -32,7 +32,7 @@
                         <div class="text-dark bg-transparent">{{ $lowongan->perusahaan->nama ?? '-' }}</div>
                         <h5 class="card-title bg-transparent fw-bold fs-4" style="margin-bottom:0rem">
                             {{ $lowongan->judul }}</h5>
-                        <h9 class="mb-auto bg-transparent" style="font-size: 0.8rem">
+                        <h9 class="mb-auto bg-transparent" style="font-size: 0.9rem">
                             <i class="fa-solid fa-star text-warning bg-transparent"></i>
                             {{ number_format(($lowongan->perusahaan->calculated_rating ?? 0), 1) }}
                         </h9>

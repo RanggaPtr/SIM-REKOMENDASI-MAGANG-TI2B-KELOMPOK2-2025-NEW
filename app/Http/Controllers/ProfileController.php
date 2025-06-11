@@ -319,4 +319,21 @@ class ProfileController extends Controller
         \App\Models\MahasiswaNotifikasiModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)->delete();
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Hitung notifikasi mahasiswa (AJAX)
+     */
+    public function countMahasiswaNotifikasi()
+    {
+        $user = Auth::user();
+        if ($user->role !== 'mahasiswa') {
+            return response()->json(['count' => 0]);
+        }
+        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', $user->user_id)->first();
+        $count = 0;
+        if ($mahasiswa) {
+            $count = \App\Models\MahasiswaNotifikasiModel::where('mahasiswa_id', $mahasiswa->mahasiswa_id)->count();
+        }
+        return response()->json(['count' => $count]);
+    }
 }

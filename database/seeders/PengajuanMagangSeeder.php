@@ -34,7 +34,7 @@ class PengajuanMagangSeeder extends Seeder
 
         for ($i = 1; $i <= 51; $i++) {
             PengajuanMagangModel::create([
-                'mahasiswa_id' => 2,
+                'mahasiswa_id' => mt_rand(9, 10),
                 'lowongan_id' => $i,
                 'status' => 'selesai',
                 'dosen_id' => 1234567890,
@@ -42,7 +42,7 @@ class PengajuanMagangSeeder extends Seeder
                 'feedback_deskripsi' => 'Selama magang di sini, saya banyak belajar tentang alur kerja profesional dan bagaimana berkolaborasi dalam tim. Mentor sangat suportif dan terbuka terhadap pertanyaan, jadi saya merasa nyaman untuk terus belajar. Meskipun awalnya cukup menantang, tapi lingkungan kerjanya sangat membantu saya berkembang. Terima kasih atas kesempatan dan bimbingannya.',
             ]);
             PengajuanMagangModel::create([
-                'mahasiswa_id' => 1,
+                'mahasiswa_id' => mt_rand(9, 10),
                 'lowongan_id' => $i,
                 'status' => 'selesai',
                 'dosen_id' => 1234567891,

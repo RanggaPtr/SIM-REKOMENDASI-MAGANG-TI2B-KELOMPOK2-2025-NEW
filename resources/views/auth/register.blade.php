@@ -10,7 +10,6 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-       <style>
         body {
             background-color: #f9f6eb;
         }
@@ -173,6 +172,29 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <!-- Field khusus untuk Mahasiswa -->
+                <div id="mahasiswa-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="nim">NIM</label>
+                        <input type="text" class="form-control @error('nim') is-invalid @enderror" id="nim" name="nim" value="{{ old('nim') }}" placeholder="Masukkan NIM">
+                        @error('nim')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Field khusus untuk Dosen -->
+                <div id="dosen-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="nik">NIK</label>
+                        <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik') }}" placeholder="Masukkan NIK">
+                        @error('nik')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100">Daftar</button>
                 <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
             </form>
@@ -181,25 +203,91 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Script untuk menampilkan/menyembunyikan field berdasarkan role
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role');
+            const mahasiswaFields = document.getElementById('mahasiswa-fields');
+            const dosenFields = document.getElementById('dosen-fields');
+            const nimInput = document.getElementById('nim');
+            const nikInput = document.getElementById('nik');
+
+            function toggleFields() {
+                const selectedRole = roleSelect.value;
+                
+                // Sembunyikan semua field khusus
+                mahasiswaFields.style.display = 'none';
+                dosenFields.style.display = 'none';
+                
+                // Hapus required attribute dari semua field
+                nimInput.removeAttribute('required');
+                nikInput.removeAttribute('required');
+
+                // Tampilkan field sesuai role dan tambahkan required
+                if (selectedRole === 'mahasiswa') {
+                    mahasiswaFields.style.display = 'block';
+                    nimInput.setAttribute('required', 'required');
+                } else if (selectedRole === 'dosen') {
+                    dosenFields.style.display = 'block';
+                    nikInput.setAttribute('required', 'required');
+                }
+            }
+
+            roleSelect.addEventListener('change', toggleFields);
+
+            // Trigger pada page load jika ada old value
+            if (roleSelect.value) {
+                toggleFields();
+            }
+        });
+
+        // Validasi form sebelumnya
         document.querySelector('form').addEventListener('submit', function (e) {
             const username = document.getElementById('username').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('password_confirmation').value;
+            const role = document.getElementById('role').value;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (username.trim() === '') {
                 e.preventDefault();
                 alert('Username tidak boleh kosong.');
-            } else if (!emailRegex.test(email)) {
+                return;
+            } 
+            
+            if (!emailRegex.test(email)) {
                 e.preventDefault();
                 alert('Masukkan email yang valid.');
-            } else if (password.length < 8) {
+                return;
+            } 
+            
+            if (password.length < 8) {
                 e.preventDefault();
                 alert('Password harus minimal 8 karakter.');
-            } else if (password !== confirmPassword) {
+                return;
+            } 
+            
+            if (password !== confirmPassword) {
                 e.preventDefault();
                 alert('Password dan konfirmasi password tidak cocok.');
+                return;
+            }
+
+            // Validasi field khusus berdasarkan role
+            if (role === 'mahasiswa') {
+                const nim = document.getElementById('nim').value;
+                if (nim.trim() === '') {
+                    e.preventDefault();
+                    alert('NIM wajib diisi untuk mahasiswa.');
+                    return;
+                }
+            } else if (role === 'dosen') {
+                const nik = document.getElementById('nik').value;
+                if (nik.trim() === '') {
+                    e.preventDefault();
+                    alert('NIK wajib diisi untuk dosen.');
+                    return;
+                }
             }
         });
     </script>

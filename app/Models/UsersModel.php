@@ -12,11 +12,21 @@ class UsersModel extends Authenticatable
     use HasApiTokens, Notifiable;
 
     protected $table = 'm_users';
-    protected $primaryKey = 'user_id'; // Disamakan dengan migrasi
+    protected $primaryKey = 'user_id';
     public $incrementing = true;
     public $timestamps = true;
 
-   protected $fillable = ['nama', 'username', 'nim_nik', 'email', 'password', 'role', 'foto_profile', 'no_telepon', 'alamat'];
+    // Perbaiki fillable agar sesuai dengan struktur tabel
+    protected $fillable = [
+        'nama', 
+        'username', 
+        'email', 
+        'password', 
+        'role', 
+        'foto_profile', 
+        'no_telepon', 
+        'alamat'
+    ];
 
     protected $hidden = ['password'];
     protected $casts = ['password' => 'hashed'];
@@ -53,6 +63,6 @@ class UsersModel extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'user_id'; // Disamakan dengan primary key
+        return 'user_id';
     }
 }

@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\DosenModel;
+use App\Models\MahasiswaModel;
 use App\Models\UsersModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -31,18 +34,28 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-  
     public function postregister(Request $request)
     {
-        $validated = $request->validate([
+        // Validasi dasar untuk semua role
+        $rules = [
             'nama' => 'required|string|max:255',
-            'username' => 'required|string|unique:m_users,username|unique:m_users',
+            'username' => 'required|string|unique:m_users,username',
             'email' => 'required|email|unique:m_users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:dosen,mahasiswa',
-        ]);
+        ];
+
+        // Validasi tambahan berdasarkan role
+        if ($request->role === 'mahasiswa') {
+            $rules['nim'] = 'required|string|unique:m_mahasiswa,nim|max:20';
+        } elseif ($request->role === 'dosen') {
+            $rules['nik'] = 'required|string|max:20';
+        }
+
+        $validated = $request->validate($rules);
 
         try {
+            // Buat user terlebih dahulu
             $user = UsersModel::create([
                 'nama' => $request->nama,
                 'username' => $request->username,
@@ -51,28 +64,35 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
 
-            // Jika user adalah dosen, buat entri di tabel dosen
+            // Buat record di tabel sesuai role
             if ($request->role === 'dosen') {
                 DosenModel::create([
                     'user_id' => $user->user_id,
-                    'nik' => $request->username, // Gunakan username sebagai NIK default
-                    'prodi_id' => 1, // Default prodi_id (ganti sesuai kebutuhan)
+                    'nik' => $request->nik,
+                    'prodi_id' => $request->prodi_id ?? 1,
                     'jumlah_bimbingan' => 0,
+                    'kompetensi_id' => $request->kompetensi_id ?? null,
+                ]);
+            } elseif ($request->role === 'mahasiswa') {
+                MahasiswaModel::create([
+                    'user_id' => $user->user_id,
+                    'nim' => $request->nim,
+                    'program_studi_id' => $request->program_studi_id ?? null,
+                    'wilayah_id' => $request->wilayah_id ?? null,
+                    'skema_id' => $request->skema_id ?? null,
+                    'ipk' => $request->ipk ?? null,
+                    'periode_id' => $request->periode_id ?? null,
+                    'file_cv' => null,
                 ]);
             }
-            // Jika user adalah mahasiswa, buat entri di tabel mahasiswa
-            // else if ($request->role === 'mahasiswa') {
-            //     Tambahkan kode untuk mahasiswa jika diperlukan
-            // }
 
-            \Log::info('Registrasi berhasil: ' . $request->username . ' (' . $request->nama . ') sebagai ' . $request->role);
+            Log::info('Registrasi berhasil: ' . $request->username . ' (' . $request->nama . ') sebagai ' . $request->role);
             return redirect('login')->with('success', 'Registrasi berhasil, silakan login.');
         } catch (\Exception $e) {
-            \Log::error('Registrasi gagal: ' . $request->username . ' (' . $request->nama . ') - Error: ' . $e->getMessage());
+            Log::error('Registrasi gagal: ' . $request->username . ' (' . $request->nama . ') - Error: ' . $e->getMessage());
             return redirect('register')->with('error', 'Registrasi gagal: ' . $e->getMessage());
         }
     }
-
 
     public function logout(Request $request)
     {

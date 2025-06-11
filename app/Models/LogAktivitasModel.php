@@ -17,10 +17,9 @@ class LogAktivitasModel extends Model
         return $this->belongsTo(PengajuanMagangModel::class, 'pengajuan_id', 'pengajuan_id');
     }
 
-    public function feedback()
-    {
-        return $this->hasOne(FeedbackLogAktivitasModel::class, 'log_id', 'log_id'); // Sesuaikan kunci asing dengan primary key
-    }
-
+   public function feedback()
+{
+    return $this->hasOne(FeedbackLogAktivitasModel::class, 'log_aktivitas_id', 'log_id');
+}
     
 }

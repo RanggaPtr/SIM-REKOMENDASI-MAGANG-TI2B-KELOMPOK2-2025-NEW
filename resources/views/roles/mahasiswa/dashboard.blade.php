@@ -670,4 +670,35 @@
             document.getElementById('keywordLowongan').addEventListener('input', fetchLowongans);
         });
     </script>
+    <script>
+        document.addEventListener('click', function(e) {
+            // AJAX paginasi untuk review di overlay
+            if (e.target.closest('.pagination a')) {
+                const a = e.target.closest('.pagination a');
+                if (a.closest('#detailSlideContent')) {
+                    e.preventDefault();
+                    const url = new URL(a.href);
+                    const page = url.searchParams.get('page') || 1;
+                    // Ambil lowongan_id dari hidden input atau JS state
+                    const lowonganId = document.querySelector('#detailSlideContent [name="lowongan_id"]')?.value
+                        || window.currentLowonganId;
+                    fetch('/mahasiswa/getLowonganDetail', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            lowongan_id: lowonganId,
+                            page: page
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('detailSlideContent').innerHTML = data.html;
+                    });
+                }
+            }
+        });
+    </script>
 @endpush

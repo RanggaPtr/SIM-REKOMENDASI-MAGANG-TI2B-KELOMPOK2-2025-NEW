@@ -84,6 +84,11 @@
                         </div>
                     </div>
                 @endforeach
+
+                {{-- PAGINATION --}}
+                <div class="d-flex justify-content-center paginasi" style="background-color: transparent !important;">
+                    {!! $reviews->links('pagination::bootstrap-5', ['paginatorClass' => 'ajax-pagination']) !!}
+                </div>
             @else
                 <div class="text-muted bg-transparent">Belum ada riwayat/testimoni magang.</div>
             @endif

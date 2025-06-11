@@ -27,9 +27,24 @@ body * {
 }
 .modal-dialog {
     z-index: 1056 !important;
-    position: relative;
+  position: relative;
 }
 .modal-content {
     z-index: 1057 !important;
     position: relative;
+}
+
+.paginasi * {
+  background-color: transparent;
+}
+
+a.page-link {
+  background-color: transparent !important;
+  color: #232323 !important;
+}
+
+span.page-link {
+  color: white !important;
+  background-color: #EEB521  !important;
+  border-color: #EEB521 !important;
 }

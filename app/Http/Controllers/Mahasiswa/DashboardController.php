@@ -498,19 +498,20 @@ class DashboardController extends Controller
     public function getLowonganDetail(Request $request)
     {
         $id = $request->input('lowongan_id');
-        $lowongan = LowonganMagangModel::with(['perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'])
-            ->findOrFail($id);
+        $page = $request->input('page', 1); // Ambil halaman dari request
 
+        $lowongan = LowonganMagangModel::with([
+            'perusahaan', 'periode', 'skema', 'lowonganKeahlian.keahlian', 'lowonganKompetensi.kompetensi'
+        ])->findOrFail($id);
 
         $reviews = \App\Models\PengajuanMagangModel::with(['mahasiswa'])
             ->whereHas('lowongan', function ($q) use ($lowongan) {
-                $q->where('perusahaan_id', $lowongan->perusahaan_id);
+                $q->where('lowongan_id', $lowongan->lowongan_id);
             })
             ->whereNotNull('feedback_rating')
             ->orderByDesc('pengajuan_id')
-            ->get();
-        
-        // Tambahkan selisih hari ke dalam variabel lowongan
+            ->paginate(10, ['*'], 'page', $page); // <-- Set halaman
+
         $lowongan->selisih_hari = $lowongan->getSelisihHari();
 
         $html = view('component.detail-lowongan-overlay', compact('lowongan', 'reviews'))->render();

@@ -86,7 +86,7 @@
 <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header bg-primary text-black">
                 <h5 class="modal-title" id="feedbackModalLabel">
                     <i class="fas fa-comment-alt me-2"></i>Feedback dari Dosen Pembimbing
                 </h5>

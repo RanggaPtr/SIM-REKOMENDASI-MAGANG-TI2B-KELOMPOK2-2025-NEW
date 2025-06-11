@@ -231,6 +231,8 @@ Route::group(['middleware' => 'auth'], function () {
             // Export (opsional)
             Route::get('/export_excel', [LogAktivitasController::class, 'export_excel'])->name('export_excel');
             Route::get('/export_pdf', [LogAktivitasController::class, 'export_pdf'])->name('export_pdf');
+
+            Route::get('log-harian/{id}/feedback', [LogAktivitasController::class, 'getFeedback'])->name('feedback');
         });
 
         // Pengajuan Magang

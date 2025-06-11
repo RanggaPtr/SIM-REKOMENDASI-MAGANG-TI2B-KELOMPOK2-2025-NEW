@@ -13,8 +13,16 @@
             <div class="mb-2"><strong>Perusahaan:</strong> {{ $lowongan->perusahaan->nama ?? 'Tidak ada perusahaan' }}</div>
             <div class="mb-2"><strong>Periode:</strong> {{ $lowongan->periode->nama ?? 'Tidak ada periode' }}</div>
             <div class="mb-2"><strong>Skema:</strong> {{ $lowongan->skema->nama ?? 'Tidak ada skema' }}</div>
-            <div class="mb-2"><strong>Tunjangan:</strong> Rp {{ number_format($lowongan->tunjangan, 0, ',', '.') }}</div>
+            <div class="mb-2"><strong>Tunjangan:</strong> {{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}</div>
             <div class="mb-2"><strong>Kuota:</strong> {{ $lowongan->kuota }}</div>
+            <div class="mb-2">
+                <strong>Silabus:</strong> 
+                @if($lowongan->silabus_path)
+                    <a href="{{ Storage::url($lowongan->silabus_path) }}" target="_blank">Lihat Silabus</a>
+                @else
+                    Belum Tersedia
+                @endif
+            </div>
             <div class="mb-3">
                 <strong>Deskripsi:</strong>
                 <p class="text-break">{!! nl2br(e($lowongan->deskripsi)) !!}</p>
@@ -27,11 +35,6 @@
             
             <div class="mb-3">
                 <strong>Bidang Keahlian:</strong>
-                {{-- Debug info --}}
-                <!-- @if(config('app.debug'))
-                    <small class="text-muted d-block">Total keahlian = {{ $lowongan->lowonganKeahlian->count() }}</small>
-                @endif -->
-                
                 @if($lowongan->lowonganKeahlian->count() > 0)
                     <ul class="mb-0">
                         @foreach($lowongan->lowonganKeahlian as $item)
@@ -50,11 +53,6 @@
 
             <div class="mb-3">
                 <strong>Kompetensi:</strong>
-                {{-- Debug info --}}
-                <!-- @if(config('app.debug'))
-                    <small class="text-muted d-block">Total kompetensi = {{ $lowongan->lowonganKompetensi->count() }}</small>
-                @endif -->
-                
                 @if($lowongan->lowonganKompetensi->count() > 0)
                     <ul class="mb-0">
                         @foreach($lowongan->lowonganKompetensi as $item)
@@ -73,17 +71,6 @@
             
             <div class="mb-2"><strong>Tanggal Buka:</strong> {{ $lowongan->tanggal_buka->format('d M Y') }}</div>
             <div class="mb-2"><strong>Tanggal Tutup:</strong> {{ $lowongan->tanggal_tutup->format('d M Y') }}</div>
-            
-            {{-- Debug section (hanya tampil jika APP_DEBUG=true) --}}
-            <!-- @if(config('app.debug'))
-                <hr>
-                <div class="alert alert-info">
-                    <h6>Detail Information:</h6>
-                    <p><strong>Lowongan ID:</strong> {{ $lowongan->lowongan_id }}</p>
-                    <p><strong>Keahlian Relations:</strong> {{ $lowongan->lowonganKeahlian->pluck('keahlian_id')->implode(', ') }}</p>
-                    <p><strong>Kompetensi Relations:</strong> {{ $lowongan->lowonganKompetensi->pluck('kompetensi_id')->implode(', ') }}</p>
-                </div>
-            @endif -->
         </div>
         
         <div class="card-footer d-flex justify-content-between">

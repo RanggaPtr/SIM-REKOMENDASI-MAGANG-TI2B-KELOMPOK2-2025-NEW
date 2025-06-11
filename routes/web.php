@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
-use Illuminate\Support\Facades\Route;
-
-/*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -194,7 +191,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/sertifikat/{id}', [\App\Http\Controllers\Dosen\SertifikatDosenController::class, 'destroy'])->name('sertifikat.destroy');
     });
 
-
     // Mahasiswa Routes
     Route::prefix('mahasiswa')->name('mahasiswa.')->middleware('authorize:mahasiswa')->group(function () {
         // Dashboard
@@ -206,21 +202,37 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/bookmark', [MahasiswaDashboardController::class, 'addBookmark'])->name('mahasiswa.bookmark.add');
         Route::delete('/bookmark', [MahasiswaDashboardController::class, 'removeBookmark'])->name('mahasiswa.bookmark.remove');
 
-        // Log Harian
-
-   Route::prefix('log-harian')->name('log-harian.')->group(function () {
-    Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
-    Route::get('/list', [LogAktivitasController::class, 'list'])->name('list');
-    Route::get('/create', [LogAktivitasController::class, 'create'])->name('create'); // Tambahkan ini
-    Route::get('/create_ajax', [LogAktivitasController::class, 'create_ajax'])->name('create_ajax');
-    Route::post('/store', [LogAktivitasController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update');
-    Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy');
-    Route::get('/check-status', [LogAktivitasController::class, 'checkStatus'])->name('check-status');
-    Route::get('/mahasiswa/log-harian/{id}/feedback', [LogAktivitasController::class, 'showFeedback'])->name('mahasiswa.log-harian.feedback');
-});
-
+        // Log Harian - FIXED VERSION
+        Route::prefix('log-harian')->name('log-harian.')->group(function () {
+            // Index - menampilkan halaman utama log harian
+            Route::get('/', [LogAktivitasController::class, 'index'])->name('index');
+            
+            // List untuk DataTables AJAX
+            Route::post('/list', [LogAktivitasController::class, 'list'])->name('list');
+            
+            // Create - form tambah log baru
+            Route::get('/create_ajax', [LogAktivitasController::class, 'create_ajax'])->name('create_ajax');
+            Route::post('/store_ajax', [LogAktivitasController::class, 'store_ajax'])->name('store_ajax');
+            Route::post('/', [LogAktivitasController::class, 'store'])->name('store'); // Tambahan untuk kompatibilitas
+            
+            // Show - lihat detail log
+            Route::get('/{id}/show_ajax', [LogAktivitasController::class, 'show_ajax'])->name('show_ajax');
+            
+            // Edit - form edit log
+            Route::get('/{id}/edit_ajax', [LogAktivitasController::class, 'edit_ajax'])->name('edit_ajax');
+            Route::put('/{id}/update_ajax', [LogAktivitasController::class, 'update_ajax'])->name('update_ajax');
+            Route::get('/{id}/edit', [LogAktivitasController::class, 'edit'])->name('edit'); // Tambahan untuk kompatibilitas
+            Route::put('/{id}', [LogAktivitasController::class, 'update'])->name('update'); // Tambahan untuk kompatibilitas
+            
+            // Delete - hapus log
+            Route::get('/{id}/confirm_ajax', [LogAktivitasController::class, 'confirm_ajax'])->name('confirm_ajax');
+            Route::delete('/{id}/delete_ajax', [LogAktivitasController::class, 'delete_ajax'])->name('delete_ajax');
+            Route::delete('/{id}', [LogAktivitasController::class, 'destroy'])->name('destroy'); // Tambahan untuk kompatibilitas
+            
+            // Export (opsional)
+            Route::get('/export_excel', [LogAktivitasController::class, 'export_excel'])->name('export_excel');
+            Route::get('/export_pdf', [LogAktivitasController::class, 'export_pdf'])->name('export_pdf');
+        });
 
         // Pengajuan Magang
         Route::prefix('/pengajuan-magang')->group(function () {

@@ -13,6 +13,7 @@ use App\Models\PerusahaanModel;
 use App\Models\SkemaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LowonganMagangController extends Controller
 {
@@ -56,20 +57,25 @@ class LowonganMagangController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'persyaratan' => 'required|string',
-            'tunjangan' => 'required|boolean', // Diubah menjadi boolean
-            'kuota' => 'required|integer|min:1', // Ditambahkan untuk kuota
+            'tunjangan' => 'required|boolean',
+            'kuota' => 'required|integer|min:1',
             'keahlian' => 'required|array|min:1',
             'keahlian.*' => 'exists:m_keahlian,keahlian_id',
             'kompetensi' => 'required|array|size:1',
             'kompetensi.*' => 'exists:m_kompetensi,kompetensi_id',
             'tanggal_buka' => 'required|date',
             'tanggal_tutup' => 'required|date|after:tanggal_buka',
+            'silabus_path' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Simpan data lowongan
+            $silabusPath = null;
+            if ($request->hasFile('silabus_path')) {
+                $silabusPath = $request->file('silabus_path')->store('silabus', 'public');
+            }
+
             $lowongan = LowonganMagangModel::create([
                 'perusahaan_id' => $request->perusahaan_id,
                 'periode_id' => $request->periode_id,
@@ -77,13 +83,13 @@ class LowonganMagangController extends Controller
                 'judul' => $request->judul,
                 'deskripsi' => $request->deskripsi,
                 'persyaratan' => $request->persyaratan,
-                'tunjangan' => $request->tunjangan, // Boolean (0 atau 1)
-                'kuota' => $request->kuota, // Ditambahkan
+                'tunjangan' => $request->tunjangan,
+                'kuota' => $request->kuota,
                 'tanggal_buka' => $request->tanggal_buka,
                 'tanggal_tutup' => $request->tanggal_tutup,
+                'silabus_path' => $silabusPath,
             ]);
 
-            // Simpan relasi keahlian (multiple)
             foreach ($request->keahlian as $keahlianId) {
                 LowonganKeahlianModel::create([
                     'lowongan_id' => $lowongan->lowongan_id,
@@ -91,7 +97,6 @@ class LowonganMagangController extends Controller
                 ]);
             }
 
-            // Simpan relasi kompetensi (single)
             LowonganKompetensiModel::create([
                 'lowongan_id' => $lowongan->lowongan_id,
                 'kompetensi_id' => $request->kompetensi[0]
@@ -132,37 +137,43 @@ class LowonganMagangController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'persyaratan' => 'required|string',
-            'tunjangan' => 'required|boolean', // Diubah menjadi boolean
-            'kuota' => 'required|integer|min:1', // Ditambahkan untuk kuota
+            'tunjangan' => 'required|boolean',
+            'kuota' => 'required|integer|min:1',
             'keahlian' => 'required|array|min:1',
             'keahlian.*' => 'exists:m_keahlian,keahlian_id',
             'kompetensi' => 'required|array|size:1',
             'kompetensi.*' => 'exists:m_kompetensi,kompetensi_id',
             'tanggal_buka' => 'required|date',
             'tanggal_tutup' => 'required|date|after:tanggal_buka',
+            'silabus_path' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Update data lowongan
-            $lowongan->update([
+            $data = [
                 'perusahaan_id' => $request->perusahaan_id,
                 'periode_id' => $request->periode_id,
                 'skema_id' => $request->skema_id,
                 'judul' => $request->judul,
                 'deskripsi' => $request->deskripsi,
                 'persyaratan' => $request->persyaratan,
-                'tunjangan' => $request->tunjangan, // Boolean (0 atau 1)
-                'kuota' => $request->kuota, // Ditambahkan
+                'tunjangan' => $request->tunjangan,
+                'kuota' => $request->kuota,
                 'tanggal_buka' => $request->tanggal_buka,
                 'tanggal_tutup' => $request->tanggal_tutup,
-            ]);
+            ];
 
-            // Hapus relasi keahlian lama
+            if ($request->hasFile('silabus_path')) {
+                if ($lowongan->silabus_path) {
+                    Storage::disk('public')->delete($lowongan->silabus_path);
+                }
+                $data['silabus_path'] = $request->file('silabus_path')->store('silabus', 'public');
+            }
+
+            $lowongan->update($data);
+
             LowonganKeahlianModel::where('lowongan_id', $lowongan->lowongan_id)->delete();
-
-            // Simpan relasi keahlian baru
             foreach ($request->keahlian as $keahlianId) {
                 LowonganKeahlianModel::create([
                     'lowongan_id' => $lowongan->lowongan_id,
@@ -170,10 +181,7 @@ class LowonganMagangController extends Controller
                 ]);
             }
 
-            // Hapus relasi kompetensi lama
             LowonganKompetensiModel::where('lowongan_id', $lowongan->lowongan_id)->delete();
-
-            // Simpan relasi kompetensi baru
             LowonganKompetensiModel::create([
                 'lowongan_id' => $lowongan->lowongan_id,
                 'kompetensi_id' => $request->kompetensi[0]
@@ -194,6 +202,11 @@ class LowonganMagangController extends Controller
     public function destroy($id)
     {
         $lowongan = LowonganMagangModel::findOrFail($id);
+        
+        if ($lowongan->silabus_path) {
+            Storage::disk('public')->delete($lowongan->silabus_path);
+        }
+        
         $lowongan->delete();
 
         return redirect()->route('admin.lowongan.index')->with('success', 'Lowongan magang berhasil dihapus.');

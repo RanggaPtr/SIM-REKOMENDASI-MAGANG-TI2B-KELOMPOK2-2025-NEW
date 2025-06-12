@@ -23,7 +23,8 @@ class SertifikatDosenController extends Controller
 
     public function create()
     {
-        return view('roles.dosen.sertifikat.create');
+        $activeMenu = 'Sertifikat';
+        return view('roles.dosen.sertifikat.create', compact('activeMenu'));
     }
 
     public function store(Request $request)
@@ -50,16 +51,25 @@ class SertifikatDosenController extends Controller
 
     public function edit($id)
     {
+        $activeMenu = 'Sertifikat';
         $sertifikat = SertifikatDosenModel::findOrFail($id);
-        $this->authorize('update', $sertifikat); // opsional jika ada policy
+        
+        // Check if the certificate belongs to the authenticated user
+        if ($sertifikat->dosen_id !== Auth::user()->dosen->dosen_id) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        return view('roles.dosen.sertifikat.edit', compact('sertifikat'));
+        return view('roles.dosen.sertifikat.edit', compact('sertifikat', 'activeMenu'));
     }
 
     public function update(Request $request, $id)
     {
         $sertifikat = SertifikatDosenModel::findOrFail($id);
-        $this->authorize('update', $sertifikat); // opsional
+        
+        // Check if the certificate belongs to the authenticated user
+        if ($sertifikat->dosen_id !== Auth::user()->dosen->dosen_id) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $request->validate([
             'nama_sertifikat' => 'required|string|max:255',
@@ -91,7 +101,11 @@ class SertifikatDosenController extends Controller
     public function destroy($id)
     {
         $sertifikat = SertifikatDosenModel::findOrFail($id);
-        $this->authorize('delete', $sertifikat); // opsional
+        
+        // Check if the certificate belongs to the authenticated user
+        if ($sertifikat->dosen_id !== Auth::user()->dosen->dosen_id) {
+            abort(403, 'Unauthorized action.');
+        }
 
         if ($sertifikat->file_sertifikat && Storage::disk('public')->exists($sertifikat->file_sertifikat)) {
             Storage::disk('public')->delete($sertifikat->file_sertifikat);

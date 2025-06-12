@@ -15,6 +15,20 @@
         </div>
 
         <div class="card-body">
+            <!-- Filter Status -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Filter Status:</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">Semua Status</option>
+                        <option value="ajukan">Ajukan</option>
+                        <option value="terima">Terima</option>
+                        <option value="tolak">Tolak</option>
+                        <option value="selesai">Selesai</option>
+                    </select>
+                </div>
+            </div>
+
             <table id="pengajuanTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -39,6 +53,18 @@
 @push('css')
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet">
+    <style>
+        /* Sembunyikan default length menu */
+        .dataTables_length {
+            display: none !important;
+        }
+        
+        /* Style untuk filter status */
+        #statusFilter {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+    </style>
 @endpush
 
 @push('scripts')
@@ -69,7 +95,10 @@
                 serverSide: true,
                 ajax: {
                     url: '{{ route("admin.pengajuan.list") }}',
-                    type: 'POST'
+                    type: 'POST',
+                    data: function(d) {
+                        d.status_filter = $('#statusFilter').val();
+                    }
                 },
                 columns: [
                     { data: 'pengajuan_id', name: 'pengajuan_id' },
@@ -79,17 +108,38 @@
                     { data: 'dosen_name', name: 'dosen_name' },
                     { data: 'periode_name', name: 'periode_name' },
                     { data: 'status', name: 'status' },
-                    { 
-                        data: 'action', 
-                        name: 'action', 
-                        orderable: false, 
-                        searchable: false,
+                    {
+                         data: 'action',
+                         name: 'action',
+                         orderable: false,
+                         searchable: false,
                         className: 'text-center'
                     }
                 ],
                 order: [[0, 'desc']],
                 pageLength: 10,
-                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]]
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                dom: 'Bfrtip', // Menghilangkan 'l' untuk length menu
+                language: {
+                    processing: "Memproses...",
+                    lengthMenu: "Tampilkan _MENU_ entri",
+                    zeroRecords: "Tidak ditemukan data yang sesuai",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
+                    infoFiltered: "(disaring dari _MAX_ entri keseluruhan)",
+                    search: "Cari:",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
+                }
+            });
+
+            // Event listener untuk filter status
+            $('#statusFilter').on('change', function() {
+                pengajuanTable.ajax.reload();
             });
         });
     </script>

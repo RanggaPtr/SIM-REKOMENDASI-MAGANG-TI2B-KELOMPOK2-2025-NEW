@@ -25,9 +25,21 @@ class PengajuanMagangController extends Controller
         $pengajuan = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan.perusahaan',
-            'lowongan.periode', // ✅ ambil periode dari lowongan
+            'lowongan.periode',
             'dosen.user'
         ])->select('t_pengajuan_magang.*');
+
+        // Apply status filter
+        if ($request->has('status_filter') && !empty($request->status_filter)) {
+            $statusMap = [
+                'ajukan' => 'diajukan',
+                'terima' => 'diterima',
+                'tolak' => 'ditolak',
+                'selesai' => 'selesai',
+            ];
+            $status = $statusMap[$request->status_filter] ?? $request->status_filter;
+            $pengajuan->where('status', $status);
+        }
 
         return DataTables::eloquent($pengajuan)
             ->addColumn('mahasiswa_name', function ($row) {
@@ -86,7 +98,6 @@ class PengajuanMagangController extends Controller
             'lowongan.periode',
             'dosen.user',
             'dosen.kompetensi'
-            
         ])->findOrFail($id);
 
         $dosens = DosenModel::with(['user', 'kompetensi'])->get();
@@ -167,10 +178,11 @@ class PengajuanMagangController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan saat memperbarui pengajuan. Silakan coba lagi.'
             ], 500);
         }
     }
+
     public function confirm_ajax($id)
     {
         $pengajuan = PengajuanMagangModel::findOrFail($id);
@@ -204,19 +216,32 @@ class PengajuanMagangController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan saat menghapus pengajuan. Silakan coba lagi.'
             ], 500);
         }
     }
 
-    public function export_excel()
+    public function export_excel(Request $request)
     {
-        $pengajuans = PengajuanMagangModel::with([
+        $query = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan.perusahaan',
             'lowongan.periode',
             'dosen.user'
-        ])->get();
+        ]);
+
+        // Apply status filter if provided
+        if ($request->has('status_filter') && !empty($request->status_filter)) {
+            $statusMap = [
+                'ajukan' => 'diajukan',
+                'terima' => 'diterima',
+                'tolak' => 'ditolak',
+                'selesai' => 'selesai',
+            ];
+            $query->where('status', $statusMap[$request->status_filter] ?? $request->status_filter);
+        }
+
+        $pengajuans = $query->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -270,17 +295,30 @@ class PengajuanMagangController extends Controller
         exit;
     }
 
-    public function export_pdf()
+    public function export_pdf(Request $request)
     {
-        $pengajuans = PengajuanMagangModel::with([
+        $query = PengajuanMagangModel::with([
             'mahasiswa.user',
             'lowongan.perusahaan',
             'lowongan.periode',
             'dosen.user'
-        ])->get();
+        ]);
+
+        // Apply status filter if provided
+        if ($request->has('status_filter') && !empty($request->status_filter)) {
+            $statusMap = [
+                'ajukan' => 'diajukan',
+                'terima' => 'diterima',
+                'tolak' => 'ditolak',
+                'selesai' => 'selesai',
+            ];
+            $query->where('status', $statusMap[$request->status_filter] ?? $request->status_filter);
+        }
+
+        $pengajuans = $query->get();
 
         $pdf = Pdf::loadView('roles.admin.pengajuan.export_pdf', ['pengajuans' => $pengajuans]);
-        $pdf->setPaper('a4', 'landscape'); // Landscape karena banyak kolom
+        $pdf->setPaper('a4', 'landscape');
         $pdf->setOption('isRemoteEnabled', true);
         $pdf->render();
 

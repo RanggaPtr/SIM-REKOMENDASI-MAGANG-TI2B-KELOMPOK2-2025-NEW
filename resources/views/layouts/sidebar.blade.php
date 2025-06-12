@@ -1,4 +1,3 @@
-@vite(['resources/css/sidebar.css'])
 
 <aside>
     <ul class="sidebar-nav nav flex-column gap-1 p-3"> <!-- Logo -->

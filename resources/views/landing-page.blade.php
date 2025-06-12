@@ -96,11 +96,11 @@
 
                 <!-- Kolom Ketiga: Tombol -->
                 <div class="d-flex gap-5">
-                    <a href="register" class="btn btn-primary text-light-softer ps-5 pe-4 btn-lg fw-bold">Daftar <span
+                    <a href="register" class="btn btn-primary bg-primary text-light-softer ps-5 pe-4 btn-lg fw-bold">Daftar <span
                             class="ps-3" style="font-size: 15px">></span></a>
                     <a href="login" class="btn btn-outline-primary btn-lg px-5 btn-hover-white fw-bold">Masuk</a>
                 </div>
-            </div>
+            </div> 
         </div>
     </section>
 

@@ -2,6 +2,32 @@
     .active-menu {
         color: #092C6B !important;
     }
+    
+    /* Gaya tambahan untuk optimalisasi */
+    .searchable-checkbox-group {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 10px;
+        margin-top: 5px;
+    }
+    
+    .searchable-checkbox-group .form-check {
+        margin-bottom: 5px;
+    }
+    
+    .search-box {
+        margin-bottom: 10px;
+    }
+    
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        height: auto;
+    }
 </style>
 
 <div class="container-fluid py-2 px-0 d-flex justify-content-between align-items-center text-dark">
@@ -13,7 +39,6 @@
         <!-- Bell Icon: Only show for mahasiswa -->
         @if (Auth::user()->role === 'mahasiswa')
         @php
-            // Hitung jumlah notifikasi belum dibaca (atau total notifikasi, jika tidak ada kolom 'read')
             $notifCount = \App\Models\MahasiswaNotifikasiModel::where('mahasiswa_id', optional(\App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first())->mahasiswa_id)->count();
         @endphp
         <div style="position: relative;">
@@ -50,7 +75,6 @@
                             <span class="visually-hidden bg-white">Loading...</span>
                         </div>
                     </div>
-                    <!-- Notifikasi akan dimuat via JS -->
                 </div>
                 <div class="text-center p-2 bg-white rounded-bottom-4">
                 </div>
@@ -106,7 +130,6 @@
                             <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
                                 alt="Profile" class="rounded-circle mb-3"
                                 style="width: 100px; height: 100px; object-fit: cover;">
-                            <!-- <label for="foto_profile" class="form-label">Ganti Foto Profil</label> -->
                             <input type="file" class="form-control" id="foto_profile" name="foto_profile"
                                 accept="image/*">
                             @error('foto_profile')
@@ -165,221 +188,228 @@
                             @enderror
                         </div>
 
-                    <!-- Role Spesifik Fields -->
-                    @if (Auth::user()->role === 'dosen')
-                    @php
-                    $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
-                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
-                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
-                    @endphp
+                        <!-- Role Spesifik Fields -->
+                        @if (Auth::user()->role === 'dosen')
+                        @php
+                        $dosen = \App\Models\DosenModel::where('user_id', Auth::user()->user_id)->first();
+                        $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                        $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
+                        @endphp
 
-                            <div class="mb-3">
-                                <label for="nik" class="form-label fw-bold">NIK</label>
-                                <input type="text" class="form-control @error('nik') is-invalid @enderror"
-                                    id="nik" name="nik" value="{{ old('nik', $dosen->nik ?? '') }}" required>
-                                @error('nik')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label for="nik" class="form-label fw-bold">NIK</label>
+                            <input type="text" class="form-control @error('nik') is-invalid @enderror"
+                                id="nik" name="nik" value="{{ old('nik', $dosen->nik ?? '') }}" required>
+                            @error('nik')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
-                        <select class="form-select @error('prodi_id') is-invalid @enderror"
-                            id="prodi_id" name="prodi_id" required>
-                            <option value="">-- Pilih Program Studi --</option>
-                            @foreach ($programStudiList as $prodi)
-                            <option value="{{ $prodi->prodi_id }}"
-                                {{ old('prodi_id', $dosen->prodi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
-                                {{ $prodi->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('prodi_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        <div class="mb-3">
+                            <label for="prodi_id" class="form-label fw-bold">Program Studi</label>
+                            <select class="form-select select2-prodi @error('prodi_id') is-invalid @enderror"
+                                id="prodi_id" name="prodi_id" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                                @foreach ($programStudiList as $prodi)
+                                <option value="{{ $prodi->prodi_id }}"
+                                    {{ old('prodi_id', $dosen->prodi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                    {{ $prodi->nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('prodi_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="kompetensi_id" class="form-label fw-bold">Kompetensi</label>
-                        <select class="form-select @error('kompetensi_id') is-invalid @enderror"
-                            id="kompetensi_id" name="kompetensi_id">
-                            <option value="">-- Pilih Kompetensi (Opsional) --</option>
-                            @foreach ($kompetensiList as $kompetensi)
-                            <option value="{{ $kompetensi->kompetensi_id }}"
-                                {{ old('kompetensi_id', $dosen->kompetensi_id ?? '') == $kompetensi->kompetensi_id ? 'selected' : '' }}>
-                                {{ $kompetensi->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('kompetensi_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    @elseif (Auth::user()->role === 'mahasiswa')
-                    @php
-                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
-                    $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
-                    $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
-                    $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
-                    $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
-
-                    $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
-                    $keahlianList = \App\Models\KeahlianModel::orderBy('nama')->get();
-
-                    // Ambil data mahasiswa dan relasinya, ubah 'keahlian' menjadi 'mahasiswaKeahlian'
-                    $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->with('mahasiswaKeahlian')->first();
-
-                    // Ubah 'keahlian' menjadi 'mahasiswaKeahlian' saat mengambil keahlian_ids
-                    $selectedKeahlianIds = old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? []);
-                    @endphp
-
-                            <div class="mb-3">
-                                <label for="nim" class="form-label fw-bold">NIM</label>
-                                <input type="text" class="form-control @error('nim') is-invalid @enderror"
-                                    id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim ?? '') }}"
-                                    required>
-                                @error('nim')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                    <div class="mb-3">
-                        <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
-                        <select class="form-select @error('program_studi_id') is-invalid @enderror"
-                            id="program_studi_id" name="program_studi_id" required>
-                            <option value="">-- Pilih Program Studi --</option>
-                            @foreach ($programStudiList as $prodi)
-                            <option value="{{ $prodi->prodi_id }}"
-                                {{ old('program_studi_id', $mahasiswa->program_studi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
-                                {{ $prodi->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('program_studi_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <!-- Kompetensi (single select checkbox) -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Kompetensi</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($kompetensiList as $kompetensi)
-                            <div class="form-check">
-                                <input class="form-check-input @error('kompetensi_id') is-invalid @enderror"
-                                    type="checkbox"
-                                    name="kompetensi_id"
-                                    value="{{ $kompetensi->kompetensi_id }}"
-                                    id="kompetensi_{{ $kompetensi->kompetensi_id }}"
-                                    {{ old('kompetensi_id', $mahasiswa->mahasiswaKompetensi->pluck('kompetensi_id')->first() ?? '') == $kompetensi->kompetensi_id ? 'checked' : '' }}
-                                    onchange="ensureSingleKompetensi(this)">
-                                <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
+                        <div class="mb-3">
+                            <label for="kompetensi_id" class="form-label fw-bold">Kompetensi</label>
+                            <select class="form-select select2-kompetensi @error('kompetensi_id') is-invalid @enderror"
+                                id="kompetensi_id" name="kompetensi_id">
+                                <option value="">-- Pilih Kompetensi (Opsional) --</option>
+                                @foreach ($kompetensiList as $kompetensi)
+                                <option value="{{ $kompetensi->kompetensi_id }}"
+                                    {{ old('kompetensi_id', $dosen->kompetensi_id ?? '') == $kompetensi->kompetensi_id ? 'selected' : '' }}>
                                     {{ $kompetensi->nama }}
-                                </label>
-                            </div>
-                            @endforeach
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('kompetensi_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        @error('kompetensi_id')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
 
-                    <!-- Keahlian (multi select checkbox) -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Keahlian</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach ($keahlianList as $keahlian)
-                            <div class="form-check">
-                                <input class="form-check-input @error('keahlian_ids') is-invalid @enderror"
-                                    type="checkbox"
-                                    name="keahlian_ids[]"
-                                    value="{{ $keahlian->keahlian_id }}"
-                                    id="keahlian_{{ $keahlian->keahlian_id }}"
-                                    {{ in_array($keahlian->keahlian_id, old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? [])) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
-                                    {{ $keahlian->nama }}
-                                </label>
-                            </div>
-                            @endforeach
+                        @elseif (Auth::user()->role === 'mahasiswa')
+                        @php
+                        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->first();
+                        $programStudiList = \App\Models\ProgramStudiModel::orderBy('nama')->get();
+                        $wilayahList = \App\Models\WilayahModel::orderBy('nama')->get();
+                        $skemaList = \App\Models\SkemaModel::orderBy('nama')->get();
+                        $periodeList = \App\Models\PeriodeMagangModel::orderBy('nama')->get();
+                        $kompetensiList = \App\Models\KompetensiModel::orderBy('nama')->get();
+                        $keahlianList = \App\Models\KeahlianModel::orderBy('nama')->get();
+                        $mahasiswa = \App\Models\MahasiswaModel::where('user_id', Auth::user()->user_id)->with('mahasiswaKeahlian')->first();
+                        $selectedKeahlianIds = old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? []);
+                        @endphp
+
+                        <div class="mb-3">
+                            <label for="nim" class="form-label fw-bold">NIM</label>
+                            <input type="text" class="form-control @error('nim') is-invalid @enderror"
+                                id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim ?? '') }}"
+                                required>
+                            @error('nim')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        @error('keahlian_ids')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="file_cv" class="form-label fw-bold">Upload CV</label>
-                        <input type="file" class="form-control @error('file_cv') is-invalid @enderror"
-                            id="file_cv" name="file_cv" accept=".pdf">
-                        @error('file_cv')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        @if ($mahasiswa->file_cv)
-                        <small class="form-text text-muted">
-                            CV saat ini: <a href="{{ url('/storage/' . $mahasiswa->file_cv) }}" target="_blank">Lihat CV</a>
-                        </small>
-                        @endif
-                    </div>
-                    <div class="mb-3">
-                        <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
-                        <select class="form-select @error('wilayah_id') is-invalid @enderror"
-                            id="wilayah_id" name="wilayah_id" required>
-                            <option value="">-- Pilih Wilayah --</option>
-                            @foreach ($wilayahList as $wilayah)
-                            <option value="{{ $wilayah->wilayah_id }}"
-                                {{ old('wilayah_id', $mahasiswa->wilayah_id ?? '') == $wilayah->wilayah_id ? 'selected' : '' }}>
-                                {{ $wilayah->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('wilayah_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
 
-                            <div class="mb-3">
-                                <label for="skema_id" class="form-label fw-bold">Skema</label>
-                                <select class="form-select @error('skema_id') is-invalid @enderror" id="skema_id"
-                                    name="skema_id" required>
-                                    <option value="">-- Pilih Skema --</option>
-                                    @foreach ($skemaList as $skema)
-                                        <option value="{{ $skema->skema_id }}"
-                                            {{ old('skema_id', $mahasiswa->skema_id ?? '') == $skema->skema_id ? 'selected' : '' }}>
-                                            {{ $skema->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('skema_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label for="program_studi_id" class="form-label fw-bold">Program Studi</label>
+                            <select class="form-select select2-prodi @error('program_studi_id') is-invalid @enderror"
+                                id="program_studi_id" name="program_studi_id" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                                @foreach ($programStudiList as $prodi)
+                                <option value="{{ $prodi->prodi_id }}"
+                                    {{ old('program_studi_id', $mahasiswa->program_studi_id ?? '') == $prodi->prodi_id ? 'selected' : '' }}>
+                                    {{ $prodi->nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('program_studi_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                            <!-- Periode -->
-                            <div class="mb-3">
-                                <label for="periode_id" class="form-label fw-bold">Periode</label>
-                                <select class="form-select @error('periode_id') is-invalid @enderror" id="periode_id"
-                                    name="periode_id" required>
-                                    <option value="">-- Pilih Periode --</option>
-                                    @foreach ($periodeList as $periode)
-                                        <option value="{{ $periode->periode_id }}"
-                                            {{ old('periode_id', $mahasiswa->periode_id ?? '') == $periode->periode_id ? 'selected' : '' }}>
-                                            {{ $periode->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('periode_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                        <!-- Kompetensi dengan pencarian -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kompetensi</label>
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" 
+                                       placeholder="Cari kompetensi..." 
+                                       onkeyup="filterCheckboxes(this, 'kompetensi-container')">
                             </div>
+                            <div class="searchable-checkbox-group" id="kompetensi-container">
+                                @foreach ($kompetensiList as $kompetensi)
+                                <div class="form-check">
+                                    <input class="form-check-input @error('kompetensi_id') is-invalid @enderror"
+                                           type="checkbox"
+                                           name="kompetensi_id"
+                                           value="{{ $kompetensi->kompetensi_id }}"
+                                           id="kompetensi_{{ $kompetensi->kompetensi_id }}"
+                                           {{ old('kompetensi_id', $mahasiswa->mahasiswaKompetensi->pluck('kompetensi_id')->first() ?? '') == $kompetensi->kompetensi_id ? 'checked' : '' }}
+                                           onchange="ensureSingleKompetensi(this)">
+                                    <label class="form-check-label" for="kompetensi_{{ $kompetensi->kompetensi_id }}">
+                                        {{ $kompetensi->nama }}
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                            @error('kompetensi_id')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="ipk" class="form-label fw-bold">IPK</label>
-                                <input type="number" step="0.01" min="0" max="4"
-                                    class="form-control @error('ipk') is-invalid @enderror" id="ipk"
-                                    name="ipk" value="{{ old('ipk', $mahasiswa->ipk ?? '') }}" required>
-                                @error('ipk')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                        <!-- Keahlian dengan pencarian -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Keahlian</label>
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" 
+                                       placeholder="Cari keahlian..." 
+                                       onkeyup="filterCheckboxes(this, 'keahlian-container')">
                             </div>
+                            <div class="searchable-checkbox-group" id="keahlian-container">
+                                @foreach ($keahlianList as $keahlian)
+                                <div class="form-check">
+                                    <input class="form-check-input @error('keahlian_ids') is-invalid @enderror"
+                                           type="checkbox"
+                                           name="keahlian_ids[]"
+                                           value="{{ $keahlian->keahlian_id }}"
+                                           id="keahlian_{{ $keahlian->keahlian_id }}"
+                                           {{ in_array($keahlian->keahlian_id, old('keahlian_ids', $mahasiswa->mahasiswaKeahlian->pluck('keahlian_id')->toArray() ?? [])) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="keahlian_{{ $keahlian->keahlian_id }}">
+                                        {{ $keahlian->nama }}
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                            @error('keahlian_ids')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="file_cv" class="form-label fw-bold">Upload CV</label>
+                            <input type="file" class="form-control @error('file_cv') is-invalid @enderror"
+                                id="file_cv" name="file_cv" accept=".pdf">
+                            @error('file_cv')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if ($mahasiswa->file_cv)
+                            <small class="form-text text-muted">
+                                CV saat ini: <a href="{{ url('/storage/' . $mahasiswa->file_cv) }}" target="_blank">Lihat CV</a>
+                            </small>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="wilayah_id" class="form-label fw-bold">Wilayah</label>
+                            <select class="form-select select2-wilayah @error('wilayah_id') is-invalid @enderror"
+                                id="wilayah_id" name="wilayah_id" required>
+                                <option value="">-- Pilih Wilayah --</option>
+                                @foreach ($wilayahList as $wilayah)
+                                <option value="{{ $wilayah->wilayah_id }}"
+                                    {{ old('wilayah_id', $mahasiswa->wilayah_id ?? '') == $wilayah->wilayah_id ? 'selected' : '' }}>
+                                    {{ $wilayah->nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('wilayah_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="skema_id" class="form-label fw-bold">Skema</label>
+                            <select class="form-select select2-skema @error('skema_id') is-invalid @enderror" id="skema_id"
+                                name="skema_id" required>
+                                <option value="">-- Pilih Skema --</option>
+                                @foreach ($skemaList as $skema)
+                                    <option value="{{ $skema->skema_id }}"
+                                        {{ old('skema_id', $mahasiswa->skema_id ?? '') == $skema->skema_id ? 'selected' : '' }}>
+                                        {{ $skema->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('skema_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="periode_id" class="form-label fw-bold">Periode</label>
+                            <select class="form-select select2-periode @error('periode_id') is-invalid @enderror" id="periode_id"
+                                name="periode_id" required>
+                                <option value="">-- Pilih Periode --</option>
+                                @foreach ($periodeList as $periode)
+                                    <option value="{{ $periode->periode_id }}"
+                                        {{ old('periode_id', $mahasiswa->periode_id ?? '') == $periode->periode_id ? 'selected' : '' }}>
+                                        {{ $periode->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('periode_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ipk" class="form-label fw-bold">IPK</label>
+                            <input type="number" step="0.01" min="0" max="4"
+                                class="form-control @error('ipk') is-invalid @enderror" id="ipk"
+                                name="ipk" value="{{ old('ipk', $mahasiswa->ipk ?? '') }}" required>
+                            @error('ipk')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                         @elseif (Auth::user()->role === 'perusahaan')
                             @php
                                 $perusahaan = \App\Models\PerusahaanModel::where(
@@ -436,189 +466,97 @@
         </div>
     </div>
 </div>
+
+<!-- Script untuk Select2 dan fungsi tambahan -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function loadMahasiswaNotifikasi() {
-        const notifList = document.getElementById('notifList');
-        notifList.innerHTML = `<div class="text-center py-3" id="notifLoading">
-            <div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>`;
-        fetch("{{ route('profile.notifikasi') }}")
-            .then(res => res.json())
-            .then(res => {
-                notifList.innerHTML = '';
-                if (res.data && res.data.length > 0) {
-                    res.data.forEach(notif => {
-                        let icon = '';
-                        if (notif.status === 'diterima') {
-                            icon = `<i class="fa-solid fa-circle-check text-success me-2"></i>`;
-                        } else if (notif.status === 'ditolak') {
-                            icon = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>`;
-                        }
-                        notifList.innerHTML += `
-                            <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center" data-id="${notif.mhs_notifikasi_id}">
-                                <div class="d-flex align-items-center w-100 bg-white">
-                                    <span class="d-flex align-items-center justify-content-center mx-2" style="font-size:1.7rem; min-width:2.2rem;">
-                                        ${
-                                            notif.status === 'diterima'
-                                                ? `<i class="fa-solid fa-circle-check text-success"></i>`
-                                                : `<i class="fa-solid fa-circle-xmark text-danger"></i>`
-                                        }
-                                    </span>
-                                    <div class="flex-grow-1" style="background-color: white;">
-                                        <div class="bg-white">${notif.deskripsi}</div>
-                                        <small class="text-muted bg-white">${formatDate(notif.created_at)}</small>
-                                    </div>
-                                    <button class="btn btn-sm btn-link text-muted bg-white ms-2 px-1 py-0 align-self-center" onclick="deleteNotifikasi(${notif.mhs_notifikasi_id}, this)" title="Hapus">
-                                        <i class="fas fa-times fa-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    notifList.innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
-                }
-            })
-            .catch(() => {
-                notifList.innerHTML = `<div class="text-center py-3 text-danger">Gagal memuat notifikasi.</div>`;
-            });
-    }
-
-    // Fungsi untuk update badge notifikasi
-function updateNotifBadge(count) {
-    let badge = document.getElementById('notifBadge');
-    const bell = document.getElementById('notifBell');
-    if (count > 0) {
-        if (!badge) {
-            badge = document.createElement('span');
-            badge.id = 'notifBadge';
-            badge.style.position = 'absolute';
-            badge.style.top = '-6px';
-            badge.style.right = '-10px';
-            badge.style.background = '#dc3545';
-            badge.style.color = '#fff';
-            badge.style.borderRadius = '50%';
-            badge.style.width = '16px';
-            badge.style.height = '16px';
-            badge.style.display = 'flex';
-            badge.style.alignItems = 'center';
-            badge.style.justifyContent = 'center';
-            badge.style.fontSize = '11px';
-            badge.style.fontWeight = 'bold';
-            badge.style.zIndex = '10';
-            badge.style.border = '2px solid #fff';
-            bell.appendChild(badge);
-        }
-        badge.textContent = count > 9 ? '9+' : count;
-        badge.style.display = 'flex';
-    } else if (badge) {
-        badge.style.display = 'none';
-    }
-}
-
-// Fungsi untuk fetch jumlah notifikasi
-function fetchNotifCount() {
-    fetch("{{ route('profile.notifikasi.count') }}")
-        .then(res => res.json())
-        .then(res => {
-            updateNotifBadge(res.count || 0);
+    // Inisialisasi Select2 untuk semua select box
+    $(document).ready(function() {
+        $('.select2-wilayah').select2({
+            placeholder: "Pilih Wilayah",
+            allowClear: true,
+            width: '100%'
         });
-}
+        
+        $('.select2-skema').select2({
+            placeholder: "Pilih Skema",
+            allowClear: true,
+            width: '100%'
+        });
+        
+        $('.select2-prodi').select2({
+            placeholder: "Pilih Program Studi",
+            allowClear: true,
+            width: '100%'
+        });
+        
+        $('.select2-periode').select2({
+            placeholder: "Pilih Periode",
+            allowClear: true,
+            width: '100%'
+        });
+        
+        $('.select2-kompetensi').select2({
+            placeholder: "Pilih Kompetensi",
+            allowClear: true,
+            width: '100%'
+        });
+    });
 
-// Panggil setiap 1 menit
-setInterval(fetchNotifCount, 60000);
-// Panggil saat halaman pertama kali load
-fetchNotifCount();
-
-// Update badge setelah hapus notifikasi
-function deleteNotifikasi(id, btn) {
-    btn.disabled = true;
-    fetch(`/profile/notifikasi/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(res => {
-        if (res.success) {
-            // Remove the notification from the list
-            const notifDiv = btn.closest('[data-id]');
-            if (notifDiv) notifDiv.remove();
-            // If no more notifications, show empty state
-            if (document.querySelectorAll('#notifList [data-id]').length === 0) {
-                document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+    // Fungsi untuk filter checkbox
+    function filterCheckboxes(input, containerId) {
+        const filter = input.value.toLowerCase();
+        const container = document.getElementById(containerId);
+        const checkboxes = container.getElementsByClassName('form-check');
+        
+        for (let i = 0; i < checkboxes.length; i++) {
+            const label = checkboxes[i].getElementsByTagName('label')[0];
+            if (label.textContent.toLowerCase().indexOf(filter) > -1) {
+                checkboxes[i].style.display = "";
+            } else {
+                checkboxes[i].style.display = "none";
             }
-            fetchNotifCount(); // <-- update badge
-        } else {
-            alert(res.error || 'Gagal menghapus notifikasi.');
-            btn.disabled = false;
         }
-    })
-    .catch(() => {
-        alert('Gagal menghapus notifikasi.');
-        btn.disabled = false;
-    });
-}
-
-// Update badge setelah hapus semua notifikasi
-document.getElementById('markAllRead').addEventListener('click', function(e) {
-    e.preventDefault();
-    fetch("{{ route('profile.notifikasi.deleteAll') }}", {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(res => {
-        if (res.success) {
-            document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
-            fetchNotifCount(); // <-- update badge
-        } else {
-            alert(res.error || 'Gagal menghapus semua notifikasi.');
-        }
-    })
-    .catch(() => {
-        alert('Gagal menghapus semua notifikasi.');
-    });
-});
-    // Format date (simple, you can improve as needed)
-    function formatDate(dateStr) {
-        const date = new Date(dateStr);
-        if (isNaN(date)) return '';
-        const now = new Date();
-        const diff = Math.floor((now - date) / 1000);
-        if (diff < 60) return 'Baru saja';
-        if (diff < 3600) return `${Math.floor(diff/60)} menit lalu`;
-        if (diff < 86400) return `${Math.floor(diff/3600)} jam lalu`;
-        if (diff < 604800) return `${Math.floor(diff/86400)} hari lalu`;
-        return date.toLocaleDateString();
     }
 
-    // Fetch notifications when bell is clicked
-    document.getElementById('notifBell').addEventListener('click', function(e) {
-        e.stopPropagation();
-        const dropdown = document.getElementById('notifDropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        if (dropdown.style.display === 'block') {
-            loadMahasiswaNotifikasi();
+    // Fungsi untuk memastikan hanya satu kompetensi yang dipilih
+    function ensureSingleKompetensi(checkbox) {
+        const checkboxes = document.querySelectorAll('#kompetensi-container input[name="kompetensi_id"]');
+        checkboxes.forEach((cb) => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+    }
+
+    // Preview foto profil
+    document.getElementById('foto_profile').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.modal-body img').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
     });
 
-    document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('notifDropdown');
-    const bell = document.getElementById('notifBell');
-    if (!dropdown.contains(e.target) && e.target !== bell) {
-        dropdown.style.display = 'none';
-    }
-});
+    // Auto close modal setelah sukses update
+    @if (session('success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }, 2000);
+        });
+    @endif
+
+    // Fungsi untuk notifikasi
     function loadMahasiswaNotifikasi() {
         const notifList = document.getElementById('notifList');
         notifList.innerHTML = `<div class="text-center py-3" id="notifLoading">
@@ -632,12 +570,6 @@ document.getElementById('markAllRead').addEventListener('click', function(e) {
                 notifList.innerHTML = '';
                 if (res.data && res.data.length > 0) {
                     res.data.forEach(notif => {
-                        let icon = '';
-                        if (notif.status === 'diterima') {
-                            icon = `<i class="fa-solid fa-circle-check text-success me-2"></i>`;
-                        } else if (notif.status === 'ditolak') {
-                            icon = `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>`;
-                        }
                         notifList.innerHTML += `
                             <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center" data-id="${notif.mhs_notifikasi_id}">
                                 <div class="d-flex align-items-center w-100 bg-white">
@@ -668,7 +600,6 @@ document.getElementById('markAllRead').addEventListener('click', function(e) {
             });
     }
 
-    // Format date (simple, you can improve as needed)
     function formatDate(dateStr) {
         const date = new Date(dateStr);
         if (isNaN(date)) return '';
@@ -680,40 +611,116 @@ document.getElementById('markAllRead').addEventListener('click', function(e) {
         if (diff < 604800) return `${Math.floor(diff/86400)} hari lalu`;
         return date.toLocaleDateString();
     }
-</script>
 
-<!-- Script untuk preview foto -->
-<script>
-    document.getElementById('foto_profile').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector('.modal-body img').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+    // Fetch notifications when bell is clicked
+    document.getElementById('notifBell').addEventListener('click', function(e) {
+        e.stopPropagation();
+        const dropdown = document.getElementById('notifDropdown');
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        if (dropdown.style.display === 'block') {
+            loadMahasiswaNotifikasi();
         }
     });
 
-    // Auto close modal setelah sukses update
-    @if (session('success'))
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
-                if (modal) {
-                    modal.hide();
-                }
-            }, 2000);
-        });
-    @endif
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('notifDropdown');
+        const bell = document.getElementById('notifBell');
+        if (!dropdown.contains(e.target) && e.target !== bell) {
+            dropdown.style.display = 'none';
+        }
+    });
 
-    // Pastikan hanya satu kompetensi yang bisa dipilih
-    function ensureSingleKompetensi(checkbox) {
-        const checkboxes = document.querySelectorAll('input[name="kompetensi_id"]');
-        checkboxes.forEach((cb) => {
-            if (cb !== checkbox) {
-                cb.checked = false;
+    function updateNotifBadge(count) {
+        let badge = document.getElementById('notifBadge');
+        const bell = document.getElementById('notifBell');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.id = 'notifBadge';
+                badge.style.position = 'absolute';
+                badge.style.top = '-6px';
+                badge.style.right = '-10px';
+                badge.style.background = '#dc3545';
+                badge.style.color = '#fff';
+                badge.style.borderRadius = '50%';
+                badge.style.width = '16px';
+                badge.style.height = '16px';
+                badge.style.display = 'flex';
+                badge.style.alignItems = 'center';
+                badge.style.justifyContent = 'center';
+                badge.style.fontSize = '11px';
+                badge.style.fontWeight = 'bold';
+                badge.style.zIndex = '10';
+                badge.style.border = '2px solid #fff';
+                bell.appendChild(badge);
             }
+            badge.textContent = count > 9 ? '9+' : count;
+            badge.style.display = 'flex';
+        } else if (badge) {
+            badge.style.display = 'none';
+        }
+    }
+
+    function fetchNotifCount() {
+        fetch("{{ route('profile.notifikasi.count') }}")
+            .then(res => res.json())
+            .then(res => {
+                updateNotifBadge(res.count || 0);
+            });
+    }
+
+    setInterval(fetchNotifCount, 60000);
+    fetchNotifCount();
+
+    function deleteNotifikasi(id, btn) {
+        btn.disabled = true;
+        fetch(`/profile/notifikasi/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                const notifDiv = btn.closest('[data-id]');
+                if (notifDiv) notifDiv.remove();
+                if (document.querySelectorAll('#notifList [data-id]').length === 0) {
+                    document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                }
+                fetchNotifCount();
+            } else {
+                alert(res.error || 'Gagal menghapus notifikasi.');
+                btn.disabled = false;
+            }
+        })
+        .catch(() => {
+            alert('Gagal menghapus notifikasi.');
+            btn.disabled = false;
         });
     }
+
+    document.getElementById('markAllRead').addEventListener('click', function(e) {
+        e.preventDefault();
+        fetch("{{ route('profile.notifikasi.deleteAll') }}", {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                document.getElementById('notifList').innerHTML = `<div class="text-center py-3 text-muted bg-white">Tidak ada notifikasi.</div>`;
+                fetchNotifCount();
+            } else {
+                alert(res.error || 'Gagal menghapus semua notifikasi.');
+            }
+        })
+        .catch(() => {
+            alert('Gagal menghapus semua notifikasi.');
+        });
+    });
 </script>

@@ -58,7 +58,7 @@
         </div>
         @endif
 
-        <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/profile.png') }}"
+        <img src="{{ Auth::user()->foto_profile ? url('/storage/' . Auth::user()->foto_profile) : url('/images/default_default.png') }}"
             alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
         <div class="column ms-2"> 
             <b class="mb-0">{{ Auth::user()->nama }}</b>

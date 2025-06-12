@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $activeMenu = 'dashboard';
+        $activeMenu = 'Dashboard';
         $lowongans = LowonganMagangModel::with('perusahaan')->latest()->get();
         
         // Ambil sertifikat dosen yang login

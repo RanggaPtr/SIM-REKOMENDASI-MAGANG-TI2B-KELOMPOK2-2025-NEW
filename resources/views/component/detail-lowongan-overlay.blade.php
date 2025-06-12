@@ -26,7 +26,7 @@
             <span class="bg-transparent">Di posting {{ $lowongan->selisih_hari }} hari yang lalu</span>
             <span class="bg-transparent">
                 <i class="fa-solid fa-money-bill-wave bg-transparent"></i>
-                {{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}
+                {{ $lowongan->tunjangan ? 'Paid Internship' : 'Unpaid' }}
             </span>
             <span class="bg-transparent"><i class="fa-solid fa-location-dot"></i>
                 {{ ucwords(strtolower($lowongan->perusahaan->lokasi->nama)) ?? '-' }}</span>

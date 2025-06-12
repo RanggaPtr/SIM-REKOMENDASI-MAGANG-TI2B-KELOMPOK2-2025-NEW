@@ -57,7 +57,7 @@
                                 <div class="bg-transparent">
                                     <span class="fw-bold bg-transparent">
                                         <i class="fa-solid fa-money-bill-wave bg-transparent"></i>
-                                        {{ $lowongan->tunjangan ? 'Berbayar' : 'Tidak Berbayar' }}
+                                        {{ $lowongan->tunjangan ? 'Paid Internship' : 'Unpaid' }}
                                     </span>
                                 </div>
                                 <div class="text-muted small" style="font-size: 0.85rem; background: transparent;">

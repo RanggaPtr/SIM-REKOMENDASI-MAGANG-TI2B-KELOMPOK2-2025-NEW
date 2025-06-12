@@ -152,7 +152,7 @@
                                                 @for ($star = 1; $star <= $i; $star++)
                                                     <i class="fa-solid fa-star text-warning bg-transparent"></i>
                                                 @endfor
-                                                {{ $i }} ≤
+                                                {{ $i }}
                                             </label>
                                         </div>
                                     @endfor

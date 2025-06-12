@@ -64,11 +64,14 @@ class DashboardController extends Controller
         // Rekomendasi (KNN/AHP)
         $recomendedLowongans = $this->rekomendasiKNN($lowongans);
 
-        // Sorting setelah rekomendasi
-        $sort = $request->input('sort', 'asc');
-        $sortedLowongans = $recomendedLowongans->sortBy(function ($lowongan) {
-            return $lowongan->judul;
-        }, SORT_REGULAR, $sort === 'desc')->values();
+        $sort = $request->input('sort', 'rekomendasi');
+        if ($sort === 'asc') {
+            $recomendedLowongans = $recomendedLowongans->sortBy('similarity')->values();
+        } elseif ($sort === 'desc') {
+            $recomendedLowongans = $recomendedLowongans->sortByDesc('similarity')->values();
+        }
+        // Pluck hanya lowongan untuk dikirim ke view
+        $sortedLowongans = $recomendedLowongans->pluck('lowongan')->values();
 
         $perPage = 15;
         $page = $request->input('page', 1);
@@ -316,7 +319,7 @@ class DashboardController extends Controller
         // echo response()->json($check, 200, [], JSON_PRETTY_PRINT);
 
         // Kirim data lowongan yang sudah diurutkan
-        return collect($result)->pluck('lowongan');
+        return collect($result);
     }
 
     //Rekomendasi menggunakan metode AHP (Analytical Hierarchy Process)

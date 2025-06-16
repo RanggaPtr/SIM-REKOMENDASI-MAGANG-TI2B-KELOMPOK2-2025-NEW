@@ -38,7 +38,7 @@ class PengajuanMagangSeeder extends Seeder
                 'lowongan_id' => $i,
                 'status' => 'selesai',
                 'dosen_id' => 1234567890,
-                'feedback_rating' => mt_rand(3, 5),
+                'feedback_rating' => mt_rand(300, 500) / 100,
                 'feedback_deskripsi' => 'Selama magang di sini, saya banyak belajar tentang alur kerja profesional dan bagaimana berkolaborasi dalam tim. Mentor sangat suportif dan terbuka terhadap pertanyaan, jadi saya merasa nyaman untuk terus belajar. Meskipun awalnya cukup menantang, tapi lingkungan kerjanya sangat membantu saya berkembang. Terima kasih atas kesempatan dan bimbingannya.',
             ]);
             PengajuanMagangModel::create([
@@ -46,7 +46,7 @@ class PengajuanMagangSeeder extends Seeder
                 'lowongan_id' => $i,
                 'status' => 'selesai',
                 'dosen_id' => 1234567891,
-                'feedback_rating' => mt_rand(3, 5),
+                'feedback_rating' => mt_rand(100, 500) / 100,
                 'feedback_deskripsi' => 'Selama magang di sini, saya banyak belajar tentang alur kerja profesional dan bagaimana berkolaborasi dalam tim. Mentor sangat suportif dan terbuka terhadap pertanyaan, jadi saya merasa nyaman untuk terus belajar. Meskipun awalnya cukup menantang, tapi lingkungan kerjanya sangat membantu saya berkembang. Terima kasih atas kesempatan dan bimbingannya.',
             ]);
         }

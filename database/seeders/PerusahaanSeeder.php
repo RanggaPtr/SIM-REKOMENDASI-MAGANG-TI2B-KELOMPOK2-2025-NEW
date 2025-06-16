@@ -31,7 +31,7 @@ class PerusahaanSeeder extends Seeder
                 'wilayah_id' => $jakarta->wilayah_id,
                 'kontak' => '02112345678',
                 'bidang_industri' => 'Teknologi Informasi',
-                'rating' => 4.5,
+                'rating' => mt_rand(100, 500) / 100, // Random rating between 1 and 5
                 'deskripsi_rating' => 'Perusahaan dengan lingkungan kerja yang inovatif.',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -45,7 +45,7 @@ class PerusahaanSeeder extends Seeder
                 'wilayah_id' => $bandung->wilayah_id,
                 'kontak' => '02298765432',
                 'bidang_industri' => 'Analisis Data',
-                'rating' => 4.2,
+                'rating' => mt_rand(150, 500) / 100, // Random rating between 1 and 5
                 'deskripsi_rating' => 'Perusahaan dengan tim yang suportif.',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -59,7 +59,7 @@ class PerusahaanSeeder extends Seeder
                 'wilayah_id' => $surabaya->wilayah_id,
                 'kontak' => '0311234567',
                 'bidang_industri' => 'Startup Teknologi',
-                'rating' => 4.4,
+                'rating' => mt_rand(120, 500) / 100, // Random rating between 1 and 5
                 'deskripsi_rating' => 'Lingkungan kerja kreatif dan kolaboratif.',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -73,7 +73,7 @@ class PerusahaanSeeder extends Seeder
                 'wilayah_id' => $yogyakarta->wilayah_id,
                 'kontak' => '0274123456',
                 'bidang_industri' => 'Kreatif & Digital',
-                'rating' => 4.3,
+                'rating' => mt_rand(140, 500) / 100, // Random rating between 1 and 5
                 'deskripsi_rating' => 'Tim muda dan inovatif.',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -87,7 +87,7 @@ class PerusahaanSeeder extends Seeder
                 'wilayah_id' => $semarang->wilayah_id,
                 'kontak' => '02433445566',
                 'bidang_industri' => 'Edukasi Digital',
-                'rating' => 4.1,
+                'rating' => mt_rand(180, 500) / 100, // Random rating between 1 and 5
                 'deskripsi_rating' => 'Fokus pada pengembangan SDM dan teknologi pendidikan.',
                 'created_at' => now(),
                 'updated_at' => now(),

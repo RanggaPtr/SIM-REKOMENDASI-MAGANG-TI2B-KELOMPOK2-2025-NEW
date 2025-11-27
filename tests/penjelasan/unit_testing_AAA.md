@@ -1,6 +1,6 @@
 # Laporan Implementasi Unit Testing dengan Mockery dan Test Case di Laravel
 
-**Nama Kelompok:** Kelompok 2  
+**Nama Kelompok:** Kelompok 6 
 **Mata Kuliah:** Sistem Informasi Magang  
 **Kelas:** TI-2B  
 **Tahun:** 2025

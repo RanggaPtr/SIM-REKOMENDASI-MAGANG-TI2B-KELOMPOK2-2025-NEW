@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersSeeder extends Seeder
 {
-  public function run()
+    public function run()
     {
         $users = [
             [
@@ -146,7 +146,7 @@ class UsersSeeder extends Seeder
             [
                 'nama' => 'Andi Wijaya',
                 'username' => 'mahasiswa1',
-                'email' => 'mahasiswa1@simmagang.com', 
+                'email' => 'mahasiswa1@simmagang.com',
                 'password' => Hash::make('mahasiswa123'),
                 'role' => 'mahasiswa',
                 'foto_profile' => 'profiles/default.jpg',
